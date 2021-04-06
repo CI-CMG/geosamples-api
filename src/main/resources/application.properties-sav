@@ -1,8 +1,0 @@
-spring.datasource.url=jdbc:postgresql://localhost:5432/geosamples
-spring.datasource.username=jcc
-spring.datasource.password=****
-
-logging.level.org.springframework=WARN
-logging.level.org.springframework.test=WARN
-logging.level.ncei.gis=DEBUG
-
