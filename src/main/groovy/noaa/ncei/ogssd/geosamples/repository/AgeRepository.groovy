@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository
  */
 
 @Repository
-class AgesRepository extends BaseRepository {
+class AgeRepository extends BaseRepository {
     static final String TABLENAME = 'curators_interval'
     static final String recordsQueryString = "select distinct age from ${SCHEMA}.${TABLENAME}"
     static final String countQueryString = "select count(distinct age) from ${SCHEMA}.${TABLENAME}"

@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletResponse
 @Slf4j
 @RestController
 @RequestMapping("/geosamples-api")
-class RepositoriesController {
+class RepositoryController {
     @Autowired
     FacilityRepository facilityRepository
 

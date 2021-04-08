@@ -1,8 +1,7 @@
 package noaa.ncei.ogssd.geosamples.web
 
 import groovy.util.logging.Slf4j
-import noaa.ncei.ogssd.geosamples.repository.AgesRepository
-import noaa.ncei.ogssd.geosamples.repository.SampleRepository
+import noaa.ncei.ogssd.geosamples.repository.AgeRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -15,9 +14,9 @@ import javax.servlet.http.HttpServletResponse
 @Slf4j
 @RestController
 @RequestMapping("/geosamples-api")
-class AgesController {
+class AgeController {
     @Autowired
-    AgesRepository agesRepository
+    AgeRepository agesRepository
 
     @GetMapping("/ages")
     def getSamples(
