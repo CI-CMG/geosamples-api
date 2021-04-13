@@ -4,7 +4,9 @@ import groovy.util.logging.Slf4j
 import noaa.ncei.ogssd.geosamples.repository.FacilityRepository
 import noaa.ncei.ogssd.geosamples.repository.SampleRepository
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
@@ -19,7 +21,7 @@ class RepositoryController {
     @Autowired
     FacilityRepository facilityRepository
 
-
+    @CrossOrigin
     @GetMapping("/repositories")
     def getSamples(
         @RequestParam(required=false, value="count_only") boolean countOnly,
@@ -54,5 +56,11 @@ class RepositoryController {
             resultSet = facilityRepository.getRecords(searchParams)
         }
         return resultSet
+    }
+
+    @CrossOrigin
+    @GetMapping("/repositories/{id}")
+    def getRepositoryById(@PathVariable String id) {
+        return facilityRepository.getRecordById(id)
     }
 }
