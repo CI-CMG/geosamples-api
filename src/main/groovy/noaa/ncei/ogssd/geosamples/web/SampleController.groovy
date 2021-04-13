@@ -61,6 +61,7 @@ class SampleController {
         if (bbox) { searchParams["bbox"] = bbox}
         if (platform) { searchParams["platform"] = platform}
         if (lake) { searchParams["lake"] = lake}
+        // cruise applies to both cruise and leg columns
         if (cruise) { searchParams["cruise"] = cruise}
         if (device) { searchParams["device"] = device}
         if (startDate) { searchParams['startDate'] = startDate}

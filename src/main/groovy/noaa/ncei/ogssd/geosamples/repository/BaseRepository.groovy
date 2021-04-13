@@ -49,6 +49,8 @@ abstract class BaseRepository {
         def response = geosamplesService.buildWhereClause(searchParameters, defaultCriteria)
         String whereClause = response[0]
         def criteriaValues = response[1]
+        log.debug(recordsQueryString + whereClause + orderByClause)
+        log.debug(criteriaValues)
         if (whereClause) {
             return jdbcTemplate.queryForList(recordsQueryString + whereClause + orderByClause, *criteriaValues)
         } else {

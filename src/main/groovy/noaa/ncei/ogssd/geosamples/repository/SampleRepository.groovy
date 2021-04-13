@@ -17,7 +17,7 @@ class SampleRepository extends BaseRepository {
     static final String TABLENAME = 'curators_sample_tsqp'
     final String recordsQueryString
     final String countQueryString
-    static final String orderByClause = ""
+    static final String orderByClause = " order by cruise, begin_date, leg, sample, device"
     List defaultCriteria = []
     private String schema
 

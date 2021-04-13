@@ -34,7 +34,8 @@ class GeosamplesService {
             criteriaValues << parameters['lake']
         }
         if (parameters['cruise']) {
-            criteria << 'cruise = ?'
+            criteria << '(cruise = ? or leg = ?)'
+            criteriaValues << parameters['cruise']
             criteriaValues << parameters['cruise']
         }
         if (parameters['device']) {
@@ -54,15 +55,14 @@ class GeosamplesService {
             criteria.push('water_depth < ?')
             criteriaValues << parameters['maxDepth']
         }
-        if (parameters['imlgs']) {
-            criteria.push('imlgs = ?')
-            criteriaValues << parameters['imlgs']
-        }
         if (parameters['igsn']) {
             criteria.push('igsn = ?')
             criteriaValues << parameters['igsn']
         }
-
+        if (parameters['imlgs']) {
+            criteria.push('imlgs = ?')
+            criteriaValues << parameters['imlgs']
+        }
         if (criteria.size() > 0) {
             println("returning ${" where ${criteria.join(' and ')}"}, ${criteriaValues}")
             return [" where ${criteria.join(' and ')}", criteriaValues]
