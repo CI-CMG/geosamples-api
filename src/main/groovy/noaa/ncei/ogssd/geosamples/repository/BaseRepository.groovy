@@ -1,8 +1,12 @@
 package noaa.ncei.ogssd.geosamples.repository
 
 import groovy.sql.Sql
+import groovy.util.logging.Slf4j
+import noaa.ncei.ogssd.geosamples.DatabaseProperties
 import noaa.ncei.ogssd.geosamples.GeosamplesService
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.AutoConfigureOrder
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Repository
 
@@ -13,11 +17,14 @@ import javax.sql.DataSource
  * WARNING: this class has a tight coupling to the underlying database schema
  *
  */
-
+@Slf4j
 @Repository
 abstract class BaseRepository {
     static final String SCHEMA = 'public'
 //    static final String SCHEMA = 'mud'
+
+    @Autowired
+    DatabaseProperties databaseProperties
 
     @Autowired
     JdbcTemplate jdbcTemplate;
@@ -44,7 +51,7 @@ abstract class BaseRepository {
 //    BaseRepository() {}
 
     List getRecords(Map<String,Object>searchParameters) {
-        println("inside getRecords with ${searchParameters}")
+        log.debug("inside getRecords with ${searchParameters}")
         def response = geosamplesService.buildWhereClause(searchParameters, defaultCriteria)
         String whereClause = response[0]
         def criteriaValues = response[1]
@@ -57,7 +64,7 @@ abstract class BaseRepository {
 
 
     Map<String,Object> getCount(Map<String,Object>searchParameters) {
-        println("inside getCount with ${searchParameters}")
+        log.debug("inside getCount with ${searchParameters}")
         def response = geosamplesService.buildWhereClause(searchParameters, defaultCriteria)
         String whereClause = response[0]
         def criteriaValues = response[1]
