@@ -1,21 +1,40 @@
 package noaa.ncei.ogssd.geosamples
 
+import groovy.util.logging.Slf4j
+import noaa.ncei.ogssd.geosamples.repository.SampleRepository
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
-
 import java.text.SimpleDateFormat
 
+@Slf4j
 @Service
 class GeosamplesService {
+    private final String schema
+    private final String intervalTable
+    private final String sampleTable
 
+    @Autowired
+    GeosamplesService(
+            @Value('${geosamples.schema: mud}') String schema,
+            @Value('${geosamples.sample_table: mud.curators_sample_tsqp}') String curatorTable,
+            @Value('${geosamples.interval_table: curators_interval}') String intervalTable
+    ) {
+        this.schema = schema
+        this.intervalTable = intervalTable
+        this.sampleTable = sampleTable
+    }
 /**
  * helper method to build SQL where clause and associated query values list.
  * WARNING: this method has an implicit coupling between the parameter names
  * and the database columns
  */
-    static List buildWhereClause(parameters, List<String> defaultCriteria = []) {
-        println("inside buildWhereClause with ${parameters} and ${defaultCriteria}")
+    List buildWhereClause(parameters, List<String> defaultCriteria = []) {
+        log.debug("inside buildWhereClause with ${parameters} and ${defaultCriteria}")
         List criteria = new ArrayList(defaultCriteria)
         List criteriaValues = []
+
+        /* start of criteria */
         if (parameters['repository']) {
             criteria << 'facility_code = ?'
             criteriaValues << parameters['repository']
@@ -63,8 +82,30 @@ class GeosamplesService {
             criteria.push('imlgs = ?')
             criteriaValues << parameters['imlgs']
         }
+        if (parameters['lithology']) {
+            criteria.push("""imlgs in (select imlgs from ${intervalTable} where (lith1 like ? or lith2 like ? or rock_lith like ?))""")
+            criteriaValues << "%${parameters['lithology']}%"
+            criteriaValues << "%${parameters['lithology']}%"
+            criteriaValues << "%${parameters['lithology']}%"
+        }
+        if (parameters['texture']) {
+            criteria.push("""imlgs in (select imlgs from ${intervalTable} where (text1 like ? or text2 like ?))""")
+            criteriaValues << "%${parameters['texture']}%"
+            criteriaValues << "%${parameters['texture']}%"
+        }
+        if (parameters['mineralogy']) {
+            criteria.push("""imlgs in (select imlgs from ${intervalTable} where rock_min like ?)""")
+            criteriaValues << "%${parameters['mineralogy']}%"
+        }
+        if (parameters['weathering']) {
+            criteria.push("""imlgs in (select imlgs from ${intervalTable} where weath_meta like ?)""")
+            criteriaValues << "%${parameters['weathering']}%"
+        }
+
+        /* end of criteria */
+
         if (criteria.size() > 0) {
-            println("returning ${" where ${criteria.join(' and ')}"}, ${criteriaValues}")
+            log.debug("returning ${" where ${criteria.join(' and ')}"}, ${criteriaValues}")
             return [" where ${criteria.join(' and ')}", criteriaValues]
         } else {
             return [null, null]

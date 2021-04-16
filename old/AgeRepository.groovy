@@ -1,6 +1,6 @@
 package noaa.ncei.ogssd.geosamples.repository
 
-import org.springframework.stereotype.Repository
+import Repository
 
 
 /*
@@ -11,8 +11,8 @@ import org.springframework.stereotype.Repository
 @Repository
 class AgeRepository extends BaseRepository {
     static final String TABLENAME = 'curators_interval'
-    static final String recordsQueryString = "select distinct age from ${SCHEMA}.${TABLENAME}"
-    static final String countQueryString = "select count(distinct age) from ${SCHEMA}.${TABLENAME}"
+    static final String recordsQueryString = "select distinct age from ${noaa.ncei.ogssd.geosamples.repository.BaseRepository.SCHEMA}.${TABLENAME}"
+    static final String countQueryString = "select count(distinct age) from ${noaa.ncei.ogssd.geosamples.repository.BaseRepository.SCHEMA}.${TABLENAME}"
     static final String orderByClause = " order by age"
     List defaultCriteria = []
 

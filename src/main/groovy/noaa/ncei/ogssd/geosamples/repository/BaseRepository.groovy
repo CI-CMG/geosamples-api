@@ -50,7 +50,11 @@ abstract class BaseRepository {
         String whereClause = response[0]
         def criteriaValues = response[1]
         log.debug(recordsQueryString + whereClause + orderByClause)
-        log.debug(criteriaValues)
+        if (criteriaValues) {
+            log.debug(criteriaValues)
+        } else {
+            log.debug('no criteria values')
+        }
         if (whereClause) {
             return jdbcTemplate.queryForList(recordsQueryString + whereClause + orderByClause, *criteriaValues)
         } else {

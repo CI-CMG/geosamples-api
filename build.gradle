@@ -19,6 +19,8 @@ dependencies {
 	implementation 'org.codehaus.groovy:groovy'
 	implementation group: 'org.codehaus.groovy', name: 'groovy-sql', version: '2.5.14'
 	implementation group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.5.14', ext: 'pom'
+	implementation 'org.springdoc:springdoc-openapi-ui:1.5.7'
+	implementation 'org.springdoc:springdoc-openapi-groovy:1.5.7'
 	runtimeOnly 'com.oracle.database.jdbc:ojdbc8'
 	runtimeOnly 'org.postgresql:postgresql'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'

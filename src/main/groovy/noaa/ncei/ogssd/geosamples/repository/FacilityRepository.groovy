@@ -27,9 +27,17 @@ class FacilityRepository extends BaseRepository {
     // inject value from application.properties
     FacilityRepository( @Value('${geosamples.schema: mud}') String schema) {
         this.schema = schema
-        this.recordsQueryString = """select distinct a.facility_code, b.facility 
-           from ${schema}.${TABLENAME} a inner join ${schema}.${JOINTABLE} b
-           on a.FACILITY_CODE = b.FACILITY_CODE"""
+//        this.recordsQueryString = """select distinct a.facility_code, b.facility
+//           from ${schema}.${TABLENAME} a inner join ${schema}.${JOINTABLE} b
+//           on a.FACILITY_CODE = b.FACILITY_CODE"""
+
+        this.recordsQueryString =
+            """select sample_count, b.facility_code, b.facility, b.facility_comment 
+            from 
+            (select count(*) as sample_count, facility_code from ${schema}.${TABLENAME} group by facility_code) as a
+            full outer join 
+            (select facility_code, facility, facility_comment from ${schema}.${JOINTABLE}) as b 
+            on a.facility_code = b.facility_code"""
         this.countQueryString = "select count(distinct facility_code) from ${schema}.${TABLENAME}"
     }
 

@@ -1,6 +1,7 @@
 package noaa.ncei.ogssd.geosamples.web
 
 import groovy.util.logging.Slf4j
+import io.swagger.v3.oas.annotations.Operation
 import noaa.ncei.ogssd.geosamples.GeosamplesBadRequestException
 import noaa.ncei.ogssd.geosamples.GeosamplesResourceNotFoundException
 import noaa.ncei.ogssd.geosamples.repository.SampleRepository
@@ -50,6 +51,10 @@ class SampleController {
         @RequestParam(required=false, value="min_depth") Float minDepth,
         @RequestParam(required=false, value="max_depth") Float maxDepth,
         @RequestParam(required=false) String igsn,
+        @RequestParam(required=false) String lithology,
+        @RequestParam(required=false) String texture,
+        @RequestParam(required=false) String mineralogy,
+        @RequestParam(required=false) String weathering,
         HttpServletRequest request,
         HttpServletResponse response
     ) {
@@ -68,6 +73,10 @@ class SampleController {
         if (minDepth) { searchParams["minDepth"] >= minDepth}
         if (maxDepth) { searchParams["maxDepth"] < maxDepth}
         if (igsn) { searchParams["igsn"] = igsn}
+        if (lithology) { searchParams['lithology'] = lithology}
+        if (texture) { searchParams['texture'] = texture}
+        if (mineralogy) { searchParams['mineralogy'] = mineralogy}
+        if (weathering) { searchParams['weathering'] = weathering}
 
         def resultSet
         if (countOnly == true) {
@@ -89,4 +98,163 @@ class SampleController {
         }
         return sampleRepository.getRecordById(id)
     }
+
+
+    @Operation(summary="Find all storage methods used in the IMLGS")
+//    @Hidden
+    @GetMapping("/storage_methods")
+    def getStorageMethods(
+            @RequestParam(required=false) String repository,
+            @RequestParam(required=false) String bbox,
+            @RequestParam(required=false) String platform,
+            @RequestParam(required=false) String lake,
+            @RequestParam(required=false) String cruise,
+            @RequestParam(required=false) String device,
+            @RequestParam(required=false, value="start_date") String startDate,
+            @RequestParam(required=false, value="min_depth") Float minDepth,
+            @RequestParam(required=false, value="max_depth") Float maxDepth,
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) {
+        // put request parameters into a collection to facility transfer to repository
+        // TODO validate params?
+        Map<String,Object> searchParams = [:]
+        if (repository) { searchParams["repository"] = repository}
+        // format: minx,miny,maxx,maxy
+        if (bbox) { searchParams["bbox"] = bbox}
+        if (platform) { searchParams["platform"] = platform}
+        if (lake) { searchParams["lake"] = lake}
+        if (cruise) { searchParams["cruise"] = cruise}
+        if (device) { searchParams["device"] = device}
+        if (startDate) { searchParams['startDate'] = startDate}
+        if (minDepth) { searchParams["minDepth"] >= minDepth}
+        if (maxDepth) { searchParams["maxDepth"] < maxDepth}
+
+        return sampleRepository.getUniqueStorageMethods(searchParams)
+    }
+
+
+    @GetMapping("/physiographic_provinces")
+    def getPhysiographicProvinces(
+            @RequestParam(required=false) String repository,
+            @RequestParam(required=false) String bbox,
+            @RequestParam(required=false) String platform,
+            @RequestParam(required=false) String lake,
+            @RequestParam(required=false) String cruise,
+            @RequestParam(required=false) String device,
+            @RequestParam(required=false, value="start_date") String startDate,
+            @RequestParam(required=false, value="min_depth") Float minDepth,
+            @RequestParam(required=false, value="max_depth") Float maxDepth,
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) {
+        // put request parameters into a collection to facility transfer to repository
+        // TODO validate params?
+        Map<String,Object> searchParams = [:]
+        if (repository) { searchParams["repository"] = repository}
+        // format: minx,miny,maxx,maxy
+        if (bbox) { searchParams["bbox"] = bbox}
+        if (platform) { searchParams["platform"] = platform}
+        if (lake) { searchParams["lake"] = lake}
+        if (cruise) { searchParams["cruise"] = cruise}
+        if (device) { searchParams["device"] = device}
+        if (startDate) { searchParams['startDate'] = startDate}
+        if (minDepth) { searchParams["minDepth"] >= minDepth}
+        if (maxDepth) { searchParams["maxDepth"] < maxDepth}
+
+        return sampleRepository.getUniquePhysiographicProvinces(searchParams)
+    }
+
+
+    @GetMapping("/devices")
+    def getDeviceNames(
+            @RequestParam(required=false) String repository,
+            @RequestParam(required=false) String bbox,
+            @RequestParam(required=false) String platform,
+            @RequestParam(required=false) String lake,
+            @RequestParam(required=false) String cruise,
+            @RequestParam(required=false, value="start_date") String startDate,
+            @RequestParam(required=false, value="min_depth") Float minDepth,
+            @RequestParam(required=false, value="max_depth") Float maxDepth,
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) {
+        // put request parameters into a collection to facility transfer to repository
+        // TODO validate params?
+        Map<String,Object> searchParams = [:]
+        if (repository) { searchParams["repository"] = repository}
+        // format: minx,miny,maxx,maxy
+        if (bbox) { searchParams["bbox"] = bbox}
+        if (lake) { searchParams["lake"] = lake}
+        if (cruise) { searchParams["cruise"] = cruise}
+        if (platform) { searchParams["platform"] = platform}
+        if (startDate) { searchParams['startDate'] = startDate}
+        if (minDepth) { searchParams["minDepth"] >= minDepth}
+        if (maxDepth) { searchParams["maxDepth"] < maxDepth}
+
+        return sampleRepository.getDeviceNames(searchParams)
+    }
+
+
+    @GetMapping("/lakes")
+    def getLakes(
+            @RequestParam(required=false) String repository,
+            @RequestParam(required=false) String bbox,
+            @RequestParam(required=false) String platform,
+            @RequestParam(required=false) String cruise,
+            @RequestParam(required=false) String device,
+            @RequestParam(required=false, value="start_date") String startDate,
+            @RequestParam(required=false, value="min_depth") Float minDepth,
+            @RequestParam(required=false, value="max_depth") Float maxDepth,
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) {
+        // put request parameters into a collection to facility transfer to repository
+        // TODO validate params?
+        Map<String,Object> searchParams = [:]
+        if (repository) { searchParams["repository"] = repository}
+        // format: minx,miny,maxx,maxy
+        if (bbox) { searchParams["bbox"] = bbox}
+        if (platform) { searchParams["platform"] = platform}
+        if (cruise) { searchParams["cruise"] = cruise}
+        if (device) { searchParams["device"] = device}
+        if (startDate) { searchParams['startDate'] = startDate}
+        if (minDepth) { searchParams["minDepth"] >= minDepth}
+        if (maxDepth) { searchParams["maxDepth"] < maxDepth}
+
+        return sampleRepository.getLakes(searchParams)
+    }
+
+
+    @GetMapping("/igsn")
+    def getIsgnValues(
+            @RequestParam(required=false) String repository,
+            @RequestParam(required=false) String bbox,
+            @RequestParam(required=false) String platform,
+            @RequestParam(required=false) String lake,
+            @RequestParam(required=false) String cruise,
+            @RequestParam(required=false) String device,
+            @RequestParam(required=false, value="start_date") String startDate,
+            @RequestParam(required=false, value="min_depth") Float minDepth,
+            @RequestParam(required=false, value="max_depth") Float maxDepth,
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) {
+        // put request parameters into a collection to facility transfer to repository
+        // TODO validate params?
+        Map<String,Object> searchParams = [:]
+        if (repository) { searchParams["repository"] = repository}
+        // format: minx,miny,maxx,maxy
+        if (bbox) { searchParams["bbox"] = bbox}
+        if (platform) { searchParams["platform"] = platform}
+        if (lake) { searchParams["lake"] = lake}
+        if (cruise) { searchParams["cruise"] = cruise}
+        if (device) { searchParams["device"] = device}
+        if (startDate) { searchParams['startDate'] = startDate}
+        if (minDepth) { searchParams["minDepth"] >= minDepth}
+        if (maxDepth) { searchParams["maxDepth"] < maxDepth}
+
+        return sampleRepository.getIgsnValues(searchParams)
+    }
+
 }

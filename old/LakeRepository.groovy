@@ -1,6 +1,6 @@
 package noaa.ncei.ogssd.geosamples.repository
 
-import org.springframework.stereotype.Repository
+import Repository
 
 /*
  * interface to database table(s).
@@ -12,9 +12,9 @@ import org.springframework.stereotype.Repository
 class LakeRepository extends BaseRepository {
     static final String TABLENAME = 'curators_sample_tsqp'
     static final String recordsQueryString =
-        "select distinct lake from ${SCHEMA}.${TABLENAME}"
+        "select distinct lake from ${noaa.ncei.ogssd.geosamples.repository.BaseRepository.SCHEMA}.${TABLENAME}"
     static final String countQueryString =
-        "select count(distinct lake) from ${SCHEMA}.${TABLENAME}"
+        "select count(distinct lake) from ${noaa.ncei.ogssd.geosamples.repository.BaseRepository.SCHEMA}.${TABLENAME}"
     static final String orderByClause = " order by lake"
     List defaultCriteria = ["lake is not null"]
 
