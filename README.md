@@ -11,7 +11,15 @@ Resources exposed via the API include:
 * Interval (along a core sample)
 * Lake
 * Platform
-* Province
+* Physiographic Province
 * Repository (aka Facility)
 * Sample
 * Storage Method
+* Texture
+* Mineralogy
+* Lithology
+* Weathering
+* Metamorphism
+
+See [notes](https://www.ngdc.noaa.gov/mgg/curator/curatorcoding.html) 
+on the database fields underlying the API 
