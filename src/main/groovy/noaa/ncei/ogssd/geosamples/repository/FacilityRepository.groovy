@@ -34,9 +34,9 @@ class FacilityRepository extends BaseRepository {
         this.recordsQueryString =
             """select sample_count, b.facility_code, b.facility, b.facility_comment 
             from 
-            (select count(*) as sample_count, facility_code from ${schema}.${TABLENAME} group by facility_code) as a
+            (select count(*) as sample_count, facility_code from ${schema}.${TABLENAME} group by facility_code) a
             full outer join 
-            (select facility_code, facility, facility_comment from ${schema}.${JOINTABLE}) as b 
+            (select facility_code, facility, facility_comment from ${schema}.${JOINTABLE}) b 
             on a.facility_code = b.facility_code"""
         this.countQueryString = "select count(distinct facility_code) from ${schema}.${TABLENAME}"
     }

@@ -101,6 +101,10 @@ class GeosamplesService {
             criteria.push("""imlgs in (select imlgs from ${intervalTable} where weath_meta like ?)""")
             criteriaValues << "%${parameters['weathering']}%"
         }
+        if (parameters['metamorphism']) {
+            criteria.push("""imlgs in (select imlgs from ${intervalTable} where weath_meta like ?)""")
+            criteriaValues << "%${parameters['metamorphism']}%"
+        }
 
         /* end of criteria */
 

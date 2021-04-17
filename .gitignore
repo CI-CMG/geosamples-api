@@ -1,5 +1,8 @@
+**/.DS_Store
 **/application.properties
-
+**/application-oracle.properties
+**/application-postgres.properties
+old/
 HELP.md
 .gradle
 build/
