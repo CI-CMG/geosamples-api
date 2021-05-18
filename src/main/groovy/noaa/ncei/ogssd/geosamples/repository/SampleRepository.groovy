@@ -34,13 +34,25 @@ class SampleRepository extends BaseRepository {
         // fully qualified table names
         this.intervalTable = intervalTable
         this.sampleTable = sampleTable
-        this.recordsQueryString = "select * from ${schema}.${TABLENAME}"
+        // this.recordsQueryString = "select * from ${schema}.${TABLENAME}"
+        // skip SHAPE column since there are problems serializing SDO_Geometry into JSON
+        this.recordsQueryString = """select facility_code, ship_code, platform, cruise, sample, device, begin_date, 
+        end_date, lat, latdeg, latmin, ns, end_lat, end_latdeg, end_latmin, end_ns, lon, londeg, lonmin, ew, end_lon, 
+        end_londeg, end_lonmin, end_ew, latlon_orig, water_depth, end_water_depth, storage_meth, cored_length, 
+        cored_length_mm, cored_diam, cored_diam_mm, pi, province, lake, other_link, last_update, igsn, leg, 
+        sample_comments, publish, previous_state, objectid, show_sampl, imlgs from ${schema}.${TABLENAME}"""
         this.countQueryString = "select count(*) from ${schema}.${TABLENAME}"
     }
 
 
     Map<String, Object> getRecordById(String id) {
-        String queryString = "select * from ${schema}.${TABLENAME} where imlgs = ?"
+//        String queryString = "select * from ${schema}.${TABLENAME} where imlgs = ?"
+        // skip SHAPE column since there are problems serializing SDO_Geometry into JSON
+        String queryString = """select facility_code, ship_code, platform, cruise, sample, device, begin_date, 
+        end_date, lat, latdeg, latmin, ns, end_lat, end_latdeg, end_latmin, end_ns, lon, londeg, lonmin, ew, end_lon, 
+        end_londeg, end_lonmin, end_ew, latlon_orig, water_depth, end_water_depth, storage_meth, cored_length, 
+        cored_length_mm, cored_diam, cored_diam_mm, pi, province, lake, other_link, last_update, igsn, leg, 
+        sample_comments, publish, previous_state, objectid, show_sampl, imlgs from ${schema}.${TABLENAME} where imlgs = ?"""
         try {
             def result = jdbcTemplate.queryForMap(queryString, id)
             return result
@@ -170,4 +182,38 @@ class SampleRepository extends BaseRepository {
         return resultSet['igsn']
     }
 
+
+    List getCruiseNames(Map<String, Object> searchParameters) {
+        log.debug("inside getCruiseNames with ${searchParameters}")
+
+        def response = geosamplesService.buildWhereClause(searchParameters, ["cruise is not null"])
+        String whereClause = response[0]
+        def criteriaValues = response[1]
+
+        if (criteriaValues) {
+            log.debug(criteriaValues.toListString())
+        } else {
+            log.debug('no criteria values')
+        }
+
+        // TODO combine cruise and leg values into response?
+        // with default criteria, there will always be a whereClause
+        String queryString = """select distinct cruise from ${sampleTable} ${whereClause} order by cruise"""
+        def resultSet = jdbcTemplate.queryForList(queryString, *criteriaValues)
+        return resultSet['cruise']
+    }
+
+
+    List getCruises(Map<String, Object> searchParameters) {
+        //TODO
+        return null
+    }
+
+
+    def buildRecordsQueryString() {
+
+
+
+
+    }
 }

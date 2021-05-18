@@ -51,7 +51,7 @@ abstract class BaseRepository {
         def criteriaValues = response[1]
         log.debug(recordsQueryString + whereClause + orderByClause)
         if (criteriaValues) {
-            log.debug(criteriaValues)
+            log.debug(criteriaValues.toListString())
         } else {
             log.debug('no criteria values')
         }
@@ -59,6 +59,24 @@ abstract class BaseRepository {
             return jdbcTemplate.queryForList(recordsQueryString + whereClause + orderByClause, *criteriaValues)
         } else {
             return jdbcTemplate.queryForList(recordsQueryString + orderByClause)
+        }
+    }
+
+    List getNames(Map<String,Object>searchParameters) {
+        log.debug("inside getNames with ${searchParameters}")
+        def response = geosamplesService.buildWhereClause(searchParameters, defaultCriteria)
+        String whereClause = response[0]
+        def criteriaValues = response[1]
+        log.debug(namesQueryString + whereClause + orderByClause)
+        if (criteriaValues) {
+            log.debug(criteriaValues.toListString())
+        } else {
+            log.debug('no criteria values')
+        }
+        if (whereClause) {
+            return jdbcTemplate.queryForList(namesQueryString + whereClause + orderByClause, *criteriaValues)
+        } else {
+            return jdbcTemplate.queryForList(namesQueryString + orderByClause)
         }
     }
 

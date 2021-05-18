@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository
 class PlatformRepository extends BaseRepository {
     static final String TABLENAME = 'curators_sample_tsqp'
     static final String recordsQueryString =
-        "select distinct platform from ${SCHEMA}.${TABLENAME}"
+        "select distinct platform as name from ${SCHEMA}.${TABLENAME}"
     static final String countQueryString =
         "select count(distinct platform) from ${SCHEMA}.${TABLENAME}"
     static final String orderByClause = " order by platform"

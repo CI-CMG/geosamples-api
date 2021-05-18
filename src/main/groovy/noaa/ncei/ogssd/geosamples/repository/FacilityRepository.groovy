@@ -19,6 +19,7 @@ class FacilityRepository extends BaseRepository {
     static final String JOINTABLE = 'curators_facility'
     final String recordsQueryString
     final String countQueryString
+    final String namesQueryString
     static final String orderByClause = " order by facility_code"
     List defaultCriteria = []
     private String schema
@@ -38,6 +39,9 @@ class FacilityRepository extends BaseRepository {
             full outer join 
             (select facility_code, facility, facility_comment from ${schema}.${JOINTABLE}) b 
             on a.facility_code = b.facility_code"""
+        this.namesQueryString = """select distinct a.facility_code, b.facility
+           from ${schema}.${TABLENAME} a inner join ${schema}.${JOINTABLE} b
+           on a.FACILITY_CODE = b.FACILITY_CODE"""
         this.countQueryString = "select count(distinct facility_code) from ${schema}.${TABLENAME}"
     }
 
