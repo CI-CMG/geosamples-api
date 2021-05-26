@@ -2,7 +2,10 @@ package noaa.ncei.ogssd.geosamples.web
 
 
 import groovy.util.logging.Slf4j
+import io.swagger.v3.oas.annotations.OpenAPIDefinition
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.servers.Server
+import io.swagger.v3.oas.annotations.servers.Servers
 import io.swagger.v3.oas.annotations.tags.Tag
 import noaa.ncei.ogssd.geosamples.GeosamplesBadRequestException
 import noaa.ncei.ogssd.geosamples.repository.FacilityRepository
@@ -17,8 +20,15 @@ import javax.servlet.http.HttpServletResponse
 
 @Slf4j
 @Tag(name="geosamples", description="Index to Marine and Lacustrine Geological Samples (IMLGS) API")
+//TODO not working
+@OpenAPIDefinition(
+        servers = [ @Server(url="http://localhost:8080/geosamples-api/", description="embedded server"),
+                    @Server(url="https://gisdev.ngdc.noaa.gov/geosamples-api/", description="test server"),
+                    @Server(url="http://localhost/geosamples-api/", description="development server")]
+)
+//@Servers(@Server(url="https://gisdev.ngdc.noaa.gov/geosamples-api/", description="development server"))
 @RestController
-@RequestMapping("/geosamples-api")
+//@RequestMapping("/geosamples-api")
 class ImlgsController {
     @Autowired
     SampleRepository sampleRepository
@@ -505,10 +515,6 @@ class ImlgsController {
             @RequestParam(required=false, value="min_depth") Float minDepth,
             @RequestParam(required=false, value="max_depth") Float maxDepth,
             @RequestParam(required=false) String igsn,
-            @RequestParam(required=false) String lithology,
-            @RequestParam(required=false) String texture,
-            @RequestParam(required=false) String mineralogy,
-            @RequestParam(required=false) String weathering,
             @RequestParam(required=false) String imlgs,
             HttpServletRequest request,
             HttpServletResponse response
@@ -528,9 +534,6 @@ class ImlgsController {
         if (minDepth) { searchParams["minDepth"] >= minDepth}
         if (maxDepth) { searchParams["maxDepth"] < maxDepth}
         if (igsn) { searchParams["igsn"] = igsn}
-        if (lithology) { searchParams['lithology'] = lithology}
-        if (mineralogy) { searchParams['mineralogy'] = mineralogy}
-        if (weathering) { searchParams['weathering'] = weathering}
         if (imlgs) { searchParams['imlgs'] = imlgs}
 
         return intervalRepository.getUniqueTextureValues(searchParams)
@@ -550,9 +553,6 @@ class ImlgsController {
             @RequestParam(required=false, value="min_depth") Float minDepth,
             @RequestParam(required=false, value="max_depth") Float maxDepth,
             @RequestParam(required=false) String igsn,
-            @RequestParam(required=false) String lithology,
-            @RequestParam(required=false) String texture,
-            @RequestParam(required=false) String weathering,
             @RequestParam(required=false) String imlgs,
             HttpServletRequest request,
             HttpServletResponse response
@@ -594,9 +594,6 @@ class ImlgsController {
             @RequestParam(required=false, value="min_depth") Float minDepth,
             @RequestParam(required=false, value="max_depth") Float maxDepth,
             @RequestParam(required=false) String igsn,
-            @RequestParam(required=false) String lithology,
-            @RequestParam(required=false) String texture,
-            @RequestParam(required=false) String weathering,
             @RequestParam(required=false) String imlgs,
             HttpServletRequest request,
             HttpServletResponse response
@@ -616,8 +613,6 @@ class ImlgsController {
         if (minDepth) { searchParams["minDepth"] >= minDepth}
         if (maxDepth) { searchParams["maxDepth"] < maxDepth}
         if (igsn) { searchParams["igsn"] = igsn}
-        if (lithology) { searchParams['lithology'] = lithology}
-        if (texture) { searchParams['texture'] = texture}
         if (imlgs) { searchParams['imlgs'] = imlgs}
 
         return intervalRepository.getUniqueWeatheringValues(searchParams)
@@ -637,9 +632,6 @@ class ImlgsController {
             @RequestParam(required=false, value="min_depth") Float minDepth,
             @RequestParam(required=false, value="max_depth") Float maxDepth,
             @RequestParam(required=false) String igsn,
-            @RequestParam(required=false) String lithology,
-            @RequestParam(required=false) String texture,
-            @RequestParam(required=false) String weathering,
             @RequestParam(required=false) String imlgs,
             HttpServletRequest request,
             HttpServletResponse response
@@ -659,8 +651,6 @@ class ImlgsController {
         if (minDepth) { searchParams["minDepth"] >= minDepth}
         if (maxDepth) { searchParams["maxDepth"] < maxDepth}
         if (igsn) { searchParams["igsn"] = igsn}
-        if (lithology) { searchParams['lithology'] = lithology}
-        if (texture) { searchParams['texture'] = texture}
         if (imlgs) { searchParams['imlgs'] = imlgs}
 
         return intervalRepository.getUniqueMetamorphismValues(searchParams)
@@ -680,9 +670,6 @@ class ImlgsController {
             @RequestParam(required=false, value="min_depth") Float minDepth,
             @RequestParam(required=false, value="max_depth") Float maxDepth,
             @RequestParam(required=false) String igsn,
-            @RequestParam(required=false) String lithology,
-            @RequestParam(required=false) String texture,
-            @RequestParam(required=false) String weathering,
             @RequestParam(required=false) String imlgs,
             HttpServletRequest request,
             HttpServletResponse response
@@ -702,8 +689,6 @@ class ImlgsController {
         if (minDepth) { searchParams["minDepth"] >= minDepth}
         if (maxDepth) { searchParams["maxDepth"] < maxDepth}
         if (igsn) { searchParams["igsn"] = igsn}
-        if (lithology) { searchParams['lithology'] = lithology}
-        if (texture) { searchParams['texture'] = texture}
         if (imlgs) { searchParams['imlgs'] = imlgs}
 
         return intervalRepository.getUniqueGeologicAgeValues(searchParams)

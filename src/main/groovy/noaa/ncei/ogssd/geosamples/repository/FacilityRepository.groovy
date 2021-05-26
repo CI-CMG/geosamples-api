@@ -46,6 +46,34 @@ class FacilityRepository extends BaseRepository {
     }
 
 
+    List getRecords(Map<String,Object>searchParameters) {
+        log.debug("inside getRecords with ${searchParameters}")
+        def response = geosamplesService.buildWhereClause(searchParameters, defaultCriteria)
+        String whereClause = response[0]
+        def criteriaValues = response[1]
+        log.debug(recordsQueryString + whereClause + orderByClause)
+        if (criteriaValues) {
+            log.debug(criteriaValues.toListString())
+        } else {
+            log.debug('no criteria values')
+        }
+
+        // if criteria provided, drive query from curators_sample_tsqp since only it has many of the parameters
+        if (whereClause) {
+            String query = """select sample_count, b.facility_code, b.facility, b.facility_comment
+            from
+            (select count(*) as sample_count, facility_code from ${schema}.${TABLENAME} ${whereClause} group by facility_code) a
+            inner join
+            (select facility_code, facility, facility_comment from ${schema}.${JOINTABLE}) b
+            on a.facility_code = b.facility_code ${orderByClause}"""
+
+            return jdbcTemplate.queryForList(query, *criteriaValues)
+        } else {
+            return jdbcTemplate.queryForList(recordsQueryString + orderByClause)
+        }
+    }
+
+
     Map<String,Object> getRecordById(String id) {
         // JOINTABLE is a misnomer in this case
         String queryString = "select * from ${schema}.${JOINTABLE} where facility_code = ?"
