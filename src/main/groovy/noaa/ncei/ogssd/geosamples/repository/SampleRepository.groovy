@@ -62,6 +62,28 @@ class SampleRepository extends BaseRepository {
 
     }
 
+    /**
+     * return limited set of attributes used by webapp
+     */
+    List getDisplayRecords(Map<String,Object>searchParameters) {
+        log.debug("inside getDisplayRecords with ${searchParameters}")
+        String query = """select facility_code, platform, cruise, sample, device, begin_date, lat, lon, 
+        water_depth, storage_meth, cored_length, igsn, leg, objectid, imlgs from ${schema}.${TABLENAME}"""
+        def response = geosamplesService.buildWhereClause(searchParameters, defaultCriteria)
+        String whereClause = response[0]
+        def criteriaValues = response[1]
+        log.debug(query + whereClause + orderByClause)
+        if (criteriaValues) {
+            log.debug(criteriaValues.toListString())
+        } else {
+            log.debug('no criteria values')
+        }
+        if (whereClause) {
+            return jdbcTemplate.queryForList(query + whereClause + orderByClause, *criteriaValues)
+        } else {
+            return jdbcTemplate.queryForList(query + orderByClause)
+        }
+    }
 
     /**
      * return a list the unique storage methods (storage_meth) values used in the curators_sample table.  Results
@@ -204,10 +226,31 @@ class SampleRepository extends BaseRepository {
     }
 
 
+    List getPlatformNames(Map<String, Object> searchParameters) {
+        log.debug("inside getPlatformNames with ${searchParameters}")
+
+        def response = geosamplesService.buildWhereClause(searchParameters, ["platform is not null"])
+        String whereClause = response[0]
+        def criteriaValues = response[1]
+
+        if (criteriaValues) {
+            log.debug(criteriaValues.toListString())
+        } else {
+            log.debug('no criteria values')
+        }
+
+        // with default criteria, there will always be a whereClause
+        String queryString = """select distinct platform from ${sampleTable} ${whereClause} order by platform"""
+        def resultSet = jdbcTemplate.queryForList(queryString, *criteriaValues)
+        return resultSet['platform']
+    }
+
+
     List getCruises(Map<String, Object> searchParameters) {
         //TODO
         return null
     }
+
 
 
     def buildRecordsQueryString() {
