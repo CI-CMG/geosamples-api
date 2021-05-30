@@ -2,6 +2,7 @@ package noaa.ncei.ogssd.geosamples.web
 
 
 import groovy.util.logging.Slf4j
+import io.swagger.v3.oas.annotations.Hidden
 import io.swagger.v3.oas.annotations.OpenAPIDefinition
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.servers.Server
@@ -10,7 +11,6 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import noaa.ncei.ogssd.geosamples.GeosamplesBadRequestException
 import noaa.ncei.ogssd.geosamples.repository.FacilityRepository
 import noaa.ncei.ogssd.geosamples.repository.IntervalRepository
-import noaa.ncei.ogssd.geosamples.repository.PlatformRepository
 import noaa.ncei.ogssd.geosamples.repository.SampleRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
@@ -37,9 +37,6 @@ class ImlgsController {
     FacilityRepository facilityRepository
 
     @Autowired
-    PlatformRepository platformRepository
-
-    @Autowired
     IntervalRepository intervalRepository
 
     /*
@@ -52,15 +49,12 @@ class ImlgsController {
     }
     */
 
-    /*
-    could specify default value instead of using required, e.g.
-        @RequestParam(defaultValue = "test") String id
-     */
     @Operation(summary="Find geosamples. Warning: large response without criteria")
     @CrossOrigin
     @GetMapping("/samples")
     def getSamples(
-        @RequestParam(required=false, value="count_only") boolean countOnly,
+        @RequestParam(defaultValue="false", value="count_only") boolean countOnly,
+        @RequestParam(defaultValue="false", value="full_record") boolean fullRecord,
         @RequestParam(required=false) String repository,
         @RequestParam(required=false) String bbox,
         @RequestParam(required=false) String platform,
@@ -101,8 +95,10 @@ class ImlgsController {
         def resultSet
         if (countOnly == true) {
             resultSet = sampleRepository.getCount(searchParams)
-        } else {
+        } else if (fullRecord == true) {
             resultSet = sampleRepository.getRecords(searchParams)
+        } else {
+            resultSet = sampleRepository.getDisplayRecords(searchParams)
         }
         return resultSet
     }
@@ -286,10 +282,11 @@ class ImlgsController {
 
 
     @Operation(summary="Find all cruises referenced in the IMLGS")
+    @Hidden
     @CrossOrigin
     @GetMapping("/cruises")
     def getCruiseNames(
-            @RequestParam(required=false, value="name_only") boolean nameOnly,
+            @RequestParam(defaultValue="false", value="name_only") boolean nameOnly,
             @RequestParam(required=false) String bbox,
             @RequestParam(required=false) String platform,
             @RequestParam(required=false) String lake,
@@ -326,8 +323,8 @@ class ImlgsController {
     @CrossOrigin
     @GetMapping("/repositories")
     def getRepositories(
-            @RequestParam(required=false, value="count_only") boolean countOnly,
-            @RequestParam(required=false, value="name_only") boolean nameOnly,
+            @RequestParam(defaultValue="false", value="count_only") boolean countOnly,
+            @RequestParam(defaultValue="false", value="name_only") boolean nameOnly,
             @RequestParam(required=false) String bbox,
             @RequestParam(required=false) String platform,
             @RequestParam(required=false) String lake,
@@ -371,11 +368,11 @@ class ImlgsController {
         return facilityRepository.getRecordById(id)
     }
 
-    @Operation(summary="Find platforms referenced in the IMLGS")
+
+    @Operation(summary="List the unique platform names referenced in the IMLGS")
     @CrossOrigin
     @GetMapping("/platforms")
     def getPlatforms(
-            @RequestParam(required=false, value="count_only") boolean countOnly,
             @RequestParam(required=false) String repository,
             @RequestParam(required=false) String bbox,
             @RequestParam(required=false) String lake,
@@ -387,7 +384,6 @@ class ImlgsController {
             HttpServletRequest request,
             HttpServletResponse response
     ) {
-        println('repository: '+repository)
         // put request parameters into a collection to facility transfer to repository
         // TODO validate params?
         Map<String,Object> searchParams = [:]
@@ -401,21 +397,16 @@ class ImlgsController {
         if (minDepth) { searchParams["minDepth"] >= minDepth}
         if (maxDepth) { searchParams["maxDepth"] < maxDepth}
 
-        def resultSet
-        if (countOnly == true) {
-            resultSet = platformRepository.getCount(searchParams)
-        } else {
-            resultSet = platformRepository.getRecords(searchParams)
-        }
-        return resultSet
+        return  sampleRepository.getPlatformNames(searchParams)
     }
 
 
     @Operation(summary="Find interval records in the IMLGS. Warning: large response without criteria")
+    @Hidden
     @CrossOrigin
     @GetMapping("/intervals")
     def getIntervals(
-            @RequestParam(required=false, value="count_only") boolean countOnly,
+            @RequestParam(defaultValue="false", value="count_only") boolean countOnly,
             @RequestParam(required=false) String repository,
             @RequestParam(required=false) String bbox,
             @RequestParam(required=false) String platform,
