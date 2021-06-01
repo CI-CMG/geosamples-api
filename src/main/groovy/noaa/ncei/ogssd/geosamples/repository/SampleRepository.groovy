@@ -2,10 +2,12 @@ package noaa.ncei.ogssd.geosamples.repository
 
 import groovy.util.logging.Slf4j
 import noaa.ncei.ogssd.geosamples.GeosamplesResourceNotFoundException
+import noaa.ncei.ogssd.geosamples.GeosamplesService
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.dao.EmptyResultDataAccessException
+import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Repository
-
 
 /*
  * interface to database table(s).
@@ -13,77 +15,96 @@ import org.springframework.stereotype.Repository
  */
 @Slf4j
 @Repository
-class SampleRepository extends BaseRepository {
-    static final String TABLENAME = 'curators_sample_tsqp'
-    final String recordsQueryString
-    final String countQueryString
+class SampleRepository {
+    @Autowired
+    JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    GeosamplesService geosamplesService
+
     static final String orderByClause = " order by cruise, begin_date, leg, sample, device"
     List defaultCriteria = []
-    private final String schema
     private final String intervalTable
     private final String sampleTable
 
+    // skip SHAPE column since there are problems serializing SDO_Geometry into JSON
+    private final List allSampleFields = [
+        'facility_code', 'ship_code', 'platform', 'cruise', 'sample', 'device', 'begin_date', 'end_date', 'lat',
+        'latdeg', 'latmin', 'ns', 'end_lat', 'end_latdeg', 'end_latmin', 'end_ns', 'lon', 'londeg', 'lonmin', 'ew',
+        'end_lon', 'end_londeg', 'end_lonmin', 'end_ew', 'latlon_orig', 'water_depth', 'end_water_depth',
+        'storage_meth', 'cored_length', 'cored_length_mm', 'cored_diam', 'cored_diam_mm', 'pi', 'province', 'lake',
+        'other_link', 'last_update', 'igsn', 'leg', 'sample_comments', 'publish', 'previous_state', 'objectid',
+        'show_sampl', 'imlgs'
+    ]
 
-    // inject values from application.properties
+    // subset of fields used for display in webapp
+    private final List displaySampleFields = [
+        'facility_code', 'platform', 'cruise', 'sample', 'device', 'begin_date', 'lat', 'lon', 'water_depth',
+        'storage_meth', 'cored_length', 'igsn', 'leg', 'objectid', 'imlgs'
+    ]
+
+
+    // inject values from application-<profilename>.properties
     SampleRepository(
-        @Value('${geosamples.schema: mud}') String schema,
         @Value('${geosamples.sample_table: mud.curators_sample_tsqp}') String sampleTable,
         @Value('${geosamples.interval_table: mud.curators_interval}') String intervalTable
     ) {
-        this.schema = schema
         // fully qualified table names
         this.intervalTable = intervalTable
         this.sampleTable = sampleTable
-        // this.recordsQueryString = "select * from ${schema}.${TABLENAME}"
-        // skip SHAPE column since there are problems serializing SDO_Geometry into JSON
-        this.recordsQueryString = """select facility_code, ship_code, platform, cruise, sample, device, begin_date, 
-        end_date, lat, latdeg, latmin, ns, end_lat, end_latdeg, end_latmin, end_ns, lon, londeg, lonmin, ew, end_lon, 
-        end_londeg, end_lonmin, end_ew, latlon_orig, water_depth, end_water_depth, storage_meth, cored_length, 
-        cored_length_mm, cored_diam, cored_diam_mm, pi, province, lake, other_link, last_update, igsn, leg, 
-        sample_comments, publish, previous_state, objectid, show_sampl, imlgs from ${schema}.${TABLENAME}"""
-        this.countQueryString = "select count(*) from ${schema}.${TABLENAME}"
     }
 
 
-    Map<String, Object> getRecordById(String id) {
-//        String queryString = "select * from ${schema}.${TABLENAME} where imlgs = ?"
-        // skip SHAPE column since there are problems serializing SDO_Geometry into JSON
-        String queryString = """select facility_code, ship_code, platform, cruise, sample, device, begin_date, 
-        end_date, lat, latdeg, latmin, ns, end_lat, end_latdeg, end_latmin, end_ns, lon, londeg, lonmin, ew, end_lon, 
-        end_londeg, end_lonmin, end_ew, latlon_orig, water_depth, end_water_depth, storage_meth, cored_length, 
-        cored_length_mm, cored_diam, cored_diam_mm, pi, province, lake, other_link, last_update, igsn, leg, 
-        sample_comments, publish, previous_state, objectid, show_sampl, imlgs from ${schema}.${TABLENAME} where imlgs = ?"""
+    List getSamples(Map<String,Object>searchParameters) {
+        log.debug("inside getSamples with ${searchParameters}")
+
+        // TODO have buildWhereClause return ['', []] rather than [null, null] when no criteria
+        def response = geosamplesService.buildWhereClause(searchParameters, defaultCriteria)
+        String whereClause = response[0] ?: ''
+        def criteriaValues = response[1] ?: []
+        logCriteriaValues(criteriaValues)
+        String sqlStmt = """select ${allSampleFields.join(', ')} from ${sampleTable} ${whereClause} ${orderByClause}"""
+        log.debug(sqlStmt)
+        // error if pass null as criteriaValues
+        return jdbcTemplate.queryForList(sqlStmt, *criteriaValues)
+    }
+
+
+    Map<String,Object> getSamplesCount(Map<String,Object>searchParameters) {
+        log.debug("inside getSamplesCount with ${searchParameters}")
+
+        def response = geosamplesService.buildWhereClause(searchParameters, defaultCriteria)
+        String whereClause = response[0] ?: ''
+        def criteriaValues = response[1] ?: []
+        logCriteriaValues(criteriaValues)
+        String sqlStmt = "select count(*) from ${sampleTable} ${whereClause}"
+        return jdbcTemplate.queryForMap(sqlStmt, *criteriaValues)
+    }
+
+
+    Map<String, Object> getSampleById(String id) {
+        String sqlStmt = "select ${allSampleFields.join(', ')} from ${sampleTable} where imlgs = ?"
         try {
-            def result = jdbcTemplate.queryForMap(queryString, id)
+            def result = jdbcTemplate.queryForMap(sqlStmt, id)
             return result
         } catch (EmptyResultDataAccessException e) {
             throw new GeosamplesResourceNotFoundException('invalid IMLGS ID')
         }
-
     }
 
-    /**
-     * return limited set of attributes used by webapp
-     */
+
+    // TODO combine w/ getSampleRecords
     List getDisplayRecords(Map<String,Object>searchParameters) {
         log.debug("inside getDisplayRecords with ${searchParameters}")
-        String query = """select facility_code, platform, cruise, sample, device, begin_date, lat, lon, 
-        water_depth, storage_meth, cored_length, igsn, leg, objectid, imlgs from ${schema}.${TABLENAME}"""
         def response = geosamplesService.buildWhereClause(searchParameters, defaultCriteria)
-        String whereClause = response[0]
-        def criteriaValues = response[1]
-        log.debug(query + whereClause + orderByClause)
-        if (criteriaValues) {
-            log.debug(criteriaValues.toListString())
-        } else {
-            log.debug('no criteria values')
-        }
-        if (whereClause) {
-            return jdbcTemplate.queryForList(query + whereClause + orderByClause, *criteriaValues)
-        } else {
-            return jdbcTemplate.queryForList(query + orderByClause)
-        }
+        String whereClause = response[0] ?: ''
+        def criteriaValues = response[1] ?: []
+        logCriteriaValues(criteriaValues)
+        String sqlStmt = "select ${displaySampleFields.join(', ')} from ${sampleTable} ${whereClause} ${orderByClause}"
+        log.debug(sqlStmt)
+        return jdbcTemplate.queryForList(sqlStmt, *criteriaValues)
     }
+
 
     /**
      * return a list the unique storage methods (storage_meth) values used in the curators_sample table.  Results
@@ -95,12 +116,6 @@ class SampleRepository extends BaseRepository {
         def response = geosamplesService.buildWhereClause(searchParameters, ["storage_meth is not null"])
         String whereClause = response[0]
         def criteriaValues = response[1]
-
-        if (criteriaValues) {
-            log.debug(criteriaValues.toListString())
-        } else {
-            log.debug('no criteria values')
-        }
 
         // with default criteria, there will always be a whereClause
         String queryString = """select distinct storage_meth from ${sampleTable} ${whereClause} order by storage_meth"""
@@ -120,13 +135,6 @@ class SampleRepository extends BaseRepository {
         String whereClause = response[0]
         def criteriaValues = response[1]
 
-        if (criteriaValues) {
-            log.debug(criteriaValues.toListString())
-        } else {
-            log.debug('no criteria values')
-        }
-
-        // with default criteria, there will always be a whereClause
         String queryString = """select distinct province from ${sampleTable} ${whereClause} order by province"""
         def resultSet = jdbcTemplate.queryForList(queryString, *criteriaValues)
         return resultSet['province']
@@ -144,13 +152,6 @@ class SampleRepository extends BaseRepository {
         String whereClause = response[0]
         def criteriaValues = response[1]
 
-        if (criteriaValues) {
-            log.debug(criteriaValues.toListString())
-        } else {
-            log.debug('no criteria values')
-        }
-
-        // with default criteria, there will always be a whereClause
         String queryString = """select distinct device from ${sampleTable} ${whereClause} order by device"""
         def resultSet = jdbcTemplate.queryForList(queryString, *criteriaValues)
         return resultSet['device']
@@ -168,13 +169,6 @@ class SampleRepository extends BaseRepository {
         String whereClause = response[0]
         def criteriaValues = response[1]
 
-        if (criteriaValues) {
-            log.debug(criteriaValues.toListString())
-        } else {
-            log.debug('no criteria values')
-        }
-
-        // with default criteria, there will always be a whereClause
         String queryString = """select distinct lake from ${sampleTable} ${whereClause} order by lake"""
         def resultSet = jdbcTemplate.queryForList(queryString, *criteriaValues)
         return resultSet['lake']
@@ -192,14 +186,8 @@ class SampleRepository extends BaseRepository {
         String whereClause = response[0]
         def criteriaValues = response[1]
 
-        if (criteriaValues) {
-            log.debug(criteriaValues.toListString())
-        } else {
-            log.debug('no criteria values')
-        }
-
         // with default criteria, there will always be a whereClause
-        String queryString = """select distinct igsn from ${sampleTable} ${whereClause} order by igsn"""
+        String queryString = "select distinct igsn from ${sampleTable} ${whereClause} order by igsn"
         def resultSet = jdbcTemplate.queryForList(queryString, *criteriaValues)
         return resultSet['igsn']
     }
@@ -212,14 +200,7 @@ class SampleRepository extends BaseRepository {
         String whereClause = response[0]
         def criteriaValues = response[1]
 
-        if (criteriaValues) {
-            log.debug(criteriaValues.toListString())
-        } else {
-            log.debug('no criteria values')
-        }
-
         // TODO combine cruise and leg values into response?
-        // with default criteria, there will always be a whereClause
         String queryString = """select distinct cruise from ${sampleTable} ${whereClause} order by cruise"""
         def resultSet = jdbcTemplate.queryForList(queryString, *criteriaValues)
         return resultSet['cruise']
@@ -233,13 +214,6 @@ class SampleRepository extends BaseRepository {
         String whereClause = response[0]
         def criteriaValues = response[1]
 
-        if (criteriaValues) {
-            log.debug(criteriaValues.toListString())
-        } else {
-            log.debug('no criteria values')
-        }
-
-        // with default criteria, there will always be a whereClause
         String queryString = """select distinct platform from ${sampleTable} ${whereClause} order by platform"""
         def resultSet = jdbcTemplate.queryForList(queryString, *criteriaValues)
         return resultSet['platform']
@@ -252,11 +226,11 @@ class SampleRepository extends BaseRepository {
     }
 
 
-
-    def buildRecordsQueryString() {
-
-
-
-
+    def logCriteriaValues(List criteriaValues) {
+        if (criteriaValues) {
+            log.debug(criteriaValues.toListString())
+        } else {
+            log.debug('no criteria values')
+        }
     }
 }

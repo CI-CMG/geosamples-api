@@ -20,13 +20,14 @@ import javax.servlet.http.HttpServletResponse
 
 @Slf4j
 @Tag(name="geosamples", description="Index to Marine and Lacustrine Geological Samples (IMLGS) API")
-//TODO not working
 @OpenAPIDefinition(
         servers = [ @Server(url="http://localhost:8080/geosamples-api/", description="embedded server"),
                     @Server(url="https://gisdev.ngdc.noaa.gov/geosamples-api/", description="test server"),
                     @Server(url="http://localhost/geosamples-api/", description="development server")]
 )
+//TODO not working
 //@Servers(@Server(url="https://gisdev.ngdc.noaa.gov/geosamples-api/", description="development server"))
+
 @RestController
 //@RequestMapping("/geosamples-api")
 class ImlgsController {
@@ -93,15 +94,16 @@ class ImlgsController {
         if (weathering) { searchParams['weathering'] = weathering}
 
         def resultSet
-        if (countOnly == true) {
-            resultSet = sampleRepository.getCount(searchParams)
-        } else if (fullRecord == true) {
-            resultSet = sampleRepository.getRecords(searchParams)
+        if (countOnly) {
+            resultSet = sampleRepository.getSamplesCount(searchParams)
+        } else if (fullRecord) {
+            resultSet = sampleRepository.getSamples(searchParams)
         } else {
             resultSet = sampleRepository.getDisplayRecords(searchParams)
         }
         return resultSet
     }
+
 
     @Operation(summary="Find individual geosample specified by ID")
     @CrossOrigin
@@ -112,7 +114,8 @@ class ImlgsController {
         if (id.length() != 12 || ! id.startsWith('imlgs')) {
             throw new GeosamplesBadRequestException('invalid IMLGS ID')
         }
-        return sampleRepository.getRecordById(id)
+        // imlgs uniquely identifies sample
+        return sampleRepository.getSampleById(id)
     }
 
 
@@ -323,7 +326,6 @@ class ImlgsController {
     @CrossOrigin
     @GetMapping("/repositories")
     def getRepositories(
-            @RequestParam(defaultValue="false", value="count_only") boolean countOnly,
             @RequestParam(defaultValue="false", value="name_only") boolean nameOnly,
             @RequestParam(required=false) String bbox,
             @RequestParam(required=false) String platform,
@@ -336,7 +338,7 @@ class ImlgsController {
             HttpServletRequest request,
             HttpServletResponse response
     ) {
-        // put request parameters into a collection to facility transfer to repository
+        // put request parameters into a collection to facilitate transfer to repository
         // TODO validate params?
         Map<String,Object> searchParams = [:]
         // format: minx,miny,maxx,maxy
@@ -349,23 +351,21 @@ class ImlgsController {
         if (minDepth) { searchParams["minDepth"] >= minDepth}
         if (maxDepth) { searchParams["maxDepth"] < maxDepth}
 
-        println("nameOnly: ${nameOnly}")
         def resultSet
-        if (countOnly == true) {
-            resultSet = facilityRepository.getCount(searchParams)
-        } else if (nameOnly == true) {
-            resultSet = facilityRepository.getNames(searchParams)
+        if (nameOnly == true) {
+            resultSet = facilityRepository.getRepositoryNames(searchParams)
         } else {
-            resultSet = facilityRepository.getRecords(searchParams)
+            resultSet = facilityRepository.getRepositories(searchParams)
         }
         return resultSet
     }
+
 
     @Operation(summary="Find repository with specified ID")
     @CrossOrigin
     @GetMapping("/repositories/{id}")
     def getRepositoryById(@PathVariable String id) {
-        return facilityRepository.getRecordById(id)
+        return facilityRepository.getRepositoryById(id)
     }
 
 
@@ -439,9 +439,9 @@ class ImlgsController {
 
         def resultSet
         if (countOnly == true) {
-            resultSet = intervalRepository.getCount(searchParams)
+            resultSet = intervalRepository.getIntervalsCount(searchParams)
         } else {
-            resultSet = intervalRepository.getRecords(searchParams)
+            resultSet = intervalRepository.getIntervals(searchParams)
         }
         return resultSet
     }

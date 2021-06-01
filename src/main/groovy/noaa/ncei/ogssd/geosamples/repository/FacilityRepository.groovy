@@ -2,8 +2,11 @@ package noaa.ncei.ogssd.geosamples.repository
 
 import groovy.util.logging.Slf4j
 import noaa.ncei.ogssd.geosamples.GeosamplesResourceNotFoundException
+import noaa.ncei.ogssd.geosamples.GeosamplesService
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.dao.EmptyResultDataAccessException
+import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Repository
 
 
@@ -13,76 +16,72 @@ import org.springframework.stereotype.Repository
  */
 @Slf4j
 @Repository
-class FacilityRepository extends BaseRepository {
+class FacilityRepository {
+    @Autowired
+    JdbcTemplate jdbcTemplate;
 
-    static final String TABLENAME = 'curators_sample_tsqp'
-    static final String JOINTABLE = 'curators_facility'
-    final String recordsQueryString
-    final String countQueryString
-    final String namesQueryString
-    static final String orderByClause = " order by facility_code"
+    @Autowired
+    GeosamplesService geosamplesService
+
     List defaultCriteria = []
-    private String schema
+    private final String facilityTable
+    private final String sampleTable
 
-
-    // inject value from application.properties
-    FacilityRepository( @Value('${geosamples.schema: mud}') String schema) {
-        this.schema = schema
-//        this.recordsQueryString = """select distinct a.facility_code, b.facility
-//           from ${schema}.${TABLENAME} a inner join ${schema}.${JOINTABLE} b
-//           on a.FACILITY_CODE = b.FACILITY_CODE"""
-
-        this.recordsQueryString =
-            """select sample_count, b.facility_code, b.facility, b.facility_comment 
-            from 
-            (select count(*) as sample_count, facility_code from ${schema}.${TABLENAME} group by facility_code) a
-            full outer join 
-            (select facility_code, facility, facility_comment from ${schema}.${JOINTABLE}) b 
-            on a.facility_code = b.facility_code"""
-        this.namesQueryString = """select distinct a.facility_code, b.facility
-           from ${schema}.${TABLENAME} a inner join ${schema}.${JOINTABLE} b
-           on a.FACILITY_CODE = b.FACILITY_CODE"""
-        this.countQueryString = "select count(distinct facility_code) from ${schema}.${TABLENAME}"
+    // inject values from application-<profilename>.properties
+    FacilityRepository(
+            @Value('${geosamples.sample_table: mud.curators_sample_tsqp}') String sampleTable,
+            @Value('${geosamples.facility_table: mud.curators_facility}') String facilityTable
+    ) {
+        // fully qualified table names
+        this.facilityTable = facilityTable
+        this.sampleTable = sampleTable
     }
 
 
-    List getRecords(Map<String,Object>searchParameters) {
-        log.debug("inside getRecords with ${searchParameters}")
+    List getRepositories(Map<String,Object>searchParameters) {
+        log.debug("inside getRepositories with ${searchParameters}")
+
         def response = geosamplesService.buildWhereClause(searchParameters, defaultCriteria)
-        String whereClause = response[0]
-        def criteriaValues = response[1]
-        log.debug(recordsQueryString + whereClause + orderByClause)
-        if (criteriaValues) {
-            log.debug(criteriaValues.toListString())
-        } else {
-            log.debug('no criteria values')
-        }
+        String whereClause = response[0] ?: ''
+        def criteriaValues = response[1] ?: []
 
-        // if criteria provided, drive query from curators_sample_tsqp since only it has many of the parameters
-        if (whereClause) {
-            String query = """select sample_count, b.facility_code, b.facility, b.facility_comment
+        //drive query from curators_sample_tsqp since only it has many of the parameters to support search criteria
+        String queryString = """select sample_count, b.facility_code, b.facility, b.facility_comment
             from
-            (select count(*) as sample_count, facility_code from ${schema}.${TABLENAME} ${whereClause} group by facility_code) a
+            (select count(*) as sample_count, facility_code from ${sampleTable} ${whereClause} group by facility_code) a
             inner join
-            (select facility_code, facility, facility_comment from ${schema}.${JOINTABLE}) b
-            on a.facility_code = b.facility_code ${orderByClause}"""
-
-            return jdbcTemplate.queryForList(query, *criteriaValues)
-        } else {
-            return jdbcTemplate.queryForList(recordsQueryString + orderByClause)
-        }
+            (select facility_code, facility, facility_comment from ${facilityTable}) b
+            on a.facility_code = b.facility_code order by facility_code"""
+        log.debug(queryString)
+        return jdbcTemplate.queryForList(queryString, *criteriaValues)
     }
 
 
-    Map<String,Object> getRecordById(String id) {
-        // JOINTABLE is a misnomer in this case
-        String queryString = "select * from ${schema}.${JOINTABLE} where facility_code = ?"
+    Map<String,Object> getRepositoryById(String id) {
+        String queryString = "select * from ${facilityTable} where facility_code = ?"
         try {
             def result = jdbcTemplate.queryForMap(queryString, id)
             return result
         } catch (EmptyResultDataAccessException e) {
             throw new GeosamplesResourceNotFoundException('invalid repository ID')
         }
+    }
 
+
+    /**
+     * return only the list of names, generally used to populate Select lists in webapp
+     */
+    List getRepositoryNames(Map<String,Object>searchParameters) {
+        log.debug("inside getRepositoryNames with ${searchParameters}")
+
+        def response = geosamplesService.buildWhereClause(searchParameters, defaultCriteria)
+        String whereClause = response[0] ?: ''
+        def criteriaValues = response[1] ?: []
+
+        //show only names actually used in IMLGS
+        String queryString = """select distinct a.facility_code, b.facility
+           from ${sampleTable} a inner join ${facilityTable} b
+           on a.FACILITY_CODE = b.FACILITY_CODE ${whereClause} order by facility_code"""
+        return jdbcTemplate.queryForList(queryString, *criteriaValues)
     }
 }
