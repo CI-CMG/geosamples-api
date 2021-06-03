@@ -14,7 +14,10 @@ import noaa.ncei.ogssd.geosamples.GeosamplesDTO
 import noaa.ncei.ogssd.geosamples.repository.FacilityRepository
 import noaa.ncei.ogssd.geosamples.repository.IntervalRepository
 import noaa.ncei.ogssd.geosamples.repository.SampleRepository
+import org.apache.commons.csv.CSVFormat
+import org.apache.commons.csv.CSVPrinter
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpHeaders
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 import javax.servlet.http.HttpServletRequest
@@ -52,13 +55,21 @@ class ImlgsController {
     def getSamples(
             @RequestParam(defaultValue="false", value="count_only") boolean countOnly,
             @RequestParam(defaultValue="false", value="full_record") boolean fullRecord,
+            @RequestParam(defaultValue="json") String format,
             @Valid GeosamplesDTO searchParams,
-            HttpServletRequest request,
             HttpServletResponse response
     ) {
+        if (! (format == 'json' || format == 'csv')) {
+            log.error("only json and csv accepted for output format")
+            throw new GeosamplesBadRequestException("only json and csv accepted for output format")
+        }
+
         def resultSet
         if (countOnly) {
             resultSet = sampleRepository.getSamplesCount(searchParams)
+        } else if (format == 'csv') {
+            printCSV(response, sampleRepository.getSamples(searchParams))
+            return
         } else if (fullRecord) {
             resultSet = sampleRepository.getSamples(searchParams)
         } else {
@@ -195,7 +206,7 @@ class ImlgsController {
     @Operation(summary="List the unique platform names referenced in the IMLGS")
     @CrossOrigin
     @GetMapping("/platforms")
-    def getPlatforms(@Valid GeosamplesDTO searchParams) {
+    List getPlatforms(@Valid GeosamplesDTO searchParams) {
         if (searchParams.platform) {
             throw new GeosamplesBadRequestException("resource does not support request parameter: platform")
         }
@@ -223,7 +234,7 @@ class ImlgsController {
     @Operation(summary="Find lithology values used in the IMLGS")
     @CrossOrigin
     @GetMapping("/lithologies")
-    def getLithologies(@Valid GeosamplesDTO searchParams) {
+    List getLithologies(@Valid GeosamplesDTO searchParams) {
         if (searchParams.lithology) {
             throw new GeosamplesBadRequestException("resource does not support request parameter: lithology")
         }
@@ -234,7 +245,7 @@ class ImlgsController {
     @Operation(summary="Find texture values used in the IMLGS")
     @CrossOrigin
     @GetMapping("/textures")
-    def getTextures(@Valid GeosamplesDTO searchParams) {
+    List getTextures(@Valid GeosamplesDTO searchParams) {
         if (searchParams.texture) {
             throw new GeosamplesBadRequestException("resource does not support request parameter: texture")
         }
@@ -245,7 +256,7 @@ class ImlgsController {
     @Operation(summary="Find mineralogy values used in the IMLGS")
     @CrossOrigin
     @GetMapping("/mineralogies")
-    def getMineralogies(@Valid GeosamplesDTO searchParams) {
+    List getMineralogies(@Valid GeosamplesDTO searchParams) {
         if (searchParams.mineralogy) {
             throw new GeosamplesBadRequestException("resource does not support request parameter: mineralogy")
         }
@@ -256,7 +267,7 @@ class ImlgsController {
     @Operation(summary="Find weathering values used in the IMLGS")
     @CrossOrigin
     @GetMapping("/weathering")
-    def getWeatheringValues(@Valid GeosamplesDTO searchParams) {
+    List getWeatheringValues(@Valid GeosamplesDTO searchParams) {
         if (searchParams.weathering) {
             throw new GeosamplesBadRequestException("resource does not support request parameter: weathering")
         }
@@ -267,7 +278,7 @@ class ImlgsController {
     @Operation(summary="Find metamorphism values used in the IMLGS")
     @CrossOrigin
     @GetMapping("/metamorphism")
-    def getMetamorphismValues(@Valid GeosamplesDTO searchParams) {
+    List getMetamorphismValues(@Valid GeosamplesDTO searchParams) {
         if (searchParams.metamorphism) {
             throw new GeosamplesBadRequestException("resource does not support request parameter: metamorphism")
         }
@@ -278,10 +289,35 @@ class ImlgsController {
     @Operation(summary="Find geologic ages referenced in the IMLGS")
     @CrossOrigin
     @GetMapping("/geologic_ages")
-    def getGeologicAgeValues(@Valid GeosamplesDTO searchParams) {
+    List getGeologicAgeValues(@Valid GeosamplesDTO searchParams) {
         if (searchParams.age) {
             throw new GeosamplesBadRequestException("resource does not support request parameter: age")
         }
         return intervalRepository.getUniqueGeologicAgeValues(searchParams)
+    }
+
+
+    /**
+     * helper method to download samples in CSV format
+     * TODO move out of Controller and into Service?
+     */
+    static void  printCSV(HttpServletResponse response, resultset) {
+        // TODO embed timestamp in filename?
+        String outputFilename = "geosamples_export.csv"
+        response.setContentType("text/csv")
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=${outputFilename}")
+
+        List csvHeaders = new ArrayList(resultset[0].keySet())
+        CSVPrinter csvPrinter = new CSVPrinter(response.writer, CSVFormat.DEFAULT.withHeader(*csvHeaders))
+        try {
+            List values
+            resultset.each { row ->
+                csvPrinter.printRecord(row.values())
+            }
+        } catch (IOException e) {
+            log.error(e.message)
+        } finally {
+            if (csvPrinter) { csvPrinter.close() }
+        }
     }
 }

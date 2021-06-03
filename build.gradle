@@ -18,6 +18,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation  'org.apache.commons:commons-csv:1.8'
 	implementation 'org.codehaus.groovy:groovy'
 	implementation group: 'org.codehaus.groovy', name: 'groovy-sql', version: '2.5.14'
 	implementation group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.5.14', ext: 'pom'
