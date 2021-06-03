@@ -1,6 +1,7 @@
 package noaa.ncei.ogssd.geosamples.repository
 
 import groovy.util.logging.Slf4j
+import noaa.ncei.ogssd.geosamples.GeosamplesDTO
 import noaa.ncei.ogssd.geosamples.GeosamplesService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -17,11 +18,6 @@ import org.springframework.stereotype.Repository
 class IntervalRepository {
     @Autowired
     JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    GeosamplesService geosamplesService
-
-    List defaultCriteria = []
     private final String intervalTable
     private final String sampleTable
 
@@ -37,14 +33,10 @@ class IntervalRepository {
     }
 
 
-    List getIntervals(Map<String,Object>searchParameters) {
-        log.debug("inside getIntervals with ${searchParameters}")
-
-        // TODO have buildWhereClause return ['', []] rather than [null, null] when no criteria
-        def response = geosamplesService.buildWhereClause(searchParameters, defaultCriteria)
-        String whereClause = response[0] ?: ''
-        def criteriaValues = response[1] ?: []
-
+    List getIntervals(GeosamplesDTO searchParams) {
+        log.debug("inside getIntervals with ${searchParams}")
+        String whereClause = searchParams.whereClause
+        List criteriaValues = searchParams.criteriaValues
         // TODO select which fields to return
         String sqlStmt = "select * from ${intervalTable} ${whereClause} order by imlgs, interval"
         log.debug(sqlStmt)
@@ -52,11 +44,10 @@ class IntervalRepository {
     }
 
 
-    Map<String,Object> getIntervalsCount(Map<String,Object>searchParameters) {
-        log.debug("inside getCount with ${searchParameters}")
-        def response = geosamplesService.buildWhereClause(searchParameters, defaultCriteria)
-        String whereClause = response[0] ?: ''
-        def criteriaValues = response[1] ?: []
+    Map<String,Object> getIntervalsCount(GeosamplesDTO searchParams) {
+        log.debug("inside getCount with ${searchParams}")
+        String whereClause = searchParams.whereClause
+        List criteriaValues = searchParams.criteriaValues
         String queryString = "select count(*) from ${intervalTable} ${whereClause}"
         return jdbcTemplate.queryForMap(queryString, *criteriaValues)
     }
@@ -66,20 +57,17 @@ class IntervalRepository {
      * return a list the unique lithology(lith1, lith2, rock_lith) values used in the curators_interval table.  Results
      * may be constrained by search parameters, e.g. platform, repository, etc.
      */
-    List getUniqueLithologyValues(Map<String,Object>searchParameters) {
-        log.debug("inside getUniqueLithologyValues with ${searchParameters}")
-
-        def response = geosamplesService.buildWhereClause(searchParameters)
-        String whereClause = response[0] ?: ''
-        def criteriaValues = response[1] ?: []
-
+    List getUniqueLithologyValues(GeosamplesDTO searchParams) {
+        log.debug("inside getUniqueLithologyValues with ${searchParams}")
+        String whereClause = searchParams.whereClause
+        List criteriaValues = searchParams.criteriaValues
         String queryString = """select distinct lithology from (
             (select distinct lith1 as lithology from ${intervalTable} ${whereClause})
             union
             (select distinct lith2 as lithology from ${intervalTable} ${whereClause})
             union
             (select distinct rock_lith as lithology from ${intervalTable} ${whereClause})
-        ) a order by lithology"""
+        ) a where lithology is not null order by lithology"""
         def resultSet = jdbcTemplate.queryForList(queryString, *criteriaValues, *criteriaValues, *criteriaValues)
         // filter out null values here because doing so in the SQL statement requires 3 separate where clauses
         return (resultSet.findAll { it['lithology']}['lithology'])
@@ -90,18 +78,15 @@ class IntervalRepository {
      * return a list the unique texture(text1, text2) values used in the curators_interval table.  Results
      * may be constrained by search parameters, e.g. platform, repository, etc.
      */
-    List getUniqueTextureValues(Map<String,Object>searchParameters) {
-        log.debug("inside getUniqueTextureValues with ${searchParameters}")
-
-        def response = geosamplesService.buildWhereClause(searchParameters)
-        String whereClause = response[0] ?: ''
-        def criteriaValues = response[1] ?: []
-
+    List getUniqueTextureValues(GeosamplesDTO searchParams) {
+        log.debug("inside getUniqueTextureValues with ${searchParams}")
+        String whereClause = searchParams.whereClause
+        List criteriaValues = searchParams.criteriaValues
         String queryString = """select distinct texture from (
                 (select distinct text1 as texture from ${intervalTable} ${whereClause})
                 union
                 (select distinct text2 as texture from ${intervalTable} ${whereClause})
-            ) a order by lithology"""
+            ) a where texture is not null order by texture"""
         def resultSet = jdbcTemplate.queryForList(queryString, *criteriaValues, *criteriaValues)
         // filter out null values here because doing so in the SQL statement requires 3 separate where clauses
         return (resultSet.findAll { it['texture']}['texture'])
@@ -112,13 +97,10 @@ class IntervalRepository {
      * return a list the unique mineralogy (rock_min) values used in the curators_interval table.  Results
      * may be constrained by search parameters, e.g. platform, repository, etc.
      */
-    List getUniqueMineralogyValues(Map<String,Object>searchParameters) {
-        log.debug("inside getUniqueMineralogyValues with ${searchParameters}")
-
-        def response = geosamplesService.buildWhereClause(searchParameters, ["rock_min is not null"])
-        String whereClause = response[0] ?: ''
-        def criteriaValues = response[1] ?: []
-
+    List getUniqueMineralogyValues(GeosamplesDTO searchParams) {
+        log.debug("inside getUniqueMineralogyValues with ${searchParams}")
+        String whereClause = searchParams.getWhereClause(['rock_min is not null'])
+        List criteriaValues = searchParams.criteriaValues
         String queryString = """select distinct rock_min as mineralogy from ${intervalTable} ${whereClause} order by rock_min"""
         def resultSet = jdbcTemplate.queryForList(queryString, *criteriaValues)
         return resultSet['mineralogy']
@@ -129,13 +111,10 @@ class IntervalRepository {
      * return a list the unique weathering (weath_meta) values used in the curators_interval table.  Results
      * may be constrained by search parameters, e.g. platform, repository, etc.
      */
-    List getUniqueWeatheringValues(Map<String,Object>searchParameters) {
-        log.debug("inside getUniqueWeatheringValues with ${searchParameters}")
-
-        def response = geosamplesService.buildWhereClause(searchParameters, ["weath_meta like 'weathering - %'"])
-        String whereClause = response[0] ?: ''
-        def criteriaValues = response[1] ?: []
-
+    List getUniqueWeatheringValues(GeosamplesDTO searchParams) {
+        log.debug("inside getUniqueWeatheringValues with ${searchParams}")
+        String whereClause = searchParams.getWhereClause(['weath_meta is not null'])
+        List criteriaValues = searchParams.criteriaValues
         String queryString = """select distinct weath_meta as weathering from ${intervalTable} ${whereClause} order by weath_meta"""
         def resultSet = jdbcTemplate.queryForList(queryString, *criteriaValues)
         return resultSet['weathering'].collect {it.trim().split(' - ')[-1]}
@@ -146,13 +125,10 @@ class IntervalRepository {
      * return a list the unique metamorphism (weath_meta) values used in the curators_interval table.  Results
      * may be constrained by search parameters, e.g. platform, repository, etc.
      */
-    List getUniqueMetamorphismValues(Map<String,Object>searchParameters) {
-        log.debug("inside getUniqueMetamorphismValues with ${searchParameters}")
-
-        def response = geosamplesService.buildWhereClause(searchParameters, ["weath_meta like 'metamorphism - %'"])
-        String whereClause = response[0] ?: ''
-        def criteriaValues = response[1] ?: []
-
+    List getUniqueMetamorphismValues(GeosamplesDTO searchParams) {
+        log.debug("inside getUniqueMetamorphismValues with ${searchParams}")
+        String whereClause = searchParams.getWhereClause(['weath_meta is not null'])
+        List criteriaValues = searchParams.criteriaValues
         String queryString = """select distinct weath_meta as metamorphism from ${intervalTable} ${whereClause} order by weath_meta"""
         def resultSet = jdbcTemplate.queryForList(queryString, *criteriaValues)
         return resultSet['metamorphism'].collect {it.trim().split(' - ')[-1]}
@@ -163,13 +139,10 @@ class IntervalRepository {
      * return a list the unique geologic age (weath_meta) values used in the curators_interval table.  Results
      * may be constrained by search parameters, e.g. platform, repository, etc.
      */
-    List getUniqueGeologicAgeValues(Map<String,Object>searchParameters) {
-        log.debug("inside getUniqueGeologicAgeValues with ${searchParameters}")
-
-        def response = geosamplesService.buildWhereClause(searchParameters, ["age is not null"])
-        String whereClause = response[0] ?: ''
-        def criteriaValues = response[1] ?: []
-
+    List getUniqueGeologicAgeValues(GeosamplesDTO searchParams) {
+        log.debug("inside getUniqueGeologicAgeValues with ${searchParams}")
+        String whereClause = searchParams.getWhereClause(['age is not null'])
+        List criteriaValues = searchParams.criteriaValues
         String queryString = """select distinct age from ${intervalTable} ${whereClause} order by age"""
         def resultSet = jdbcTemplate.queryForList(queryString, *criteriaValues)
         return resultSet['age']

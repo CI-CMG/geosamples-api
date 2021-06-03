@@ -8,15 +8,22 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.servers.Server
 import io.swagger.v3.oas.annotations.servers.Servers
 import io.swagger.v3.oas.annotations.tags.Tag
+import io.swagger.v3.oas.models.security.SecurityScheme
 import noaa.ncei.ogssd.geosamples.GeosamplesBadRequestException
+import noaa.ncei.ogssd.geosamples.GeosamplesDTO
 import noaa.ncei.ogssd.geosamples.repository.FacilityRepository
 import noaa.ncei.ogssd.geosamples.repository.IntervalRepository
 import noaa.ncei.ogssd.geosamples.repository.SampleRepository
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
-
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
+import javax.validation.Valid
+import javax.validation.constraints.Max
+import javax.validation.constraints.Min
+import javax.validation.constraints.NotBlank
+import javax.validation.constraints.Size
 
 @Slf4j
 @Tag(name="geosamples", description="Index to Marine and Lacustrine Geological Samples (IMLGS) API")
@@ -25,11 +32,9 @@ import javax.servlet.http.HttpServletResponse
                     @Server(url="https://gisdev.ngdc.noaa.gov/geosamples-api/", description="test server"),
                     @Server(url="http://localhost/geosamples-api/", description="development server")]
 )
-//TODO not working
-//@Servers(@Server(url="https://gisdev.ngdc.noaa.gov/geosamples-api/", description="development server"))
 
 @RestController
-//@RequestMapping("/geosamples-api")
+@Validated
 class ImlgsController {
     @Autowired
     SampleRepository sampleRepository
@@ -40,59 +45,17 @@ class ImlgsController {
     @Autowired
     IntervalRepository intervalRepository
 
-    /*
-    convenient alternative, but you lose the automatic type conversion and the
-    request parameter names must match the variable names
-
-    @GetMapping("/samples")
-    def getSamples(@RequestParam Map<String,String> allParams) {
-        return []
-    }
-    */
 
     @Operation(summary="Find geosamples. Warning: large response without criteria")
     @CrossOrigin
     @GetMapping("/samples")
     def getSamples(
-        @RequestParam(defaultValue="false", value="count_only") boolean countOnly,
-        @RequestParam(defaultValue="false", value="full_record") boolean fullRecord,
-        @RequestParam(required=false) String repository,
-        @RequestParam(required=false) String bbox,
-        @RequestParam(required=false) String platform,
-        @RequestParam(required=false) String lake,
-        @RequestParam(required=false) String cruise,
-        @RequestParam(required=false) String device,
-        @RequestParam(required=false, value="start_date") String startDate,
-        @RequestParam(required=false, value="min_depth") Float minDepth,
-        @RequestParam(required=false, value="max_depth") Float maxDepth,
-        @RequestParam(required=false) String igsn,
-        @RequestParam(required=false) String lithology,
-        @RequestParam(required=false) String texture,
-        @RequestParam(required=false) String mineralogy,
-        @RequestParam(required=false) String weathering,
-        HttpServletRequest request,
-        HttpServletResponse response
+            @RequestParam(defaultValue="false", value="count_only") boolean countOnly,
+            @RequestParam(defaultValue="false", value="full_record") boolean fullRecord,
+            @Valid GeosamplesDTO searchParams,
+            HttpServletRequest request,
+            HttpServletResponse response
     ) {
-        // put request parameters into a collection to facility transfer to repository
-        // TODO validate params?
-        Map<String,Object> searchParams = [:]
-        if (repository) { searchParams["repository"] = repository}
-        // format: minx,miny,maxx,maxy
-        if (bbox) { searchParams["bbox"] = bbox}
-        if (platform) { searchParams["platform"] = platform}
-        if (lake) { searchParams["lake"] = lake}
-        // cruise applies to both cruise and leg columns
-        if (cruise) { searchParams["cruise"] = cruise}
-        if (device) { searchParams["device"] = device}
-        if (startDate) { searchParams['startDate'] = startDate}
-        if (minDepth) { searchParams["minDepth"] >= minDepth}
-        if (maxDepth) { searchParams["maxDepth"] < maxDepth}
-        if (igsn) { searchParams["igsn"] = igsn}
-        if (lithology) { searchParams['lithology'] = lithology}
-        if (texture) { searchParams['texture'] = texture}
-        if (mineralogy) { searchParams['mineralogy'] = mineralogy}
-        if (weathering) { searchParams['weathering'] = weathering}
-
         def resultSet
         if (countOnly) {
             resultSet = sampleRepository.getSamplesCount(searchParams)
@@ -109,7 +72,6 @@ class ImlgsController {
     @CrossOrigin
     @GetMapping("/samples/{id}")
     def getSampleById(@PathVariable String id) {
-        // TODO use annotation-based validation
         // IMLGS id in format of "imlgs0000001"
         if (id.length() != 12 || ! id.startsWith('imlgs')) {
             throw new GeosamplesBadRequestException('invalid IMLGS ID')
@@ -123,97 +85,32 @@ class ImlgsController {
 //    @Hidden
     @CrossOrigin
     @GetMapping("/storage_methods")
-    def getStorageMethods(
-            @RequestParam(required=false) String repository,
-            @RequestParam(required=false) String bbox,
-            @RequestParam(required=false) String platform,
-            @RequestParam(required=false) String lake,
-            @RequestParam(required=false) String cruise,
-            @RequestParam(required=false) String device,
-            @RequestParam(required=false, value="start_date") String startDate,
-            @RequestParam(required=false, value="min_depth") Float minDepth,
-            @RequestParam(required=false, value="max_depth") Float maxDepth,
-            HttpServletRequest request,
-            HttpServletResponse response
-    ) {
-        // put request parameters into a collection to facility transfer to repository
-        // TODO validate params?
-        Map<String,Object> searchParams = [:]
-        if (repository) { searchParams["repository"] = repository}
-        // format: minx,miny,maxx,maxy
-        if (bbox) { searchParams["bbox"] = bbox}
-        if (platform) { searchParams["platform"] = platform}
-        if (lake) { searchParams["lake"] = lake}
-        if (cruise) { searchParams["cruise"] = cruise}
-        if (device) { searchParams["device"] = device}
-        if (startDate) { searchParams['startDate'] = startDate}
-        if (minDepth) { searchParams["minDepth"] >= minDepth}
-        if (maxDepth) { searchParams["maxDepth"] < maxDepth}
-
+    def getStorageMethods(@Valid GeosamplesDTO searchParams) {
+        if (searchParams.storageMethod) {
+            throw new GeosamplesBadRequestException("resource does not support request parameter: storage_method")
+        }
         return sampleRepository.getUniqueStorageMethods(searchParams)
     }
+
 
     @Operation(summary="Find all physiographic provinces used in the IMLGS")
     @CrossOrigin
     @GetMapping("/physiographic_provinces")
-    def getPhysiographicProvinces(
-            @RequestParam(required=false) String repository,
-            @RequestParam(required=false) String bbox,
-            @RequestParam(required=false) String platform,
-            @RequestParam(required=false) String lake,
-            @RequestParam(required=false) String cruise,
-            @RequestParam(required=false) String device,
-            @RequestParam(required=false, value="start_date") String startDate,
-            @RequestParam(required=false, value="min_depth") Float minDepth,
-            @RequestParam(required=false, value="max_depth") Float maxDepth,
-            HttpServletRequest request,
-            HttpServletResponse response
-    ) {
-        // put request parameters into a collection to facility transfer to repository
-        // TODO validate params?
-        Map<String,Object> searchParams = [:]
-        if (repository) { searchParams["repository"] = repository}
-        // format: minx,miny,maxx,maxy
-        if (bbox) { searchParams["bbox"] = bbox}
-        if (platform) { searchParams["platform"] = platform}
-        if (lake) { searchParams["lake"] = lake}
-        if (cruise) { searchParams["cruise"] = cruise}
-        if (device) { searchParams["device"] = device}
-        if (startDate) { searchParams['startDate'] = startDate}
-        if (minDepth) { searchParams["minDepth"] >= minDepth}
-        if (maxDepth) { searchParams["maxDepth"] < maxDepth}
-
+    def getPhysiographicProvinces(@Valid GeosamplesDTO searchParams) {
+        if (searchParams.province) {
+            throw new GeosamplesBadRequestException("resource does not support request parameter: province")
+        }
         return sampleRepository.getUniquePhysiographicProvinces(searchParams)
     }
+
 
     @Operation(summary="Find all sampling devices used in the IMLGS")
     @CrossOrigin
     @GetMapping("/devices")
-    def getDeviceNames(
-            @RequestParam(required=false) String repository,
-            @RequestParam(required=false) String bbox,
-            @RequestParam(required=false) String platform,
-            @RequestParam(required=false) String lake,
-            @RequestParam(required=false) String cruise,
-            @RequestParam(required=false, value="start_date") String startDate,
-            @RequestParam(required=false, value="min_depth") Float minDepth,
-            @RequestParam(required=false, value="max_depth") Float maxDepth,
-            HttpServletRequest request,
-            HttpServletResponse response
-    ) {
-        // put request parameters into a collection to facility transfer to repository
-        // TODO validate params?
-        Map<String,Object> searchParams = [:]
-        if (repository) { searchParams["repository"] = repository}
-        // format: minx,miny,maxx,maxy
-        if (bbox) { searchParams["bbox"] = bbox}
-        if (lake) { searchParams["lake"] = lake}
-        if (cruise) { searchParams["cruise"] = cruise}
-        if (platform) { searchParams["platform"] = platform}
-        if (startDate) { searchParams['startDate'] = startDate}
-        if (minDepth) { searchParams["minDepth"] >= minDepth}
-        if (maxDepth) { searchParams["maxDepth"] < maxDepth}
-
+    def getDeviceNames(@Valid GeosamplesDTO searchParams) {
+        if (searchParams.device) {
+            throw new GeosamplesBadRequestException("resource does not support request parameter: device")
+        }
         return sampleRepository.getDeviceNames(searchParams)
     }
 
@@ -221,31 +118,10 @@ class ImlgsController {
     @Operation(summary="Find all lakes referenced in the IMLGS")
     @CrossOrigin
     @GetMapping("/lakes")
-    def getLakes(
-            @RequestParam(required=false) String repository,
-            @RequestParam(required=false) String bbox,
-            @RequestParam(required=false) String platform,
-            @RequestParam(required=false) String cruise,
-            @RequestParam(required=false) String device,
-            @RequestParam(required=false, value="start_date") String startDate,
-            @RequestParam(required=false, value="min_depth") Float minDepth,
-            @RequestParam(required=false, value="max_depth") Float maxDepth,
-            HttpServletRequest request,
-            HttpServletResponse response
-    ) {
-        // put request parameters into a collection to facility transfer to repository
-        // TODO validate params?
-        Map<String,Object> searchParams = [:]
-        if (repository) { searchParams["repository"] = repository}
-        // format: minx,miny,maxx,maxy
-        if (bbox) { searchParams["bbox"] = bbox}
-        if (platform) { searchParams["platform"] = platform}
-        if (cruise) { searchParams["cruise"] = cruise}
-        if (device) { searchParams["device"] = device}
-        if (startDate) { searchParams['startDate'] = startDate}
-        if (minDepth) { searchParams["minDepth"] >= minDepth}
-        if (maxDepth) { searchParams["maxDepth"] < maxDepth}
-
+    def getLakes(@Valid GeosamplesDTO searchParams) {
+        if (searchParams.lake) {
+            throw new GeosamplesBadRequestException("resource does not support request parameter: lake")
+        }
         return sampleRepository.getLakes(searchParams)
     }
 
@@ -253,33 +129,10 @@ class ImlgsController {
     @Operation(summary="Find all IGSN numbers used in the IMLGS")
     @CrossOrigin
     @GetMapping("/igsn")
-    def getIsgnValues(
-            @RequestParam(required=false) String repository,
-            @RequestParam(required=false) String bbox,
-            @RequestParam(required=false) String platform,
-            @RequestParam(required=false) String lake,
-            @RequestParam(required=false) String cruise,
-            @RequestParam(required=false) String device,
-            @RequestParam(required=false, value="start_date") String startDate,
-            @RequestParam(required=false, value="min_depth") Float minDepth,
-            @RequestParam(required=false, value="max_depth") Float maxDepth,
-            HttpServletRequest request,
-            HttpServletResponse response
-    ) {
-        // put request parameters into a collection to facility transfer to repository
-        // TODO validate params?
-        Map<String,Object> searchParams = [:]
-        if (repository) { searchParams["repository"] = repository}
-        // format: minx,miny,maxx,maxy
-        if (bbox) { searchParams["bbox"] = bbox}
-        if (platform) { searchParams["platform"] = platform}
-        if (lake) { searchParams["lake"] = lake}
-        if (cruise) { searchParams["cruise"] = cruise}
-        if (device) { searchParams["device"] = device}
-        if (startDate) { searchParams['startDate'] = startDate}
-        if (minDepth) { searchParams["minDepth"] >= minDepth}
-        if (maxDepth) { searchParams["maxDepth"] < maxDepth}
-
+    def getIsgnValues(@Valid GeosamplesDTO searchParams) {
+        if (searchParams.igsn) {
+            throw new GeosamplesBadRequestException("resource does not support request parameter: igsn")
+        }
         return sampleRepository.getIgsnValues(searchParams)
     }
 
@@ -289,36 +142,27 @@ class ImlgsController {
     @CrossOrigin
     @GetMapping("/cruises")
     def getCruiseNames(
-            @RequestParam(defaultValue="false", value="name_only") boolean nameOnly,
-            @RequestParam(required=false) String bbox,
-            @RequestParam(required=false) String platform,
-            @RequestParam(required=false) String lake,
-            @RequestParam(required=false) String device,
-            @RequestParam(required=false, value="start_date") String startDate,
-            @RequestParam(required=false, value="min_depth") Float minDepth,
-            @RequestParam(required=false, value="max_depth") Float maxDepth,
-            HttpServletRequest request,
-            HttpServletResponse response
+        @RequestParam(defaultValue="false", value="name_only") boolean nameOnly,
+        @Valid GeosamplesDTO searchParams
     ) {
-        // put request parameters into a collection to facility transfer to repository
-        // TODO validate params?
-        Map<String,Object> searchParams = [:]
-        // format: minx,miny,maxx,maxy
-        if (bbox) { searchParams["bbox"] = bbox}
-        if (platform) { searchParams["platform"] = platform}
-        if (lake) { searchParams["lake"] = lake}
-        if (device) { searchParams["device"] = device}
-        if (startDate) { searchParams['startDate'] = startDate}
-        if (minDepth) { searchParams["minDepth"] >= minDepth}
-        if (maxDepth) { searchParams["maxDepth"] < maxDepth}
-
-        def resultSet
-        if (nameOnly == true) {
-            resultSet = sampleRepository.getCruiseNames(searchParams)
-        } else {
-            resultSet = sampleRepository.getCruises(searchParams)
+        if (searchParams.cruise) {
+            throw new GeosamplesBadRequestException("resource does not support request parameter: cruise")
         }
-        return resultSet
+        if (nameOnly == true) {
+            return sampleRepository.getCruiseNames(searchParams)
+        } else {
+            return sampleRepository.getCruises(searchParams)
+        }
+    }
+
+
+    @Operation(summary="Find individual cruise or leg specified by ID")
+    @CrossOrigin
+    @GetMapping("/cruises/{id}")
+    def getCruiseById(@PathVariable String id) {
+        // TODO
+        log.warn("select cruise by Id not yet implemented")
+        return [:]
     }
 
 
@@ -326,38 +170,17 @@ class ImlgsController {
     @CrossOrigin
     @GetMapping("/repositories")
     def getRepositories(
-            @RequestParam(defaultValue="false", value="name_only") boolean nameOnly,
-            @RequestParam(required=false) String bbox,
-            @RequestParam(required=false) String platform,
-            @RequestParam(required=false) String lake,
-            @RequestParam(required=false) String cruise,
-            @RequestParam(required=false) String device,
-            @RequestParam(required=false, value="start_date") String startDate,
-            @RequestParam(required=false, value="min_depth") Float minDepth,
-            @RequestParam(required=false, value="max_depth") Float maxDepth,
-            HttpServletRequest request,
-            HttpServletResponse response
+        @RequestParam(defaultValue="false", value="name_only") boolean nameOnly,
+        @Valid GeosamplesDTO searchParams
     ) {
-        // put request parameters into a collection to facilitate transfer to repository
-        // TODO validate params?
-        Map<String,Object> searchParams = [:]
-        // format: minx,miny,maxx,maxy
-        if (bbox) { searchParams["bbox"] = bbox}
-        if (platform) { searchParams["platform"] = platform}
-        if (lake) { searchParams["lake"] = lake}
-        if (cruise) { searchParams["cruise"] = cruise}
-        if (device) { searchParams["device"] = device}
-        if (startDate) { searchParams['startDate'] = startDate}
-        if (minDepth) { searchParams["minDepth"] >= minDepth}
-        if (maxDepth) { searchParams["maxDepth"] < maxDepth}
-
-        def resultSet
-        if (nameOnly == true) {
-            resultSet = facilityRepository.getRepositoryNames(searchParams)
-        } else {
-            resultSet = facilityRepository.getRepositories(searchParams)
+        if (searchParams.repository) {
+            throw new GeosamplesBadRequestException("resource does not support request parameter: repository")
         }
-        return resultSet
+        if (nameOnly == true) {
+            return facilityRepository.getRepositoryNames(searchParams)
+        } else {
+            return facilityRepository.getRepositories(searchParams)
+        }
     }
 
 
@@ -372,31 +195,10 @@ class ImlgsController {
     @Operation(summary="List the unique platform names referenced in the IMLGS")
     @CrossOrigin
     @GetMapping("/platforms")
-    def getPlatforms(
-            @RequestParam(required=false) String repository,
-            @RequestParam(required=false) String bbox,
-            @RequestParam(required=false) String lake,
-            @RequestParam(required=false) String cruise,
-            @RequestParam(required=false) String device,
-            @RequestParam(required=false, value="start_date") String startDate,
-            @RequestParam(required=false, value="min_depth") Float minDepth,
-            @RequestParam(required=false, value="max_depth") Float maxDepth,
-            HttpServletRequest request,
-            HttpServletResponse response
-    ) {
-        // put request parameters into a collection to facility transfer to repository
-        // TODO validate params?
-        Map<String,Object> searchParams = [:]
-        if (repository) { searchParams["repository"] = repository}
-        // format: minx,miny,maxx,maxy
-        if (bbox) { searchParams["bbox"] = bbox}
-        if (lake) { searchParams["lake"] = lake}
-        if (cruise) { searchParams["cruise"] = cruise}
-        if (device) { searchParams["device"] = device}
-        if (startDate) { searchParams['startDate'] = startDate}
-        if (minDepth) { searchParams["minDepth"] >= minDepth}
-        if (maxDepth) { searchParams["maxDepth"] < maxDepth}
-
+    def getPlatforms(@Valid GeosamplesDTO searchParams) {
+        if (searchParams.platform) {
+            throw new GeosamplesBadRequestException("resource does not support request parameter: platform")
+        }
         return  sampleRepository.getPlatformNames(searchParams)
     }
 
@@ -407,282 +209,79 @@ class ImlgsController {
     @GetMapping("/intervals")
     def getIntervals(
             @RequestParam(defaultValue="false", value="count_only") boolean countOnly,
-            @RequestParam(required=false) String repository,
-            @RequestParam(required=false) String bbox,
-            @RequestParam(required=false) String platform,
-            @RequestParam(required=false) String lake,
-            @RequestParam(required=false) String cruise,
-            @RequestParam(required=false) String device,
-            @RequestParam(required=false, value="start_date") String startDate,
-            @RequestParam(required=false, value="min_depth") Float minDepth,
-            @RequestParam(required=false, value="max_depth") Float maxDepth,
-            @RequestParam(required=false) String imlgs,
-            @RequestParam(required=false) String igsn,
-            HttpServletRequest request,
+            @Valid GeosamplesDTO searchParams,
             HttpServletResponse response
     ) {
-        // put request parameters into a collection to facility transfer to repository
-        // TODO validate params?
-        Map<String,Object> searchParams = [:]
-        if (repository) { searchParams["repository"] = repository}
-        // format: minx,miny,maxx,maxy
-        if (bbox) { searchParams["bbox"] = bbox}
-        if (platform) { searchParams["platform"] = platform}
-        if (lake) { searchParams["lake"] = lake}
-        if (cruise) { searchParams["cruise"] = cruise}
-        if (device) { searchParams["device"] = device}
-        if (startDate) { searchParams['startDate'] = startDate}
-        if (minDepth) { searchParams["minDepth"] >= minDepth}
-        if (maxDepth) { searchParams["maxDepth"] < maxDepth}
-        if (imlgs) { searchParams["imlgs"] = imlgs}
-        if (igsn) { searchParams["igsn"] = igsn}
-
-        def resultSet
         if (countOnly == true) {
-            resultSet = intervalRepository.getIntervalsCount(searchParams)
+            return intervalRepository.getIntervalsCount(searchParams)
         } else {
-            resultSet = intervalRepository.getIntervals(searchParams)
+            return intervalRepository.getIntervals(searchParams)
         }
-        return resultSet
     }
 
 
     @Operation(summary="Find lithology values used in the IMLGS")
     @CrossOrigin
     @GetMapping("/lithologies")
-    def getLithologies(
-            @RequestParam(required=false) String repository,
-            @RequestParam(required=false) String bbox,
-            @RequestParam(required=false) String platform,
-            @RequestParam(required=false) String lake,
-            @RequestParam(required=false) String cruise,
-            @RequestParam(required=false) String device,
-            @RequestParam(required=false, value="start_date") String startDate,
-            @RequestParam(required=false, value="min_depth") Float minDepth,
-            @RequestParam(required=false, value="max_depth") Float maxDepth,
-            @RequestParam(required=false) String igsn,
-            @RequestParam(required=false) String lithology,
-            @RequestParam(required=false) String texture,
-            @RequestParam(required=false) String mineralogy,
-            @RequestParam(required=false) String weathering,
-            @RequestParam(required=false) String imlgs,
-            HttpServletRequest request,
-            HttpServletResponse response
-    ) {
-        // put request parameters into a collection to facility transfer to repository
-        // TODO validate params?
-        Map<String,Object> searchParams = [:]
-        if (repository) { searchParams["repository"] = repository}
-        // format: minx,miny,maxx,maxy
-        if (bbox) { searchParams["bbox"] = bbox}
-        if (platform) { searchParams["platform"] = platform}
-        if (lake) { searchParams["lake"] = lake}
-        // cruise applies to both cruise and leg columns
-        if (cruise) { searchParams["cruise"] = cruise}
-        if (device) { searchParams["device"] = device}
-        if (startDate) { searchParams['startDate'] = startDate}
-        if (minDepth) { searchParams["minDepth"] >= minDepth}
-        if (maxDepth) { searchParams["maxDepth"] < maxDepth}
-        if (igsn) { searchParams["igsn"] = igsn}
-        if (texture) { searchParams['texture'] = texture}
-        if (mineralogy) { searchParams['mineralogy'] = mineralogy}
-        if (weathering) { searchParams['weathering'] = weathering}
-        if (imlgs) { searchParams['imlgs'] = imlgs}
-
+    def getLithologies(@Valid GeosamplesDTO searchParams) {
+        if (searchParams.lithology) {
+            throw new GeosamplesBadRequestException("resource does not support request parameter: lithology")
+        }
         return intervalRepository.getUniqueLithologyValues(searchParams)
     }
+
 
     @Operation(summary="Find texture values used in the IMLGS")
     @CrossOrigin
     @GetMapping("/textures")
-    def getTextures(
-            @RequestParam(required=false) String repository,
-            @RequestParam(required=false) String bbox,
-            @RequestParam(required=false) String platform,
-            @RequestParam(required=false) String lake,
-            @RequestParam(required=false) String cruise,
-            @RequestParam(required=false) String device,
-            @RequestParam(required=false, value="start_date") String startDate,
-            @RequestParam(required=false, value="min_depth") Float minDepth,
-            @RequestParam(required=false, value="max_depth") Float maxDepth,
-            @RequestParam(required=false) String igsn,
-            @RequestParam(required=false) String imlgs,
-            HttpServletRequest request,
-            HttpServletResponse response
-    ) {
-        // put request parameters into a collection to facility transfer to repository
-        // TODO validate params?
-        Map<String,Object> searchParams = [:]
-        if (repository) { searchParams["repository"] = repository}
-        // format: minx,miny,maxx,maxy
-        if (bbox) { searchParams["bbox"] = bbox}
-        if (platform) { searchParams["platform"] = platform}
-        if (lake) { searchParams["lake"] = lake}
-        // cruise applies to both cruise and leg columns
-        if (cruise) { searchParams["cruise"] = cruise}
-        if (device) { searchParams["device"] = device}
-        if (startDate) { searchParams['startDate'] = startDate}
-        if (minDepth) { searchParams["minDepth"] >= minDepth}
-        if (maxDepth) { searchParams["maxDepth"] < maxDepth}
-        if (igsn) { searchParams["igsn"] = igsn}
-        if (imlgs) { searchParams['imlgs'] = imlgs}
-
+    def getTextures(@Valid GeosamplesDTO searchParams) {
+        if (searchParams.texture) {
+            throw new GeosamplesBadRequestException("resource does not support request parameter: texture")
+        }
         return intervalRepository.getUniqueTextureValues(searchParams)
     }
+
 
     @Operation(summary="Find mineralogy values used in the IMLGS")
     @CrossOrigin
     @GetMapping("/mineralogies")
-    def getMineralogies(
-            @RequestParam(required=false) String repository,
-            @RequestParam(required=false) String bbox,
-            @RequestParam(required=false) String platform,
-            @RequestParam(required=false) String lake,
-            @RequestParam(required=false) String cruise,
-            @RequestParam(required=false) String device,
-            @RequestParam(required=false, value="start_date") String startDate,
-            @RequestParam(required=false, value="min_depth") Float minDepth,
-            @RequestParam(required=false, value="max_depth") Float maxDepth,
-            @RequestParam(required=false) String igsn,
-            @RequestParam(required=false) String imlgs,
-            HttpServletRequest request,
-            HttpServletResponse response
-    ) {
-        // put request parameters into a collection to facility transfer to repository
-        // TODO validate params?
-        Map<String,Object> searchParams = [:]
-        if (repository) { searchParams["repository"] = repository}
-        // format: minx,miny,maxx,maxy
-        if (bbox) { searchParams["bbox"] = bbox}
-        if (platform) { searchParams["platform"] = platform}
-        if (lake) { searchParams["lake"] = lake}
-        // cruise applies to both cruise and leg columns
-        if (cruise) { searchParams["cruise"] = cruise}
-        if (device) { searchParams["device"] = device}
-        if (startDate) { searchParams['startDate'] = startDate}
-        if (minDepth) { searchParams["minDepth"] >= minDepth}
-        if (maxDepth) { searchParams["maxDepth"] < maxDepth}
-        if (igsn) { searchParams["igsn"] = igsn}
-        if (lithology) { searchParams['lithology'] = lithology}
-        if (texture) { searchParams['texture'] = texture}
-        if (weathering) { searchParams['weathering'] = weathering}
-        if (imlgs) { searchParams['imlgs'] = imlgs}
-
+    def getMineralogies(@Valid GeosamplesDTO searchParams) {
+        if (searchParams.mineralogy) {
+            throw new GeosamplesBadRequestException("resource does not support request parameter: mineralogy")
+        }
         return intervalRepository.getUniqueMineralogyValues(searchParams)
     }
+
 
     @Operation(summary="Find weathering values used in the IMLGS")
     @CrossOrigin
     @GetMapping("/weathering")
-    def getWeatheringValues(
-            @RequestParam(required=false) String repository,
-            @RequestParam(required=false) String bbox,
-            @RequestParam(required=false) String platform,
-            @RequestParam(required=false) String lake,
-            @RequestParam(required=false) String cruise,
-            @RequestParam(required=false) String device,
-            @RequestParam(required=false, value="start_date") String startDate,
-            @RequestParam(required=false, value="min_depth") Float minDepth,
-            @RequestParam(required=false, value="max_depth") Float maxDepth,
-            @RequestParam(required=false) String igsn,
-            @RequestParam(required=false) String imlgs,
-            HttpServletRequest request,
-            HttpServletResponse response
-    ) {
-        // put request parameters into a collection to facility transfer to repository
-        // TODO validate params?
-        Map<String,Object> searchParams = [:]
-        if (repository) { searchParams["repository"] = repository}
-        // format: minx,miny,maxx,maxy
-        if (bbox) { searchParams["bbox"] = bbox}
-        if (platform) { searchParams["platform"] = platform}
-        if (lake) { searchParams["lake"] = lake}
-        // cruise applies to both cruise and leg columns
-        if (cruise) { searchParams["cruise"] = cruise}
-        if (device) { searchParams["device"] = device}
-        if (startDate) { searchParams['startDate'] = startDate}
-        if (minDepth) { searchParams["minDepth"] >= minDepth}
-        if (maxDepth) { searchParams["maxDepth"] < maxDepth}
-        if (igsn) { searchParams["igsn"] = igsn}
-        if (imlgs) { searchParams['imlgs'] = imlgs}
-
+    def getWeatheringValues(@Valid GeosamplesDTO searchParams) {
+        if (searchParams.weathering) {
+            throw new GeosamplesBadRequestException("resource does not support request parameter: weathering")
+        }
         return intervalRepository.getUniqueWeatheringValues(searchParams)
     }
+
 
     @Operation(summary="Find metamorphism values used in the IMLGS")
     @CrossOrigin
     @GetMapping("/metamorphism")
-    def getMetamorphismValues(
-            @RequestParam(required=false) String repository,
-            @RequestParam(required=false) String bbox,
-            @RequestParam(required=false) String platform,
-            @RequestParam(required=false) String lake,
-            @RequestParam(required=false) String cruise,
-            @RequestParam(required=false) String device,
-            @RequestParam(required=false, value="start_date") String startDate,
-            @RequestParam(required=false, value="min_depth") Float minDepth,
-            @RequestParam(required=false, value="max_depth") Float maxDepth,
-            @RequestParam(required=false) String igsn,
-            @RequestParam(required=false) String imlgs,
-            HttpServletRequest request,
-            HttpServletResponse response
-    ) {
-        // put request parameters into a collection to facility transfer to repository
-        // TODO validate params?
-        Map<String,Object> searchParams = [:]
-        if (repository) { searchParams["repository"] = repository}
-        // format: minx,miny,maxx,maxy
-        if (bbox) { searchParams["bbox"] = bbox}
-        if (platform) { searchParams["platform"] = platform}
-        if (lake) { searchParams["lake"] = lake}
-        // cruise applies to both cruise and leg columns
-        if (cruise) { searchParams["cruise"] = cruise}
-        if (device) { searchParams["device"] = device}
-        if (startDate) { searchParams['startDate'] = startDate}
-        if (minDepth) { searchParams["minDepth"] >= minDepth}
-        if (maxDepth) { searchParams["maxDepth"] < maxDepth}
-        if (igsn) { searchParams["igsn"] = igsn}
-        if (imlgs) { searchParams['imlgs'] = imlgs}
-
+    def getMetamorphismValues(@Valid GeosamplesDTO searchParams) {
+        if (searchParams.metamorphism) {
+            throw new GeosamplesBadRequestException("resource does not support request parameter: metamorphism")
+        }
         return intervalRepository.getUniqueMetamorphismValues(searchParams)
     }
+
 
     @Operation(summary="Find geologic ages referenced in the IMLGS")
     @CrossOrigin
     @GetMapping("/geologic_ages")
-    def getGeologicAgeValues(
-            @RequestParam(required=false) String repository,
-            @RequestParam(required=false) String bbox,
-            @RequestParam(required=false) String platform,
-            @RequestParam(required=false) String lake,
-            @RequestParam(required=false) String cruise,
-            @RequestParam(required=false) String device,
-            @RequestParam(required=false, value="start_date") String startDate,
-            @RequestParam(required=false, value="min_depth") Float minDepth,
-            @RequestParam(required=false, value="max_depth") Float maxDepth,
-            @RequestParam(required=false) String igsn,
-            @RequestParam(required=false) String imlgs,
-            HttpServletRequest request,
-            HttpServletResponse response
-    ) {
-        // put request parameters into a collection to facility transfer to repository
-        // TODO validate params?
-        Map<String,Object> searchParams = [:]
-        if (repository) { searchParams["repository"] = repository}
-        // format: minx,miny,maxx,maxy
-        if (bbox) { searchParams["bbox"] = bbox}
-        if (platform) { searchParams["platform"] = platform}
-        if (lake) { searchParams["lake"] = lake}
-        // cruise applies to both cruise and leg columns
-        if (cruise) { searchParams["cruise"] = cruise}
-        if (device) { searchParams["device"] = device}
-        if (startDate) { searchParams['startDate'] = startDate}
-        if (minDepth) { searchParams["minDepth"] >= minDepth}
-        if (maxDepth) { searchParams["maxDepth"] < maxDepth}
-        if (igsn) { searchParams["igsn"] = igsn}
-        if (imlgs) { searchParams['imlgs'] = imlgs}
-
+    def getGeologicAgeValues(@Valid GeosamplesDTO searchParams) {
+        if (searchParams.age) {
+            throw new GeosamplesBadRequestException("resource does not support request parameter: age")
+        }
         return intervalRepository.getUniqueGeologicAgeValues(searchParams)
     }
-
 }

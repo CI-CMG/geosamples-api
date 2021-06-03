@@ -1,6 +1,7 @@
 package noaa.ncei.ogssd.geosamples.repository
 
 import groovy.util.logging.Slf4j
+import noaa.ncei.ogssd.geosamples.GeosamplesDTO
 import noaa.ncei.ogssd.geosamples.GeosamplesResourceNotFoundException
 import noaa.ncei.ogssd.geosamples.GeosamplesService
 import org.springframework.beans.factory.annotation.Autowired
@@ -19,11 +20,6 @@ import org.springframework.stereotype.Repository
 class FacilityRepository {
     @Autowired
     JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    GeosamplesService geosamplesService
-
-    List defaultCriteria = []
     private final String facilityTable
     private final String sampleTable
 
@@ -38,12 +34,10 @@ class FacilityRepository {
     }
 
 
-    List getRepositories(Map<String,Object>searchParameters) {
-        log.debug("inside getRepositories with ${searchParameters}")
-
-        def response = geosamplesService.buildWhereClause(searchParameters, defaultCriteria)
-        String whereClause = response[0] ?: ''
-        def criteriaValues = response[1] ?: []
+    List getRepositories(GeosamplesDTO searchParams) {
+        log.debug("inside getRepositories with ${searchParams}")
+        String whereClause = searchParams.whereClause
+        List criteriaValues = searchParams.criteriaValues
 
         //drive query from curators_sample_tsqp since only it has many of the parameters to support search criteria
         String queryString = """select sample_count, b.facility_code, b.facility, b.facility_comment
@@ -60,8 +54,7 @@ class FacilityRepository {
     Map<String,Object> getRepositoryById(String id) {
         String queryString = "select * from ${facilityTable} where facility_code = ?"
         try {
-            def result = jdbcTemplate.queryForMap(queryString, id)
-            return result
+            return jdbcTemplate.queryForMap(queryString, id)
         } catch (EmptyResultDataAccessException e) {
             throw new GeosamplesResourceNotFoundException('invalid repository ID')
         }
@@ -71,12 +64,10 @@ class FacilityRepository {
     /**
      * return only the list of names, generally used to populate Select lists in webapp
      */
-    List getRepositoryNames(Map<String,Object>searchParameters) {
-        log.debug("inside getRepositoryNames with ${searchParameters}")
-
-        def response = geosamplesService.buildWhereClause(searchParameters, defaultCriteria)
-        String whereClause = response[0] ?: ''
-        def criteriaValues = response[1] ?: []
+    List getRepositoryNames(GeosamplesDTO searchParams) {
+        log.debug("inside getRepositoryNames with ${searchParams}")
+        String whereClause = searchParams.whereClause
+        List criteriaValues = searchParams.criteriaValues
 
         //show only names actually used in IMLGS
         String queryString = """select distinct a.facility_code, b.facility

@@ -1,6 +1,7 @@
 package noaa.ncei.ogssd.geosamples.repository
 
 import groovy.util.logging.Slf4j
+import noaa.ncei.ogssd.geosamples.GeosamplesDTO
 import noaa.ncei.ogssd.geosamples.GeosamplesResourceNotFoundException
 import noaa.ncei.ogssd.geosamples.GeosamplesService
 import org.springframework.beans.factory.annotation.Autowired
@@ -17,13 +18,9 @@ import org.springframework.stereotype.Repository
 @Repository
 class SampleRepository {
     @Autowired
-    JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    GeosamplesService geosamplesService
+    JdbcTemplate jdbcTemplate
 
     static final String orderByClause = " order by cruise, begin_date, leg, sample, device"
-    List defaultCriteria = []
     private final String intervalTable
     private final String sampleTable
 
@@ -55,27 +52,22 @@ class SampleRepository {
     }
 
 
-    List getSamples(Map<String,Object>searchParameters) {
-        log.debug("inside getSamples with ${searchParameters}")
-
-        // TODO have buildWhereClause return ['', []] rather than [null, null] when no criteria
-        def response = geosamplesService.buildWhereClause(searchParameters, defaultCriteria)
-        String whereClause = response[0] ?: ''
-        def criteriaValues = response[1] ?: []
+    List getSamples(GeosamplesDTO searchParams) {
+        log.debug("inside getSamples with ${searchParams}")
+        String whereClause = searchParams.whereClause
+        List criteriaValues = searchParams.criteriaValues
         logCriteriaValues(criteriaValues)
-        String sqlStmt = """select ${allSampleFields.join(', ')} from ${sampleTable} ${whereClause} ${orderByClause}"""
+        String sqlStmt = "select ${allSampleFields.join(', ')} from ${sampleTable} ${whereClause} ${orderByClause}"
         log.debug(sqlStmt)
         // error if pass null as criteriaValues
         return jdbcTemplate.queryForList(sqlStmt, *criteriaValues)
     }
 
 
-    Map<String,Object> getSamplesCount(Map<String,Object>searchParameters) {
-        log.debug("inside getSamplesCount with ${searchParameters}")
-
-        def response = geosamplesService.buildWhereClause(searchParameters, defaultCriteria)
-        String whereClause = response[0] ?: ''
-        def criteriaValues = response[1] ?: []
+    Map<String,Object> getSamplesCount(GeosamplesDTO searchParams) {
+        log.debug("inside getSamplesCount with ${searchParams}")
+        String whereClause = searchParams.whereClause
+        List criteriaValues = searchParams.criteriaValues
         logCriteriaValues(criteriaValues)
         String sqlStmt = "select count(*) from ${sampleTable} ${whereClause}"
         return jdbcTemplate.queryForMap(sqlStmt, *criteriaValues)
@@ -94,11 +86,10 @@ class SampleRepository {
 
 
     // TODO combine w/ getSampleRecords
-    List getDisplayRecords(Map<String,Object>searchParameters) {
-        log.debug("inside getDisplayRecords with ${searchParameters}")
-        def response = geosamplesService.buildWhereClause(searchParameters, defaultCriteria)
-        String whereClause = response[0] ?: ''
-        def criteriaValues = response[1] ?: []
+    List getDisplayRecords(GeosamplesDTO searchParams) {
+        log.debug("inside getDisplayRecords with ${searchParams}")
+        String whereClause = searchParams.whereClause
+        List criteriaValues = searchParams.criteriaValues
         logCriteriaValues(criteriaValues)
         String sqlStmt = "select ${displaySampleFields.join(', ')} from ${sampleTable} ${whereClause} ${orderByClause}"
         log.debug(sqlStmt)
@@ -110,15 +101,11 @@ class SampleRepository {
      * return a list the unique storage methods (storage_meth) values used in the curators_sample table.  Results
      * may be constrained by search parameters, e.g. platform, repository, etc.
      */
-    List getUniqueStorageMethods(Map<String,Object>searchParameters) {
-        log.debug("inside getUniqueStorageMethods with ${searchParameters}")
-
-        def response = geosamplesService.buildWhereClause(searchParameters, ["storage_meth is not null"])
-        String whereClause = response[0]
-        def criteriaValues = response[1]
-
-        // with default criteria, there will always be a whereClause
-        String queryString = """select distinct storage_meth from ${sampleTable} ${whereClause} order by storage_meth"""
+    List getUniqueStorageMethods(GeosamplesDTO searchParams) {
+        log.debug("inside getUniqueStorageMethods with ${searchParams}")
+        String whereClause = searchParams.getWhereClause(['storage_meth is not null'])
+        List criteriaValues = searchParams.criteriaValues
+        String queryString = "select distinct storage_meth from ${sampleTable} ${whereClause} order by storage_meth"
         def resultSet = jdbcTemplate.queryForList(queryString, *criteriaValues)
         return resultSet['storage_meth']
     }
@@ -128,14 +115,11 @@ class SampleRepository {
      * return a list the unique physiographic province names (province) used in the curators_sample table.  Results
      * may be constrained by search parameters, e.g. platform, repository, etc.
      */
-    List getUniquePhysiographicProvinces(Map<String,Object>searchParameters) {
-        log.debug("inside getUniquePhysiographicProvinces with ${searchParameters}")
-
-        def response = geosamplesService.buildWhereClause(searchParameters, ["province is not null"])
-        String whereClause = response[0]
-        def criteriaValues = response[1]
-
-        String queryString = """select distinct province from ${sampleTable} ${whereClause} order by province"""
+    List getUniquePhysiographicProvinces(GeosamplesDTO searchParams) {
+        log.debug("inside getUniquePhysiographicProvinces with ${searchParams}")
+        String whereClause = searchParams.getWhereClause(['province is not null'])
+        List criteriaValues = searchParams.criteriaValues
+        String queryString = "select distinct province from ${sampleTable} ${whereClause} order by province"
         def resultSet = jdbcTemplate.queryForList(queryString, *criteriaValues)
         return resultSet['province']
     }
@@ -145,14 +129,11 @@ class SampleRepository {
      * return a list the unique devices (device) used in the curators_sample table.  Results
      * may be constrained by search parameters, e.g. platform, repository, etc.
      */
-    List getDeviceNames(Map<String,Object>searchParameters) {
-        log.debug("inside getDeviceNames with ${searchParameters}")
-
-        def response = geosamplesService.buildWhereClause(searchParameters, ["device is not null"])
-        String whereClause = response[0]
-        def criteriaValues = response[1]
-
-        String queryString = """select distinct device from ${sampleTable} ${whereClause} order by device"""
+    List getDeviceNames(GeosamplesDTO searchParams) {
+        log.debug("inside getDeviceNames with ${searchParams}")
+        String whereClause = searchParams.getWhereClause(['device is not null'])
+        List criteriaValues = searchParams.criteriaValues
+        String queryString = "select distinct device from ${sampleTable} ${whereClause} order by device"
         def resultSet = jdbcTemplate.queryForList(queryString, *criteriaValues)
         return resultSet['device']
     }
@@ -162,14 +143,11 @@ class SampleRepository {
      * return a list the unique lake names (lake) used in the curators_sample table.  Results
      * may be constrained by search parameters, e.g. platform, repository, etc.
      */
-    List getLakes(Map<String,Object>searchParameters) {
-        log.debug("inside getLakes with ${searchParameters}")
-
-        def response = geosamplesService.buildWhereClause(searchParameters, ["lake is not null"])
-        String whereClause = response[0]
-        def criteriaValues = response[1]
-
-        String queryString = """select distinct lake from ${sampleTable} ${whereClause} order by lake"""
+    List getLakes(GeosamplesDTO searchParams) {
+        log.debug("inside getLakes with ${searchParams}")
+        String whereClause = searchParams.getWhereClause(['lake is not null'])
+        List criteriaValues = searchParams.criteriaValues
+        String queryString = "select distinct lake from ${sampleTable} ${whereClause} order by lake"
         def resultSet = jdbcTemplate.queryForList(queryString, *criteriaValues)
         return resultSet['lake']
     }
@@ -179,48 +157,46 @@ class SampleRepository {
      * return a list the unique lake names (lake) used in the curators_sample table.  Results
      * may be constrained by search parameters, e.g. platform, repository, etc.
      */
-    List getIgsnValues(Map<String,Object>searchParameters) {
-        log.debug("inside getIgsnValues with ${searchParameters}")
-
-        def response = geosamplesService.buildWhereClause(searchParameters, ["igsn is not null"])
-        String whereClause = response[0]
-        def criteriaValues = response[1]
-
-        // with default criteria, there will always be a whereClause
+    List getIgsnValues(GeosamplesDTO searchParams) {
+        log.debug("inside getIgsnValues with ${searchParams}")
+        String whereClause = searchParams.getWhereClause(['igsn is not null'])
+        List criteriaValues = searchParams.criteriaValues
         String queryString = "select distinct igsn from ${sampleTable} ${whereClause} order by igsn"
         def resultSet = jdbcTemplate.queryForList(queryString, *criteriaValues)
         return resultSet['igsn']
     }
 
 
-    List getCruiseNames(Map<String, Object> searchParameters) {
-        log.debug("inside getCruiseNames with ${searchParameters}")
-
-        def response = geosamplesService.buildWhereClause(searchParameters, ["cruise is not null"])
-        String whereClause = response[0]
-        def criteriaValues = response[1]
+    /**
+     * return a list the unique cruise names used in the curators_sample table.  Results
+     * may be constrained by search parameters, e.g. platform, repository, etc.
+     */
+    List getCruiseNames(GeosamplesDTO searchParams) {
+        log.debug("inside getCruiseNames with ${searchParams}")
+        String whereClause = searchParams.getWhereClause(['cruise is not null'])
+        List criteriaValues = searchParams.criteriaValues
 
         // TODO combine cruise and leg values into response?
-        String queryString = """select distinct cruise from ${sampleTable} ${whereClause} order by cruise"""
+        String queryString = "select distinct cruise from ${sampleTable} ${whereClause} order by cruise"
         def resultSet = jdbcTemplate.queryForList(queryString, *criteriaValues)
         return resultSet['cruise']
     }
 
-
-    List getPlatformNames(Map<String, Object> searchParameters) {
-        log.debug("inside getPlatformNames with ${searchParameters}")
-
-        def response = geosamplesService.buildWhereClause(searchParameters, ["platform is not null"])
-        String whereClause = response[0]
-        def criteriaValues = response[1]
-
-        String queryString = """select distinct platform from ${sampleTable} ${whereClause} order by platform"""
+    /**
+     * return a list the unique platform names used in the curators_sample table.  Results
+     * may be constrained by search parameters, e.g. repository, etc.
+     */
+    List getPlatformNames(GeosamplesDTO searchParams) {
+        log.debug("inside getPlatformNames with ${searchParams}")
+        String whereClause = searchParams.getWhereClause(['platform is not null'])
+        List criteriaValues = searchParams.criteriaValues
+        String queryString = "select distinct platform from ${sampleTable} ${whereClause} order by platform"
         def resultSet = jdbcTemplate.queryForList(queryString, *criteriaValues)
         return resultSet['platform']
     }
 
 
-    List getCruises(Map<String, Object> searchParameters) {
+    List getCruises(GeosamplesDTO searchParams) {
         //TODO
         return null
     }
