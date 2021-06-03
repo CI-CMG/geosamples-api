@@ -3,7 +3,6 @@ package noaa.ncei.ogssd.geosamples.repository
 import groovy.util.logging.Slf4j
 import noaa.ncei.ogssd.geosamples.GeosamplesDTO
 import noaa.ncei.ogssd.geosamples.GeosamplesResourceNotFoundException
-import noaa.ncei.ogssd.geosamples.GeosamplesService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.dao.EmptyResultDataAccessException
