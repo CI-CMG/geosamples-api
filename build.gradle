@@ -1,11 +1,11 @@
 plugins {
-	id 'org.springframework.boot' version '2.4.4'
+	id 'org.springframework.boot' version '2.5.0'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'groovy'
 }
 
-group = "noaa.ncei.ogssd"
-version = "1.0.0"
+group = 'noaa.ncei.ogssd'
+version = '1.0.0'
 sourceCompatibility = '1.8'
 
 repositories {
@@ -20,10 +20,10 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.apache.commons:commons-csv:1.8'
 	implementation 'org.codehaus.groovy:groovy'
-	implementation 'org.codehaus.groovy:groovy-sql:2.5.14'
-	implementation 'org.codehaus.groovy:groovy-all:2.5.14'
-	implementation 'org.springdoc:springdoc-openapi-ui:1.5.7'
-	implementation 'org.springdoc:springdoc-openapi-groovy:1.5.7'
+	implementation 'org.codehaus.groovy:groovy-sql:3.0.8'
+	implementation 'org.codehaus.groovy:groovy-all:3.0.8'
+	implementation 'org.springdoc:springdoc-openapi-ui:1.5.9'
+	implementation 'org.springdoc:springdoc-openapi-groovy:1.5.9'
 //	implementation group: 'org.hibernate.validator', name: 'hibernate-validator', version: '7.0.1.Final'
 	runtimeOnly 'com.oracle.database.jdbc:ojdbc8'
 	runtimeOnly 'org.postgresql:postgresql'
