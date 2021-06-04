@@ -5,6 +5,7 @@ plugins {
 }
 
 //group = 'noaa.ncei.ogssd'
+group = 'gov.noaa.ncei'
 version = '1.0.0'
 sourceCompatibility = '1.8'
 
