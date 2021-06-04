@@ -4,9 +4,8 @@ plugins {
 	id 'groovy'
 }
 
-//group = 'noaa.ncei.ogssd'
-group = 'gov.noaa.ncei'
-version = '1.0.0'
+group = "noaa.ncei.ogssd"
+version = "1.0.0"
 sourceCompatibility = '1.8'
 
 repositories {
