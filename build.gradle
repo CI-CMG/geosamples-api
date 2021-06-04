@@ -4,7 +4,7 @@ plugins {
 	id 'groovy'
 }
 
-group = 'noaa.ncei.ogssd'
+//group = 'noaa.ncei.ogssd'
 version = '1.0.0'
 sourceCompatibility = '1.8'
 
@@ -18,10 +18,10 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	implementation  'org.apache.commons:commons-csv:1.8'
+	implementation 'org.apache.commons:commons-csv:1.8'
 	implementation 'org.codehaus.groovy:groovy'
-	implementation group: 'org.codehaus.groovy', name: 'groovy-sql', version: '2.5.14'
-	implementation group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.5.14', ext: 'pom'
+	implementation 'org.codehaus.groovy:groovy-sql:2.5.14'
+	implementation 'org.codehaus.groovy:groovy-all:2.5.14'
 	implementation 'org.springdoc:springdoc-openapi-ui:1.5.7'
 	implementation 'org.springdoc:springdoc-openapi-groovy:1.5.7'
 //	implementation group: 'org.hibernate.validator', name: 'hibernate-validator', version: '7.0.1.Final'
