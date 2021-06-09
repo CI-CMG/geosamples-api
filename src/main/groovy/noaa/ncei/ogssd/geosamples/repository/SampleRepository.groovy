@@ -22,6 +22,7 @@ class SampleRepository {
     static final String orderByClause = " order by cruise, begin_date, leg, sample, device"
     private final String intervalTable
     private final String sampleTable
+    private final String facilityTable
 
     // skip SHAPE column since there are problems serializing SDO_Geometry into JSON
     private final List allSampleFields = [
@@ -43,11 +44,14 @@ class SampleRepository {
     // inject values from application-<profilename>.properties
     SampleRepository(
         @Value('${geosamples.sample_table: mud.curators_sample_tsqp}') String sampleTable,
-        @Value('${geosamples.interval_table: mud.curators_interval}') String intervalTable
+        @Value('${geosamples.interval_table: mud.curators_interval}') String intervalTable,
+        @Value('${geosamples.facility_table: mud.curators_facility}') String facilityTable
+
     ) {
         // fully qualified table names
         this.intervalTable = intervalTable
         this.sampleTable = sampleTable
+        this.facilityTable = facilityTable
     }
 
 
@@ -74,7 +78,9 @@ class SampleRepository {
 
 
     Map<String, Object> getSampleById(String id) {
-        String sqlStmt = "select ${allSampleFields.join(', ')} from ${sampleTable} where imlgs = ?"
+        List qualifiedFields = allSampleFields.collect { "a.${it}"}
+        String sqlStmt = """select ${qualifiedFields.join(', ')}, b.facility  
+        from ${sampleTable} a inner join ${facilityTable} b on a.FACILITY_CODE = b.FACILITY_CODE where imlgs = ?"""
         try {
             def result = jdbcTemplate.queryForMap(sqlStmt, id)
             return result
