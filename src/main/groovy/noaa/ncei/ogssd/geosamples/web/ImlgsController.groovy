@@ -93,7 +93,7 @@ class ImlgsController {
         } else {
             resultSet = sampleRepository.getDisplayRecords(searchParams)
         }
-        return resultSet
+        return convertPropertyNamesToLowerCase(resultSet)
     }
 
 
@@ -106,7 +106,7 @@ class ImlgsController {
             throw new GeosamplesBadRequestException('invalid IMLGS ID')
         }
         // imlgs uniquely identifies sample
-        return sampleRepository.getSampleById(id)
+        return convertPropertyNamesToLowerCase(sampleRepository.getSampleById(id))
     }
 
 
@@ -118,7 +118,7 @@ class ImlgsController {
         if (searchParams.storageMethod) {
             throw new GeosamplesBadRequestException("resource does not support request parameter: storage_method")
         }
-        return sampleRepository.getUniqueStorageMethods(searchParams)
+        return convertPropertyNamesToLowerCase(sampleRepository.getUniqueStorageMethods(searchParams))
     }
 
 
@@ -129,7 +129,7 @@ class ImlgsController {
         if (searchParams.province) {
             throw new GeosamplesBadRequestException("resource does not support request parameter: province")
         }
-        return sampleRepository.getUniquePhysiographicProvinces(searchParams)
+        return convertPropertyNamesToLowerCase(sampleRepository.getUniquePhysiographicProvinces(searchParams))
     }
 
 
@@ -151,7 +151,7 @@ class ImlgsController {
         if (searchParams.lake) {
             throw new GeosamplesBadRequestException("resource does not support request parameter: lake")
         }
-        return sampleRepository.getLakes(searchParams)
+        return convertPropertyNamesToLowerCase(sampleRepository.getLakes(searchParams))
     }
 
 
@@ -162,7 +162,7 @@ class ImlgsController {
         if (searchParams.igsn) {
             throw new GeosamplesBadRequestException("resource does not support request parameter: igsn")
         }
-        return sampleRepository.getIgsnValues(searchParams)
+        return convertPropertyNamesToLowerCase(sampleRepository.getIgsnValues(searchParams))
     }
 
 
@@ -178,9 +178,9 @@ class ImlgsController {
             throw new GeosamplesBadRequestException("resource does not support request parameter: cruise")
         }
         if (nameOnly == true) {
-            return sampleRepository.getCruiseNames(searchParams)
+            return convertPropertyNamesToLowerCase(sampleRepository.getCruiseNames(searchParams))
         } else {
-            return sampleRepository.getCruises(searchParams)
+            return convertPropertyNamesToLowerCase(sampleRepository.getCruises(searchParams))
         }
     }
 
@@ -208,7 +208,7 @@ class ImlgsController {
         if (nameOnly == true) {
             return convertPropertyNamesToLowerCase(facilityRepository.getRepositoryNames(searchParams))
         } else {
-            return facilityRepository.getRepositories(searchParams)
+            return convertPropertyNamesToLowerCase(facilityRepository.getRepositories(searchParams))
         }
     }
 
@@ -217,7 +217,7 @@ class ImlgsController {
     @CrossOrigin
     @GetMapping("/repositories/{id}")
     def getRepositoryById(@PathVariable String id) {
-        return facilityRepository.getRepositoryById(id)
+        return convertPropertyNamesToLowerCase(facilityRepository.getRepositoryById(id))
     }
 
 
@@ -228,7 +228,7 @@ class ImlgsController {
         if (searchParams.platform) {
             throw new GeosamplesBadRequestException("resource does not support request parameter: platform")
         }
-        return  sampleRepository.getPlatformNames(searchParams)
+        return  convertPropertyNamesToLowerCase(sampleRepository.getPlatformNames(searchParams))
     }
 
 
@@ -242,9 +242,9 @@ class ImlgsController {
             HttpServletResponse response
     ) {
         if (countOnly == true) {
-            return intervalRepository.getIntervalsCount(searchParams)
+            return convertPropertyNamesToLowerCase(intervalRepository.getIntervalsCount(searchParams))
         } else {
-            return intervalRepository.getIntervals(searchParams)
+            return convertPropertyNamesToLowerCase(intervalRepository.getIntervals(searchParams))
         }
     }
 
@@ -256,7 +256,7 @@ class ImlgsController {
         if (searchParams.lithology) {
             throw new GeosamplesBadRequestException("resource does not support request parameter: lithology")
         }
-        return intervalRepository.getUniqueLithologyValues(searchParams)
+        return convertPropertyNamesToLowerCase(intervalRepository.getUniqueLithologyValues(searchParams))
     }
 
 
@@ -267,7 +267,7 @@ class ImlgsController {
         if (searchParams.texture) {
             throw new GeosamplesBadRequestException("resource does not support request parameter: texture")
         }
-        return intervalRepository.getUniqueTextureValues(searchParams)
+        return convertPropertyNamesToLowerCase(intervalRepository.getUniqueTextureValues(searchParams))
     }
 
 
@@ -278,7 +278,7 @@ class ImlgsController {
         if (searchParams.mineralogy) {
             throw new GeosamplesBadRequestException("resource does not support request parameter: mineralogy")
         }
-        return intervalRepository.getUniqueMineralogyValues(searchParams)
+        return convertPropertyNamesToLowerCase(intervalRepository.getUniqueMineralogyValues(searchParams))
     }
 
 
@@ -289,7 +289,7 @@ class ImlgsController {
         if (searchParams.weathering) {
             throw new GeosamplesBadRequestException("resource does not support request parameter: weathering")
         }
-        return intervalRepository.getUniqueWeatheringValues(searchParams)
+        return convertPropertyNamesToLowerCase(intervalRepository.getUniqueWeatheringValues(searchParams))
     }
 
 
@@ -300,7 +300,7 @@ class ImlgsController {
         if (searchParams.metamorphism) {
             throw new GeosamplesBadRequestException("resource does not support request parameter: metamorphism")
         }
-        return intervalRepository.getUniqueMetamorphismValues(searchParams)
+        return convertPropertyNamesToLowerCase(intervalRepository.getUniqueMetamorphismValues(searchParams))
     }
 
 
@@ -311,7 +311,7 @@ class ImlgsController {
         if (searchParams.age) {
             throw new GeosamplesBadRequestException("resource does not support request parameter: age")
         }
-        return intervalRepository.getUniqueGeologicAgeValues(searchParams)
+        return convertPropertyNamesToLowerCase(intervalRepository.getUniqueGeologicAgeValues(searchParams))
     }
 
 
@@ -351,5 +351,9 @@ class ImlgsController {
             }
         }
         return newResultSet
+    }
+
+    static Map convertPropertyNamesToLowerCase(Map resultSet) {
+        return resultSet.collectEntries { key, value ->  [(key.toLowerCase()): value] }
     }
 }

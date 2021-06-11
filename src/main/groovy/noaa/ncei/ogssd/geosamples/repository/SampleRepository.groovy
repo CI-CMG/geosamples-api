@@ -80,7 +80,7 @@ class SampleRepository {
         String whereClause = searchParams.whereClause
         List criteriaValues = searchParams.criteriaValues
         logCriteriaValues(criteriaValues)
-        String sqlStmt = "select count(*) from ${sampleTable} ${whereClause}"
+        String sqlStmt = "select count(*) as count from ${sampleTable} ${whereClause}"
         return jdbcTemplate.queryForMap(sqlStmt, *criteriaValues)
     }
 

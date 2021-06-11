@@ -47,7 +47,7 @@ class IntervalRepository {
         log.debug("inside getCount with ${searchParams}")
         String whereClause = searchParams.whereClause
         List criteriaValues = searchParams.criteriaValues
-        String queryString = "select count(*) from ${intervalTable} ${whereClause}"
+        String queryString = "select count(*) as count from ${intervalTable} ${whereClause}"
         return jdbcTemplate.queryForMap(queryString, *criteriaValues)
     }
 
