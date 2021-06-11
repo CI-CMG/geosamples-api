@@ -35,6 +35,7 @@ class FacilityRepository {
 
     List getRepositories(GeosamplesDTO searchParams) {
         log.debug("inside getRepositories with ${searchParams}")
+        jdbcTemplate.setResultsMapCaseInsensitive(true)
         String whereClause = searchParams.whereClause
         List criteriaValues = searchParams.criteriaValues
 
@@ -51,6 +52,7 @@ class FacilityRepository {
 
 
     Map<String,Object> getRepositoryById(String id) {
+        jdbcTemplate.setResultsMapCaseInsensitive(true)
         String queryString = "select * from ${facilityTable} where facility_code = ?"
         try {
             return jdbcTemplate.queryForMap(queryString, id)
@@ -64,6 +66,7 @@ class FacilityRepository {
      * return only the list of names, generally used to populate Select lists in webapp
      */
     List getRepositoryNames(GeosamplesDTO searchParams) {
+        jdbcTemplate.setResultsMapCaseInsensitive(true)
         log.debug("inside getRepositoryNames with ${searchParams}")
         String whereClause = searchParams.whereClause
         List criteriaValues = searchParams.criteriaValues
