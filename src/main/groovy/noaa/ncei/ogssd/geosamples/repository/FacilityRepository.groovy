@@ -9,6 +9,9 @@ import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Repository
 
+import javax.annotation.PostConstruct
+import javax.sql.DataSource
+
 
 /*
  * interface to database table(s).
@@ -18,7 +21,13 @@ import org.springframework.stereotype.Repository
 @Repository
 class FacilityRepository {
     @Autowired
-    JdbcTemplate jdbcTemplate;
+    JdbcTemplate jdbcTemplate
+
+    @Autowired
+    DataSource dataSource
+
+    private JdbcTemplate customJdbcTemplate
+
     private final String facilityTable
     private final String sampleTable
 
@@ -30,6 +39,14 @@ class FacilityRepository {
         // fully qualified table names
         this.facilityTable = facilityTable
         this.sampleTable = sampleTable
+    }
+
+
+    @PostConstruct
+    void init() {
+        println('inside init...')
+        customJdbcTemplate = new JdbcTemplate(dataSource)
+        customJdbcTemplate.setResultsMapCaseInsensitive(true)
     }
 
 
@@ -66,7 +83,8 @@ class FacilityRepository {
      * return only the list of names, generally used to populate Select lists in webapp
      */
     List getRepositoryNames(GeosamplesDTO searchParams) {
-        jdbcTemplate.setResultsMapCaseInsensitive(true)
+//        jdbcTemplate.setResultsMapCaseInsensitive(true)
+        println(customJdbcTemplate.isResultsMapCaseInsensitive())
         log.debug("inside getRepositoryNames with ${searchParams}")
         String whereClause = searchParams.whereClause
         List criteriaValues = searchParams.criteriaValues
@@ -75,6 +93,6 @@ class FacilityRepository {
         String queryString = """select distinct a.facility_code, b.facility
            from ${sampleTable} a inner join ${facilityTable} b
            on a.FACILITY_CODE = b.FACILITY_CODE ${whereClause} order by facility_code"""
-        return jdbcTemplate.queryForList(queryString, *criteriaValues)
+        return customJdbcTemplate.queryForList(queryString, *criteriaValues)
     }
 }
