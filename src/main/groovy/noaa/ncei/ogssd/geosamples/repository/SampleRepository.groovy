@@ -25,13 +25,21 @@ class SampleRepository {
     private final String facilityTable
 
     // skip SHAPE column since there are problems serializing SDO_Geometry into JSON
+//    private final List allSampleFields = [
+//        'facility_code', 'ship_code', 'platform', 'cruise', 'sample', 'device', 'begin_date', 'end_date', 'lat',
+//        'latdeg', 'latmin', 'ns', 'end_lat', 'end_latdeg', 'end_latmin', 'end_ns', 'lon', 'londeg', 'lonmin', 'ew',
+//        'end_lon', 'end_londeg', 'end_lonmin', 'end_ew', 'latlon_orig', 'water_depth', 'end_water_depth',
+//        'storage_meth', 'cored_length', 'cored_length_mm', 'cored_diam', 'cored_diam_mm', 'pi', 'province', 'lake',
+//        'other_link', 'last_update', 'igsn', 'leg', 'sample_comments', 'publish', 'previous_state', 'objectid',
+//        'show_sampl', 'imlgs'
+//    ]
+
     private final List allSampleFields = [
-        'facility_code', 'ship_code', 'platform', 'cruise', 'sample', 'device', 'begin_date', 'end_date', 'lat',
-        'latdeg', 'latmin', 'ns', 'end_lat', 'end_latdeg', 'end_latmin', 'end_ns', 'lon', 'londeg', 'lonmin', 'ew',
-        'end_lon', 'end_londeg', 'end_lonmin', 'end_ew', 'latlon_orig', 'water_depth', 'end_water_depth',
-        'storage_meth', 'cored_length', 'cored_length_mm', 'cored_diam', 'cored_diam_mm', 'pi', 'province', 'lake',
-        'other_link', 'last_update', 'igsn', 'leg', 'sample_comments', 'publish', 'previous_state', 'objectid',
-        'show_sampl', 'imlgs'
+            'facility_code', 'ship_code', 'platform', 'cruise', 'sample', 'device', 'begin_date', 'end_date', 'lat',
+            'end_lat', 'lon', 'end_lon', 'latlon_orig', 'water_depth', 'end_water_depth',
+            'storage_meth', 'cored_length', 'cored_length_mm', 'cored_diam', 'cored_diam_mm', 'pi', 'province', 'lake',
+            'other_link', 'last_update', 'igsn', 'leg', 'sample_comments', 'objectid',
+            'show_sampl', 'imlgs'
     ]
 
     // subset of fields used for display in webapp
@@ -63,7 +71,7 @@ class SampleRepository {
         String sqlStmt = "select ${allSampleFields.join(', ')} from ${sampleTable} ${whereClause} ${orderByClause}"
         log.debug(sqlStmt)
         // error if pass null as criteriaValues
-        return jdbcTemplate.queryForList(sqlStmt, *criteriaValues)
+        return jdbcTemplate.queryForList(sqlStmt, *criteriaValues)[searchParams.startIndex..searchParams.endIndex]
     }
 
 
@@ -93,12 +101,15 @@ class SampleRepository {
     // TODO combine w/ getSampleRecords
     List getDisplayRecords(GeosamplesDTO searchParams) {
         log.debug("inside getDisplayRecords with ${searchParams}")
+        println("start = ${searchParams.startIndex}")
+        println("end = ${searchParams.endIndex}")
         String whereClause = searchParams.whereClause
         List criteriaValues = searchParams.criteriaValues
         logCriteriaValues(criteriaValues)
         String sqlStmt = "select ${displaySampleFields.join(', ')} from ${sampleTable} ${whereClause} ${orderByClause}"
         log.debug(sqlStmt)
-        return jdbcTemplate.queryForList(sqlStmt, *criteriaValues)
+        // due to default values there will always be a start and end index in the DTO
+        return jdbcTemplate.queryForList(sqlStmt, *criteriaValues)[searchParams.startIndex..searchParams.endIndex]
     }
 
 

@@ -37,10 +37,24 @@ class GeosamplesDTO {
     @Size(min=12, max=12)
     String imlgs
 
+    // paging controls
+    @Min(0L)
+    Integer startIndex = 0
+    Integer limit = null
+
     // following are derived properties and not bound via Controller
     private String whereClause
     private List criteriaValues
 
+
+    void setStart(String startStr) {
+        // convert to 0-based
+        startIndex = startStr.toInteger() - 1
+    }
+
+    Integer getEndIndex() {
+        return (limit) ? (startIndex + limit) - 1 : -1
+    }
 
     /*
      * custom setters.  Type conversion exceptions handled as HTTP status 400.
