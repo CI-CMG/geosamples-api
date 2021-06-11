@@ -83,8 +83,8 @@ class FacilityRepository {
      * return only the list of names, generally used to populate Select lists in webapp
      */
     List getRepositoryNames(GeosamplesDTO searchParams) {
-//        jdbcTemplate.setResultsMapCaseInsensitive(true)
-        println(customJdbcTemplate.isResultsMapCaseInsensitive())
+        jdbcTemplate.setResultsMapCaseInsensitive(true)
+        println(jdbcTemplate.isResultsMapCaseInsensitive())
         log.debug("inside getRepositoryNames with ${searchParams}")
         String whereClause = searchParams.whereClause
         List criteriaValues = searchParams.criteriaValues
@@ -93,6 +93,7 @@ class FacilityRepository {
         String queryString = """select distinct a.facility_code, b.facility
            from ${sampleTable} a inner join ${facilityTable} b
            on a.FACILITY_CODE = b.FACILITY_CODE ${whereClause} order by facility_code"""
-        return customJdbcTemplate.queryForList(queryString, *criteriaValues)
+        def resultSet = jdbcTemplate.queryForList(queryString, *criteriaValues)
+        println(resultSet[0].getClass().name)
     }
 }
