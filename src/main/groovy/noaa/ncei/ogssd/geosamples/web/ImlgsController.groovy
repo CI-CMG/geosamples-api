@@ -1,6 +1,7 @@
 package noaa.ncei.ogssd.geosamples.web
 
-
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.annotation.JsonNaming
 import groovy.util.logging.Slf4j
 import io.swagger.v3.oas.annotations.Hidden
 import io.swagger.v3.oas.annotations.OpenAPIDefinition
@@ -18,8 +19,12 @@ import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVPrinter
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpHeaders
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
+import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
+
+import javax.annotation.PostConstruct
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 import javax.validation.Valid
@@ -27,6 +32,8 @@ import javax.validation.constraints.Max
 import javax.validation.constraints.Min
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.Size
+import com.fasterxml.jackson.databind.PropertyNamingStrategies
+import com.fasterxml.jackson.databind.annotation.JsonNaming
 
 @Slf4j
 @Tag(name="geosamples", description="Index to Marine and Lacustrine Geological Samples (IMLGS) API")
@@ -36,6 +43,7 @@ import javax.validation.constraints.Size
                     @Server(url="http://localhost/geosamples-api/", description="development server")]
 )
 
+@JsonNaming(PropertyNamingStrategies.UpperCamelCaseStrategy.class)
 @RestController
 @Validated
 class ImlgsController {
@@ -48,6 +56,16 @@ class ImlgsController {
     @Autowired
     IntervalRepository intervalRepository
 
+//    @Autowired
+//    ObjectMapper objectMapper
+
+//    @Autowired
+//    MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter
+
+//    @PostConstruct
+//    void init() {
+//        objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
+//    }
 
     @Operation(summary="Find geosamples. Warning: large response without criteria")
     @CrossOrigin
@@ -188,7 +206,7 @@ class ImlgsController {
             throw new GeosamplesBadRequestException("resource does not support request parameter: repository")
         }
         if (nameOnly == true) {
-            return facilityRepository.getRepositoryNames(searchParams)
+            return convertPropertyNamesToLowerCase(facilityRepository.getRepositoryNames(searchParams))
         } else {
             return facilityRepository.getRepositories(searchParams)
         }
@@ -319,5 +337,19 @@ class ImlgsController {
         } finally {
             if (csvPrinter) { csvPrinter.close() }
         }
+    }
+
+
+    /*
+     * hack to work around problem w/ spring.jackson.property-naming-strategy not working.
+     * considerable memory use considerations
+     */
+    static List convertPropertyNamesToLowerCase(List resultSet) {
+        List newResultSet = resultSet.collect { row ->
+            row.collectEntries { key, value ->
+                [(key.toLowerCase()): value]
+            }
+        }
+        return newResultSet
     }
 }
