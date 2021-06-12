@@ -3,9 +3,12 @@ package noaa.ncei.ogssd.geosamples.repository
 import groovy.util.logging.Slf4j
 import noaa.ncei.ogssd.geosamples.GeosamplesDTO
 import noaa.ncei.ogssd.geosamples.GeosamplesResourceNotFoundException
+import noaa.ncei.ogssd.geosamples.domain.Facility
+import noaa.ncei.ogssd.geosamples.domain.Sample
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.dao.EmptyResultDataAccessException
+import org.springframework.jdbc.core.BeanPropertyRowMapper
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Repository
 
@@ -63,7 +66,7 @@ class SampleRepository {
     }
 
 
-    List getSamples(GeosamplesDTO searchParams) {
+    List<Sample> getSamples(GeosamplesDTO searchParams) {
         log.debug("inside getSamples with ${searchParams}")
         String whereClause = searchParams.whereClause
         List criteriaValues = searchParams.criteriaValues
@@ -71,10 +74,10 @@ class SampleRepository {
         String sqlStmt = "select ${allSampleFields.join(', ')} from ${sampleTable} ${whereClause} ${orderByClause}"
         log.debug(sqlStmt)
         // error if pass null as criteriaValues
-        return jdbcTemplate.queryForList(sqlStmt, *criteriaValues)
+        return jdbcTemplate.query(sqlStmt, new BeanPropertyRowMapper(Sample.class), *criteriaValues)
     }
 
-
+    // TODO return bare count
     Map<String,Object> getSamplesCount(GeosamplesDTO searchParams) {
         log.debug("inside getSamplesCount with ${searchParams}")
         String whereClause = searchParams.whereClause
@@ -85,13 +88,12 @@ class SampleRepository {
     }
 
 
-    Map<String, Object> getSampleById(String id) {
+    Sample getSampleById(String id) {
         List qualifiedFields = allSampleFields.collect { "a.${it}"}
         String sqlStmt = """select ${qualifiedFields.join(', ')}, b.facility  
         from ${sampleTable} a inner join ${facilityTable} b on a.FACILITY_CODE = b.FACILITY_CODE where imlgs = ?"""
         try {
-            def result = jdbcTemplate.queryForMap(sqlStmt, id)
-            return result
+            return jdbcTemplate.queryForObject(sqlStmt, new BeanPropertyRowMapper(Sample.class), id)
         } catch (EmptyResultDataAccessException e) {
             throw new GeosamplesResourceNotFoundException('invalid IMLGS ID')
         }
@@ -99,7 +101,7 @@ class SampleRepository {
 
 
     // TODO combine w/ getSampleRecords
-    List getDisplayRecords(GeosamplesDTO searchParams) {
+    List<Sample> getDisplayRecords(GeosamplesDTO searchParams) {
         log.debug("inside getDisplayRecords with ${searchParams}")
         String whereClause = searchParams.whereClause
         List criteriaValues = searchParams.criteriaValues
@@ -107,7 +109,7 @@ class SampleRepository {
         String sqlStmt = """select ${displaySampleFields.join(', ')} from ${sampleTable} ${whereClause} 
             ${orderByClause} offset ${searchParams.offset} rows fetch next ${searchParams.pageSize} rows only"""
         log.debug(sqlStmt)
-        return jdbcTemplate.queryForList(sqlStmt, *criteriaValues)
+        return jdbcTemplate.query(sqlStmt, new BeanPropertyRowMapper(Sample.class), *criteriaValues)
     }
 
 
@@ -196,6 +198,7 @@ class SampleRepository {
         return resultSet['cruise']
     }
 
+
     /**
      * return a list the unique platform names used in the curators_sample table.  Results
      * may be constrained by search parameters, e.g. repository, etc.
@@ -212,7 +215,7 @@ class SampleRepository {
 
     List getCruises(GeosamplesDTO searchParams) {
         //TODO
-        return null
+        return []
     }
 
 

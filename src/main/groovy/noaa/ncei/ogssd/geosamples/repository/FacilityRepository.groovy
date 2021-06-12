@@ -3,13 +3,14 @@ package noaa.ncei.ogssd.geosamples.repository
 import groovy.util.logging.Slf4j
 import noaa.ncei.ogssd.geosamples.GeosamplesDTO
 import noaa.ncei.ogssd.geosamples.GeosamplesResourceNotFoundException
+import noaa.ncei.ogssd.geosamples.domain.Facility
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.dao.EmptyResultDataAccessException
+import org.springframework.jdbc.core.BeanPropertyRowMapper
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Repository
 
-import javax.annotation.PostConstruct
 import javax.sql.DataSource
 
 
@@ -49,7 +50,7 @@ class FacilityRepository {
 //    }
 
 
-    List getRepositories(GeosamplesDTO searchParams) {
+    List<Facility> getRepositories(GeosamplesDTO searchParams) {
         log.debug("inside getRepositories with ${searchParams}")
         String whereClause = searchParams.whereClause
         List criteriaValues = searchParams.criteriaValues
@@ -62,14 +63,14 @@ class FacilityRepository {
             (select facility_code, facility, facility_comment from ${facilityTable}) b
             on a.facility_code = b.facility_code order by facility_code"""
         log.debug(queryString)
-        return jdbcTemplate.queryForList(queryString, *criteriaValues)
+        return jdbcTemplate.query(queryString, new BeanPropertyRowMapper(Facility.class), *criteriaValues)
     }
 
 
-    Map<String,Object> getRepositoryById(String id) {
+    Facility getRepositoryById(String id) {
         String queryString = "select * from ${facilityTable} where facility_code = ?"
         try {
-            return jdbcTemplate.queryForMap(queryString, id)
+            return jdbcTemplate.queryForObject(queryString, new BeanPropertyRowMapper(Facility.class), id)
         } catch (EmptyResultDataAccessException e) {
             throw new GeosamplesResourceNotFoundException('invalid repository ID')
         }
@@ -77,10 +78,9 @@ class FacilityRepository {
 
 
     /**
-     * return only the list of names, generally used to populate Select lists in webapp
+     * return only the list of names/codes, generally used to populate Select lists in webapp
      */
     List getRepositoryNames(GeosamplesDTO searchParams) {
-//        jdbcTemplate.setResultsMapCaseInsensitive(true)
         log.debug("inside getRepositoryNames with ${searchParams}")
         String whereClause = searchParams.whereClause
         List criteriaValues = searchParams.criteriaValues
@@ -90,9 +90,5 @@ class FacilityRepository {
            from ${sampleTable} a inner join ${facilityTable} b
            on a.FACILITY_CODE = b.FACILITY_CODE ${whereClause} order by facility_code"""
         return jdbcTemplate.queryForList(queryString, *criteriaValues)
-//        return convertPropertyNamesToLowerCase(jdbcTemplate.queryForList(queryString, *criteriaValues))
     }
-
-
-
 }

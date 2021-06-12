@@ -1,15 +1,12 @@
 package noaa.ncei.ogssd.geosamples.web
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.annotation.JsonNaming
+
 import groovy.util.logging.Slf4j
 import io.swagger.v3.oas.annotations.Hidden
 import io.swagger.v3.oas.annotations.OpenAPIDefinition
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.servers.Server
-import io.swagger.v3.oas.annotations.servers.Servers
 import io.swagger.v3.oas.annotations.tags.Tag
-import io.swagger.v3.oas.models.security.SecurityScheme
 import noaa.ncei.ogssd.geosamples.GeosamplesBadRequestException
 import noaa.ncei.ogssd.geosamples.GeosamplesDTO
 import noaa.ncei.ogssd.geosamples.repository.FacilityRepository
@@ -19,21 +16,15 @@ import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVPrinter
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpHeaders
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
-import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 
-import javax.annotation.PostConstruct
-import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 import javax.validation.Valid
-import javax.validation.constraints.Max
-import javax.validation.constraints.Min
-import javax.validation.constraints.NotBlank
-import javax.validation.constraints.Size
+
 import com.fasterxml.jackson.databind.PropertyNamingStrategies
 import com.fasterxml.jackson.databind.annotation.JsonNaming
+import noaa.ncei.ogssd.geosamples.domain.Facility
 
 @Slf4j
 @Tag(name="geosamples", description="Index to Marine and Lacustrine Geological Samples (IMLGS) API")
@@ -42,8 +33,6 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming
                     @Server(url="https://gisdev.ngdc.noaa.gov/geosamples-api/", description="test server"),
                     @Server(url="http://localhost/geosamples-api/", description="development server")]
 )
-
-@JsonNaming(PropertyNamingStrategies.UpperCamelCaseStrategy.class)
 @RestController
 @Validated
 class ImlgsController {
@@ -82,18 +71,16 @@ class ImlgsController {
             throw new GeosamplesBadRequestException("only json and csv accepted for output format")
         }
 
-        def resultSet
         if (countOnly) {
-            resultSet = sampleRepository.getSamplesCount(searchParams)
+            return sampleRepository.getSamplesCount(searchParams)
         } else if (format == 'csv') {
             printCSV(response, sampleRepository.getSamples(searchParams))
             return
         } else if (fullRecord) {
-            resultSet = sampleRepository.getSamples(searchParams)
+            return sampleRepository.getSamples(searchParams)
         } else {
-            resultSet = sampleRepository.getDisplayRecords(searchParams)
+            return sampleRepository.getDisplayRecords(searchParams)
         }
-        return convertPropertyNamesToLowerCase(resultSet)
     }
 
 
@@ -106,12 +93,11 @@ class ImlgsController {
             throw new GeosamplesBadRequestException('invalid IMLGS ID')
         }
         // imlgs uniquely identifies sample
-        return convertPropertyNamesToLowerCase(sampleRepository.getSampleById(id))
+        return sampleRepository.getSampleById(id)
     }
 
 
     @Operation(summary="Find all storage methods used in the IMLGS")
-//    @Hidden
     @CrossOrigin
     @GetMapping("/storage_methods")
     def getStorageMethods(@Valid GeosamplesDTO searchParams) {
@@ -208,7 +194,7 @@ class ImlgsController {
         if (nameOnly == true) {
             return convertPropertyNamesToLowerCase(facilityRepository.getRepositoryNames(searchParams))
         } else {
-            return convertPropertyNamesToLowerCase(facilityRepository.getRepositories(searchParams))
+            return facilityRepository.getRepositories(searchParams)
         }
     }
 
@@ -217,7 +203,7 @@ class ImlgsController {
     @CrossOrigin
     @GetMapping("/repositories/{id}")
     def getRepositoryById(@PathVariable String id) {
-        return convertPropertyNamesToLowerCase(facilityRepository.getRepositoryById(id))
+        return facilityRepository.getRepositoryById(id)
     }
 
 
