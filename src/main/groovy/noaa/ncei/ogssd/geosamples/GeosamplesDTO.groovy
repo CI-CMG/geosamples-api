@@ -23,7 +23,9 @@ class GeosamplesDTO {
     String lake
     String cruise
     String device
-    Date startDate
+    @Size(min=4, max=8)
+    String startDate
+//    Date startDate
     @Min(0L)
     Integer minDepth
     Integer maxDepth
@@ -47,8 +49,8 @@ class GeosamplesDTO {
     Integer pageSize = 500
 
     // deprecated
-    Integer startIndex = 0
-    Integer limit = null
+//    Integer startIndex = 0
+//    Integer limit = null
 
     // following are derived properties and not bound via Controller
     private String whereClause
@@ -59,14 +61,14 @@ class GeosamplesDTO {
         pageSize = pageSizeStr.toInteger()
     }
 
-    void setStart(String startStr) {
-        // convert to 0-based
-        startIndex = startStr.toInteger() - 1
-    }
-
-    Integer getEndIndex() {
-        return (limit) ? (startIndex + limit) - 1 : -1
-    }
+//    void setStart(String startStr) {
+//        // convert to 0-based
+//        startIndex = startStr.toInteger() - 1
+//    }
+//
+//    Integer getEndIndex() {
+//        return (limit) ? (startIndex + limit) - 1 : -1
+//    }
 
     /*
      * custom setters.  Type conversion exceptions handled as HTTP status 400.
@@ -87,9 +89,13 @@ class GeosamplesDTO {
         this.ymax = coords[3]
     }
 
+//    void setStart_date(dateString) {
+//        // allows "wrap-around" date, e.g. 2021-16-02 == 2022-02-02
+//        this.startDate = new SimpleDateFormat("yyyy-MM-dd").parse(dateString)
+//    }
     void setStart_date(dateString) {
-        // allows "wrap-around" date, e.g. 2021-16-02 == 2022-02-02
-        this.startDate = new SimpleDateFormat("yyyy-MM-dd").parse(dateString)
+        println('start_date = '+dateString)
+        this.startDate = dateString
     }
 
     // work around changing the property name from REST parameter name convention to Java variable convention
@@ -155,59 +161,65 @@ class GeosamplesDTO {
             criteria << 'device = ?'
             criteriaValues << this.device
         }
+//        if (this.startDate) {
+//            criteria << "begin_date >= ?"
+//            criteriaValues << new java.sql.Date(this.startDate.getTime())
+//        }
+        // BEGIN_DATE is text field in format YYYYMMDD
         if (this.startDate) {
-            criteria << "begin_date >= ?"
-            criteriaValues << new java.sql.Date(this.startDate.getTime())
+            criteria << "begin_date like ?"
+            criteriaValues << "${this.startDate}%"
         }
         if (this.minDepth) {
             criteria << 'water_depth >= ?'
             criteriaValues << this.minDepth
         }
         if (this.maxDepth) {
-            criteria.push('water_depth < ?')
+            criteria << 'water_depth <= ?'
             criteriaValues << this.maxDepth
         }
         if (this.igsn) {
-            criteria.push('igsn = ?')
+            criteria << 'igsn = ?'
             criteriaValues << this.igsn
         }
         if (this.imlgs) {
-            criteria.push('imlgs = ?')
+            criteria << 'imlgs = ?'
             criteriaValues << this.imlgs
         }
         if (this.lithology) {
-            criteria.push("""imlgs in (select imlgs from ${intervalTable} where (lith1 like ? or lith2 like ? or rock_lith like ?))""")
+            criteria << """imlgs in (select imlgs from ${intervalTable} where (lith1 like ? or lith2 like ? or 
+                        rock_lith like ?))"""
             criteriaValues << "%${this.lithology}%"
             criteriaValues << "%${this.lithology}%"
             criteriaValues << "%${this.lithology}%"
         }
         if (this.texture) {
-            criteria.push("""imlgs in (select imlgs from ${intervalTable} where (text1 like ? or text2 like ?))""")
+            criteria << "imlgs in (select imlgs from ${intervalTable} where (text1 like ? or text2 like ?))"
             criteriaValues << "%${this.texture}%"
             criteriaValues << "%${this.texture}%"
         }
         if (this.mineralogy) {
-            criteria.push("""imlgs in (select imlgs from ${intervalTable} where rock_min like ?)""")
+            criteria << "imlgs in (select imlgs from ${intervalTable} where rock_min like ?)"
             criteriaValues << "%${this.mineralogy}%"
         }
         if (this.weathering) {
-            criteria.push("""imlgs in (select imlgs from ${intervalTable} where weath_meta like ?)""")
+            criteria << "imlgs in (select imlgs from ${intervalTable} where weath_meta like ?)"
             criteriaValues << "%${this.weathering}%"
         }
         if (this.metamorphism) {
-            criteria.push("""imlgs in (select imlgs from ${intervalTable} where weath_meta like ?)""")
+            criteria << "imlgs in (select imlgs from ${intervalTable} where weath_meta like ?)"
             criteriaValues << "%${this.metamorphism}%"
         }
         if (this.storageMethod) {
-            criteria.push('storage_meth = ?')
+            criteria << 'storage_meth = ?'
             criteriaValues << storageMethod
         }
         if (this.province) {
-            criteria.push('province = ?')
+            criteria << 'province = ?'
             criteriaValues << province
         }
         if (this.age) {
-            criteria.push('age = ?')
+            criteria << 'age = ?'
             criteriaValues << age
         }
         /* end of criteria */
