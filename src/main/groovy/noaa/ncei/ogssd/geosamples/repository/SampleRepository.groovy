@@ -71,7 +71,7 @@ class SampleRepository {
         String sqlStmt = "select ${allSampleFields.join(', ')} from ${sampleTable} ${whereClause} ${orderByClause}"
         log.debug(sqlStmt)
         // error if pass null as criteriaValues
-        return jdbcTemplate.queryForList(sqlStmt, *criteriaValues)[searchParams.startIndex..searchParams.endIndex]
+        return jdbcTemplate.queryForList(sqlStmt, *criteriaValues)
     }
 
 
@@ -101,15 +101,13 @@ class SampleRepository {
     // TODO combine w/ getSampleRecords
     List getDisplayRecords(GeosamplesDTO searchParams) {
         log.debug("inside getDisplayRecords with ${searchParams}")
-        println("start = ${searchParams.startIndex}")
-        println("end = ${searchParams.endIndex}")
         String whereClause = searchParams.whereClause
         List criteriaValues = searchParams.criteriaValues
         logCriteriaValues(criteriaValues)
-        String sqlStmt = "select ${displaySampleFields.join(', ')} from ${sampleTable} ${whereClause} ${orderByClause}"
+        String sqlStmt = """select ${displaySampleFields.join(', ')} from ${sampleTable} ${whereClause} 
+            ${orderByClause} offset ${searchParams.offset} rows fetch next ${searchParams.pageSize} rows only"""
         log.debug(sqlStmt)
-        // due to default values there will always be a start and end index in the DTO
-        return jdbcTemplate.queryForList(sqlStmt, *criteriaValues)[searchParams.startIndex..searchParams.endIndex]
+        return jdbcTemplate.queryForList(sqlStmt, *criteriaValues)
     }
 
 

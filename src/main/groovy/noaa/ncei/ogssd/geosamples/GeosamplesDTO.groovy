@@ -3,6 +3,8 @@ package noaa.ncei.ogssd.geosamples
 import groovy.transform.ToString
 import groovy.util.logging.Slf4j
 import org.springframework.context.annotation.Bean
+
+import javax.validation.constraints.Max
 import javax.validation.constraints.Min
 import javax.validation.constraints.Size
 import java.text.SimpleDateFormat
@@ -39,6 +41,12 @@ class GeosamplesDTO {
 
     // paging controls
     @Min(0L)
+    Integer offset = 0
+    //TODO allow requests w/o limits? e.g. populate table which pages client-side?
+    @Min(1L) @Max(5000L)
+    Integer pageSize = 500
+
+    // deprecated
     Integer startIndex = 0
     Integer limit = null
 
@@ -46,6 +54,10 @@ class GeosamplesDTO {
     private String whereClause
     private List criteriaValues
 
+
+    void setPage_size(String pageSizeStr) {
+        pageSize = pageSizeStr.toInteger()
+    }
 
     void setStart(String startStr) {
         // convert to 0-based
