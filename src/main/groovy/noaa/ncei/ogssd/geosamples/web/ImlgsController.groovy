@@ -74,7 +74,7 @@ class ImlgsController {
         if (countOnly) {
             return convertPropertyNamesToLowerCase(sampleRepository.getSamplesCount(searchParams))
         } else if (format == 'csv') {
-            printCSV(response, sampleRepository.getSamples(searchParams))
+            printCSV(response, sampleRepository.getRawSamples(searchParams))
             return
         } else if (fullRecord) {
             return sampleRepository.getSamples(searchParams)
