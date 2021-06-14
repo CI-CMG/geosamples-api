@@ -77,6 +77,19 @@ class SampleRepository {
         return jdbcTemplate.query(sqlStmt, new BeanPropertyRowMapper(Sample.class), *criteriaValues)
     }
 
+
+    List getRawSamples(GeosamplesDTO searchParams) {
+        log.debug("inside getRawSamples with ${searchParams}")
+        String whereClause = searchParams.whereClause
+        List criteriaValues = searchParams.criteriaValues
+        logCriteriaValues(criteriaValues)
+        String sqlStmt = "select ${allSampleFields.join(', ')} from ${sampleTable} ${whereClause} ${orderByClause}"
+        log.debug(sqlStmt)
+        // error if pass null as criteriaValues
+        return jdbcTemplate.queryForList(sqlStmt, *criteriaValues)
+    }
+
+
     // TODO return bare count
     Map<String,Object> getSamplesCount(GeosamplesDTO searchParams) {
         log.debug("inside getSamplesCount with ${searchParams}")
