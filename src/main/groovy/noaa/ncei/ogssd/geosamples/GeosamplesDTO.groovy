@@ -13,7 +13,6 @@ import java.text.SimpleDateFormat
 @ToString(includeNames=true,ignoreNulls=true,includePackage=false)
 class GeosamplesDTO {
     String repository
-    @Size(max=24)
     String bbox
     Double xmin
     Double ymin
@@ -82,11 +81,11 @@ class GeosamplesDTO {
             throw new GeosamplesBadRequestException("invalid geographic coordinates provided for bbox")
         }
         // ensure there are no spaces in the provided value
-        this.bbox = coords.join(',')
-        this.xmin = coords[0]
-        this.ymin = coords[1]
-        this.xmax = coords[2]
-        this.ymax = coords[3]
+        bbox = coords.join(',')
+        xmin = coords[0]
+        ymin = coords[1]
+        xmax = coords[2]
+        ymax = coords[3]
     }
 
 //    void setStart_date(dateString) {
