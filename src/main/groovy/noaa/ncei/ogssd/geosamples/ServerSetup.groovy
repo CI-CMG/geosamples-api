@@ -30,15 +30,22 @@ class ServerSetup {
     @Bean
     ServletWebServerFactory servletContainer() {
         TomcatServletWebServerFactory tomcat = new TomcatServletWebServerFactory()
+        log.debug("serverAddress: ${serverAddress}")
+        if (serverAddress) {
+            log.debug("setting server address for AJP connection to ${serverAddress}")
+            // can be IP address for fully-qualified hostname
+//            log.debug(InetAddress.getByName(serverAddress))
+
+//            tomcat.setAddress(InetAddress.getByName(serverAddress))
+        } else {
+            log.debug("using default server address: ${tomcat.getAddress()}")
+        }
 
         if (ajpEnabled) {
 //            Connector ajpConnector = new Connector("AJP/1.3")
 //            AbstractAjpProtocol protocol =  (AbstractAjpProtocol)ajpConnector.getProtocolHandler()
             Connector ajpConnector = new Connector("org.apache.coyote.ajp.AjpNioProtocol")
             AjpNioProtocol protocol= (AjpNioProtocol)ajpConnector.getProtocolHandler()
-            if (serverAddress) {
-                log.debug("setting server address for AJP connection to ${serverAddress}")
-            }
 
             if (ajpSecret =='none') {
                 log.debug("setting AJP secret. make sure set corresponding worker parameter in Apache ProxyPass")
