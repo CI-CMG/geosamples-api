@@ -30,20 +30,18 @@ class ServerSetup {
     @Bean
     ServletWebServerFactory servletContainer() {
         TomcatServletWebServerFactory tomcat = new TomcatServletWebServerFactory()
-        if (serverAddress != 'default') {
-            log.debug("setting server address for AJP connection to ${serverAddress}")
-            // can be IP address for fully-qualified hostname
-            log.debug(InetAddress.getByName(serverAddress).toString())
-            tomcat.setAddress(InetAddress.getByName(serverAddress))
-        } else {
-            log.debug("using default server address")
-        }
 
         if (ajpEnabled) {
 //            Connector ajpConnector = new Connector("AJP/1.3")
 //            AbstractAjpProtocol protocol =  (AbstractAjpProtocol)ajpConnector.getProtocolHandler()
             Connector ajpConnector = new Connector("org.apache.coyote.ajp.AjpNioProtocol")
             AjpNioProtocol protocol= (AjpNioProtocol)ajpConnector.getProtocolHandler()
+
+            if (serverAddress != 'default') {
+                log.debug("setting server address for AJP connection to ${serverAddress}")
+                // can be IP address for fully-qualified hostname
+                protocol.setAddress(InetAddress.getByName(serverAddress))
+            }
 
             if (ajpSecret == 'none') {
                 log.warn("using AJP without secret. might be vulnerable to know security exploits")
