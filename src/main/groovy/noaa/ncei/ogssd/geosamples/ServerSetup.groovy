@@ -15,30 +15,28 @@ import org.springframework.web.filter.CommonsRequestLoggingFilter
 @Slf4j
 @Configuration
 class ServerSetup {
-    @Value('${ajp.port: 8009}')
+    @Value('${ajp.port:8009}')
     int ajpPort
 
-    @Value('${ajp.enabled: true}')
+    @Value('${ajp.enabled:true}')
     boolean ajpEnabled
 
-    @Value('${ajp.secret: none}')
+    @Value('${ajp.secret:none}')
     String ajpSecret
 
-    @Value('${ajp.server.address: null}')
+    @Value('${ajp.server.address:default}')
     String serverAddress
 
     @Bean
     ServletWebServerFactory servletContainer() {
         TomcatServletWebServerFactory tomcat = new TomcatServletWebServerFactory()
-        log.debug("serverAddress: ${serverAddress}")
-        if (serverAddress) {
+        if (serverAddress != 'default') {
             log.debug("setting server address for AJP connection to ${serverAddress}")
             // can be IP address for fully-qualified hostname
-//            log.debug(InetAddress.getByName(serverAddress))
-
-//            tomcat.setAddress(InetAddress.getByName(serverAddress))
+            log.debug(InetAddress.getByName(serverAddress).toString())
+            tomcat.setAddress(InetAddress.getByName(serverAddress))
         } else {
-            log.debug("using default server address: ${tomcat.getAddress()}")
+            log.debug("using default server address")
         }
 
         if (ajpEnabled) {
@@ -47,13 +45,13 @@ class ServerSetup {
             Connector ajpConnector = new Connector("org.apache.coyote.ajp.AjpNioProtocol")
             AjpNioProtocol protocol= (AjpNioProtocol)ajpConnector.getProtocolHandler()
 
-            if (ajpSecret =='none') {
+            if (ajpSecret == 'none') {
+                log.warn("using AJP without secret. might be vulnerable to know security exploits")
+                protocol.setSecretRequired(false)
+            } else {
                 log.debug("setting AJP secret. make sure set corresponding worker parameter in Apache ProxyPass")
                 protocol.setSecret(ajpSecret)
                 protocol.setSecretRequired(true)
-            } else {
-                log.warn("using AJP without secret. might be vulnerable to know security exploits")
-                protocol.setSecretRequired(false)
             }
             ajpConnector.setPort(ajpPort)
             ajpConnector.setSecure(true)
