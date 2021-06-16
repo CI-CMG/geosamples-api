@@ -24,6 +24,7 @@ class ServerSetup {
     @Value('${ajp.secret:none}')
     String ajpSecret
 
+    // can be IP address for fully-qualified hostname
     @Value('${ajp.server.address:default}')
     String serverAddress
 
@@ -39,8 +40,12 @@ class ServerSetup {
 
             if (serverAddress != 'default') {
                 log.debug("setting server address for AJP connection to ${serverAddress}")
-                // can be IP address for fully-qualified hostname
-                protocol.setAddress(InetAddress.getByName(serverAddress))
+                try {
+                    protocol.setAddress(InetAddress.getByName(serverAddress))
+                } catch( UnknownHostException e ) {
+                    log.error("${serverAddress} is an invalid address")
+                    e.printStackTrace();
+                }
             }
 
             if (ajpSecret == 'none') {
