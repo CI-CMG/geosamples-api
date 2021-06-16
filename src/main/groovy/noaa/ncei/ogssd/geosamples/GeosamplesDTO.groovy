@@ -93,7 +93,6 @@ class GeosamplesDTO {
 //        this.startDate = new SimpleDateFormat("yyyy-MM-dd").parse(dateString)
 //    }
     void setStart_date(dateString) {
-        println('start_date = '+dateString)
         this.startDate = dateString
     }
 

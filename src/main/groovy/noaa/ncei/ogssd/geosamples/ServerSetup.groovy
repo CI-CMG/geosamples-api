@@ -24,6 +24,8 @@ class ServerSetup {
     @Value('${ajp.secret: none}')
     String ajpSecret
 
+    @Value('${ajp.server.address: null}')
+    String serverAddress
 
     @Bean
     ServletWebServerFactory servletContainer() {
@@ -34,6 +36,10 @@ class ServerSetup {
 //            AbstractAjpProtocol protocol =  (AbstractAjpProtocol)ajpConnector.getProtocolHandler()
             Connector ajpConnector = new Connector("org.apache.coyote.ajp.AjpNioProtocol")
             AjpNioProtocol protocol= (AjpNioProtocol)ajpConnector.getProtocolHandler()
+            if (serverAddress) {
+                log.debug("setting server address for AJP connection to ${serverAddress}")
+            }
+
             if (ajpSecret =='none') {
                 log.debug("setting AJP secret. make sure set corresponding worker parameter in Apache ProxyPass")
                 protocol.setSecret(ajpSecret)
