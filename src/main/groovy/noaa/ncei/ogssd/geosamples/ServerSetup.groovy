@@ -23,8 +23,8 @@ class ServerSetup {
     @Value('${ajp.secret:none}')
     String ajpSecret
 
-    // can be IP address for fully-qualified hostname
-    @Value('${ajp.server.address:default}')
+    // can be IP address for fully-qualified hostname. Default to binding on all addresses
+    @Value('${ajp.server.address:0.0.0.0}')
     String serverAddress
 
     @Bean
@@ -37,14 +37,12 @@ class ServerSetup {
             Connector ajpConnector = new Connector("org.apache.coyote.ajp.AjpNioProtocol")
             AjpNioProtocol protocol= (AjpNioProtocol)ajpConnector.getProtocolHandler()
 
-            if (serverAddress != 'default') {
-                log.debug("setting server address for AJP connection to ${serverAddress}")
-                try {
-                    protocol.setAddress(InetAddress.getByName(serverAddress))
-                } catch( UnknownHostException e ) {
-                    log.error("${serverAddress} is an invalid address")
-                    e.printStackTrace();
-                }
+            log.debug("setting server address for AJP connection to ${serverAddress}")
+            try {
+                protocol.setAddress(InetAddress.getByName(serverAddress))
+            } catch( UnknownHostException e ) {
+                log.error("${serverAddress} is an invalid address")
+                e.printStackTrace();
             }
 
             if (ajpSecret == 'none') {
