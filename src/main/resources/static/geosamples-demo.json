@@ -7,11 +7,6 @@
       "variables": {}
     },
     {
-      "url": "https://gisdev.ngdc.noaa.gov/geosamples-api/",
-      "description": "test server",
-      "variables": {}
-    },
-    {
       "url": "http://localhost/geosamples-api/",
       "description": "development server",
       "variables": {}

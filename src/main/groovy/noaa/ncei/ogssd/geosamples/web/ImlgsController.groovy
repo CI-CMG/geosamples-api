@@ -30,7 +30,6 @@ import noaa.ncei.ogssd.geosamples.domain.Facility
 @Tag(name="geosamples", description="Index to Marine and Lacustrine Geological Samples (IMLGS) API")
 @OpenAPIDefinition(
         servers = [ @Server(url="http://localhost:8080/geosamples-api/", description="embedded server"),
-                    @Server(url="https://gisdev.ngdc.noaa.gov/geosamples-api/", description="test server"),
                     @Server(url="http://localhost/geosamples-api/", description="development server")]
 )
 @RestController
