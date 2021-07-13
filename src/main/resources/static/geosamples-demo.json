@@ -2,6 +2,11 @@
   "openapi": "3.0.1",
   "servers": [
     {
+      "url": "https://www.ngdc.noaa.gov/geosamples-api/",
+      "description": "production server",
+      "variables": {}
+    },
+    {
       "url": "http://localhost:8080/geosamples-api/",
       "description": "embedded server",
       "variables": {}
@@ -15,7 +20,7 @@
   "tags": [
     {
       "name": "geosamples",
-      "description": "(new) Index to Marine and Lacustrine Geological Samples (IMLGS) API"
+      "description": "Index to Marine and Lacustrine Geological Samples (IMLGS) API"
     }
   ],
   "paths": {
@@ -1775,5 +1780,10 @@
         }
       }
     }
+  },
+  "info": {
+    "description": "Index to Marine and Lacustrine Geological Samples (IMLGS) API",
+    "title": "Index to Marine and Lacustrine Geological Samples (IMLGS) API",
+    "version": "1"
   }
 }
