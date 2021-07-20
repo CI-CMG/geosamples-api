@@ -42,10 +42,28 @@ class Sample {
     String pi
     String province
     String lake
+    // TODO should this be included w/ list of datalinks instead?
     String other_link
     String last_update
     String igsn
     String leg
     String sample_comments
     String showSampl
+
+    //ancillary information not set by JDBCTemplate
+    List links = []
+    List intervals = []
+
+    def addLinks(List<Map> links) {
+        this.links += links
+    }
+
+
+    def addIntervals(List<Map> intervals) {
+        // remove all empty fields
+        intervals.forEach(interval -> {
+            interval.removeAll ({ k,v -> v == null })
+        })
+        this.intervals += intervals
+    }
 }

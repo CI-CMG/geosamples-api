@@ -26,6 +26,7 @@ class SampleRepository {
     private final String intervalTable
     private final String sampleTable
     private final String facilityTable
+    private final String linksTable
 
     // skip SHAPE column since there are problems serializing SDO_Geometry into JSON
 //    private final List allSampleFields = [
@@ -56,13 +57,14 @@ class SampleRepository {
     SampleRepository(
         @Value('${geosamples.sample_table: mud.curators_sample_tsqp}') String sampleTable,
         @Value('${geosamples.interval_table: mud.curators_interval}') String intervalTable,
-        @Value('${geosamples.facility_table: mud.curators_facility}') String facilityTable
-
+        @Value('${geosamples.facility_table: mud.curators_facility}') String facilityTable,
+        @Value('${geosamples.links_table: mud.curators_sample_links}') String linksTable
     ) {
         // fully qualified table names
         this.intervalTable = intervalTable
         this.sampleTable = sampleTable
         this.facilityTable = facilityTable
+        this.linksTable = linksTable
     }
 
 
@@ -105,11 +107,35 @@ class SampleRepository {
         List qualifiedFields = allSampleFields.collect { "a.${it}"}
         String sqlStmt = """select ${qualifiedFields.join(', ')}, b.facility  
         from ${sampleTable} a inner join ${facilityTable} b on a.FACILITY_CODE = b.FACILITY_CODE where imlgs = ?"""
+        def sample
         try {
-            return jdbcTemplate.queryForObject(sqlStmt, new BeanPropertyRowMapper(Sample.class), id)
+            sample = jdbcTemplate.queryForObject(sqlStmt, new BeanPropertyRowMapper(Sample.class), id)
         } catch (EmptyResultDataAccessException e) {
             throw new GeosamplesResourceNotFoundException('invalid IMLGS ID')
         }
+        sample.addLinks(getLinksById(id))
+        sample.addIntervals(getIntervalsByImlgsId(id))
+        return sample
+    }
+
+
+     List getLinksById(String id) {
+        String sqlStmt = """select 
+        datalink as link, link_level as level, link_source as source, link_type as type 
+        from ${linksTable} where imlgs = ?"""
+        return jdbcTemplate.queryForList(sqlStmt, id)
+    }
+
+
+    List getIntervalsByImlgsId(String id) {
+        String sqlStmt = """select 
+       interval, depth_top, depth_top_mm, depth_bot, depth_bot_mm, dhcore_id, dhcore_length, dhcore_length_mm,
+       dhcore_interval, dtop_in_dhcore, dtop_mm_in_dhcore, dbot_in_dhcore, dbot_mm_in_dhcore, lith1, text1,
+       lith2, text2, comp1, comp2, comp3, comp4, comp5, comp6, description, age, absolute_age_top,
+       absolute_age_bot, weight, rock_lith, rock_min, weath_meta, remark, munsell_code, munsell, exhaust_code,
+       photo_link, unit_number, int_comments, dhdevice, cmcd_top, mmcd_top, cmcd_bot, mmcd_bot
+        from ${intervalTable} where imlgs = ?"""
+        return jdbcTemplate.queryForList(sqlStmt, id)
     }
 
 
