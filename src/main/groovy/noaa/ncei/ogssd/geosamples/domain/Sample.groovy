@@ -53,9 +53,15 @@ class Sample {
     //ancillary information not set by JDBCTemplate
     List links = []
     List intervals = []
+    List cruiseLinks = []
 
     def addLinks(List<Map> links) {
         this.links += links
+    }
+
+
+    def addCruiseLinks(List<Map> links) {
+        this.cruiseLinks += links
     }
 
 

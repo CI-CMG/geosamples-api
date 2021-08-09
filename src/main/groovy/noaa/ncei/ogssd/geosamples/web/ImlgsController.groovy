@@ -174,9 +174,7 @@ class ImlgsController {
     @CrossOrigin
     @GetMapping("/cruises/{id}")
     def getCruiseById(@PathVariable String id) {
-        // TODO
-        log.warn("select cruise by Id not yet implemented")
-        return [:]
+        return sampleRepository.getCruiseById(id)
     }
 
 

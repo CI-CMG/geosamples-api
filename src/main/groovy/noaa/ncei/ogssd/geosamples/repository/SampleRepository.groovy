@@ -3,6 +3,7 @@ package noaa.ncei.ogssd.geosamples.repository
 import groovy.util.logging.Slf4j
 import noaa.ncei.ogssd.geosamples.GeosamplesDTO
 import noaa.ncei.ogssd.geosamples.GeosamplesResourceNotFoundException
+import noaa.ncei.ogssd.geosamples.domain.Cruise
 import noaa.ncei.ogssd.geosamples.domain.Facility
 import noaa.ncei.ogssd.geosamples.domain.Sample
 import org.springframework.beans.factory.annotation.Autowired
@@ -27,6 +28,7 @@ class SampleRepository {
     private final String sampleTable
     private final String facilityTable
     private final String linksTable
+    private final String cruiseLinksTable
 
     // skip SHAPE column since there are problems serializing SDO_Geometry into JSON
 //    private final List allSampleFields = [
@@ -58,13 +60,15 @@ class SampleRepository {
         @Value('${geosamples.sample_table: mud.curators_sample_tsqp}') String sampleTable,
         @Value('${geosamples.interval_table: mud.curators_interval}') String intervalTable,
         @Value('${geosamples.facility_table: mud.curators_facility}') String facilityTable,
-        @Value('${geosamples.links_table: mud.curators_sample_links}') String linksTable
+        @Value('${geosamples.links_table: mud.curators_sample_links}') String linksTable,
+        @Value('${geosamples.cruise_links_table: mud.curators_cruise_links}') String cruiseLinksTable
     ) {
         // fully qualified table names
         this.intervalTable = intervalTable
         this.sampleTable = sampleTable
         this.facilityTable = facilityTable
         this.linksTable = linksTable
+        this.cruiseLinksTable = cruiseLinksTable
     }
 
 
@@ -115,11 +119,12 @@ class SampleRepository {
         }
         sample.addLinks(getLinksById(id))
         sample.addIntervals(getIntervalsByImlgsId(id))
+        sample.addCruiseLinks(getCruiseLinks(sample.cruise, sample.platform, sample.leg))
         return sample
     }
 
 
-     List getLinksById(String id) {
+    List getLinksById(String id) {
         String sqlStmt = """select 
         datalink as link, link_level as level, link_source as source, link_type as type 
         from ${linksTable} where imlgs = ?"""
@@ -228,13 +233,18 @@ class SampleRepository {
      */
     List getCruiseNames(GeosamplesDTO searchParams) {
         log.debug("inside getCruiseNames with ${searchParams}")
-        String whereClause = searchParams.getWhereClause(['cruise is not null'])
+        String whereClause = searchParams.whereClause
         List criteriaValues = searchParams.criteriaValues
 
-        // TODO combine cruise and leg values into response?
-        String queryString = "select distinct cruise from ${sampleTable} ${whereClause} order by cruise"
-        def resultSet = jdbcTemplate.queryForList(queryString, *criteriaValues)
-        return resultSet['cruise']
+        // combine cruise and leg values into response
+        String queryString = """select distinct cruise from (
+            (select distinct cruise from ${sampleTable} ${whereClause})
+            union
+            (select distinct leg as cruise from ${sampleTable} ${whereClause})
+        ) a where cruise is not null order by cruise"""
+        def resultSet = jdbcTemplate.queryForList(queryString, *criteriaValues, *criteriaValues)
+        log.debug("${resultSet.size()} unique cruise/leg names found")
+        return (resultSet.findAll { it['cruise']}['cruise'])
     }
 
 
@@ -252,9 +262,45 @@ class SampleRepository {
     }
 
 
-    List getCruises(GeosamplesDTO searchParams) {
-        //TODO
-        return []
+    List<Cruise> getCruises(GeosamplesDTO searchParams) {
+        String whereClause = searchParams.getWhereClause()
+        List criteriaValues = searchParams.criteriaValues
+        String sqlStmt = "select distinct cruise, leg, platform, facility_code from ${sampleTable} ${whereClause} order by cruise, platform, leg, facility_code"
+        return jdbcTemplate.query(sqlStmt, new BeanPropertyRowMapper(Cruise.class), *criteriaValues)
+    }
+
+
+    Cruise getCruiseById(String cruise) {
+        String sqlStmt = "select distinct cruise, leg, platform, facility_code from ${sampleTable} where cruise = ? or leg = ?"
+//        def resultSet = jdbcTemplate.queryForList(queryString, cruise, cruise)
+        List<Cruise> results = jdbcTemplate.query(sqlStmt, new BeanPropertyRowMapper(Cruise.class), cruise, cruise)
+
+        if (results.size() == 0) {
+            throw new GeosamplesResourceNotFoundException('invalid cruise ID')
+        }
+        // cruise ID and platform required to uniquely identify record?
+        if (results.size() > 1) {
+            log.warn("${results.size()} records found for cruise ${cruise}. Returning the first one.")
+        }
+        Cruise result = results[0]
+        result.addLinks(getCruiseLinks(result.cruise, result.platform, result.leg))
+        return result
+    }
+
+
+    List getCruiseLinks(cruise, platform, leg) {
+        // cruise, platform should never be null
+        if (! leg) {
+            String sqlStmt = """select 
+        datalink as link, link_level as level, link_source as source, link_type as type 
+        from ${cruiseLinksTable} where cruise = ? and platform = ? and leg is null"""
+            return jdbcTemplate.queryForList(sqlStmt, cruise, platform)
+        } else {
+            String sqlStmt = """select 
+        datalink as link, link_level as level, link_source as source, link_type as type 
+        from ${cruiseLinksTable} where cruise = ? and platform = ? and leg = ?"""
+            return jdbcTemplate.queryForList(sqlStmt, cruise, platform, leg)
+        }
     }
 
 
