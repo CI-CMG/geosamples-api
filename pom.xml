@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>noaa.ncei.ogssd</groupId>
 	<artifactId>geosamples-api</artifactId>
-	<version>1.0.1</version>
+	<version>1.1.0</version>
 	<name>geosamples-api</name>
 	<description>Index to Marine and Lacustrine Geological Samples (IMLGS) API</description>
 	<properties>
