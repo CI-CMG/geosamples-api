@@ -45,7 +45,7 @@ class SampleRepository {
             'end_lat', 'lon', 'end_lon', 'latlon_orig', 'water_depth', 'end_water_depth',
             'storage_meth', 'cored_length', 'cored_length_mm', 'cored_diam', 'cored_diam_mm', 'pi', 'province', 'lake',
             'other_link', 'last_update', 'igsn', 'leg', 'sample_comments', 'objectid',
-            'show_sampl', 'imlgs'
+            'show_sampl', 'imlgs', 'publish'
     ]
 
     // subset of fields used for display in webapp

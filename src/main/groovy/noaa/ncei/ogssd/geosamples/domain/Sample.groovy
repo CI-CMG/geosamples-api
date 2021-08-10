@@ -49,6 +49,7 @@ class Sample {
     String leg
     String sample_comments
     String showSampl
+    String publish
 
     //ancillary information not set by JDBCTemplate
     List links = []

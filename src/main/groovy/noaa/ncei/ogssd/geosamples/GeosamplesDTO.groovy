@@ -39,6 +39,7 @@ class GeosamplesDTO {
     String age
     @Size(min=12, max=12)
     String imlgs
+    String publish
 
     // paging controls
     @Min(0L)
@@ -219,6 +220,10 @@ class GeosamplesDTO {
         if (this.age) {
             criteria << 'age = ?'
             criteriaValues << age
+        }
+        if (this.publish) {
+            criteria << 'publish = ?'
+            criteriaValues << publish
         }
         /* end of criteria */
 
