@@ -57,20 +57,27 @@ class Sample {
     List cruiseLinks = []
 
     def addLinks(List<Map> links) {
-        this.links += links
+        this.links += links.collect(link -> convertPropertyNamesToLowerCase(link))
     }
 
 
     def addCruiseLinks(List<Map> links) {
-        this.cruiseLinks += links
+        this.cruiseLinks += links.collect(link -> convertPropertyNamesToLowerCase(link))
     }
 
 
     def addIntervals(List<Map> intervals) {
-        // remove all empty fields
-        intervals.forEach(interval -> {
+        List transformedList = intervals.collect(interval -> {
+            // remove all empty fields
             interval.removeAll ({ k,v -> v == null })
+            convertPropertyNamesToLowerCase(interval)
         })
-        this.intervals += intervals
+        this.intervals += transformedList
+    }
+
+
+    // bit of a hack to account for Oracle upper-case column names
+    static Map<String, Object> convertPropertyNamesToLowerCase(Map<String, Object> resultSet) {
+        return resultSet.collectEntries { key, value ->  [(key.toLowerCase()): value] }
     }
 }
