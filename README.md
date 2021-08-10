@@ -22,4 +22,4 @@ Resources exposed via the API include:
 * Metamorphism
 
 See [notes](https://www.ngdc.noaa.gov/mgg/curator/curatorcoding.html) 
-on the database fields underlying the API 
+on the database fields underlying the API
