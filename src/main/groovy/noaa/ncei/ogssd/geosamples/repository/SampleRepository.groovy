@@ -126,7 +126,7 @@ class SampleRepository {
 
     List getLinksById(String id) {
         String sqlStmt = """select 
-        datalink as link, link_level as level, link_source as source, link_type as type 
+        datalink as link, link_level as linklevel, link_source as source, link_type as type 
         from ${linksTable} where imlgs = ?"""
         return jdbcTemplate.queryForList(sqlStmt, id)
     }
@@ -292,12 +292,12 @@ class SampleRepository {
         // cruise, platform should never be null
         if (! leg) {
             String sqlStmt = """select 
-        datalink as link, link_level as level, link_source as source, link_type as type 
+        datalink as link, link_level as linklevel, link_source as source, link_type as type 
         from ${cruiseLinksTable} where cruise = ? and platform = ? and leg is null"""
             return jdbcTemplate.queryForList(sqlStmt, cruise, platform)
         } else {
             String sqlStmt = """select 
-        datalink as link, link_level as level, link_source as source, link_type as type 
+        datalink as link, link_level as linklevel, link_source as source, link_type as type 
         from ${cruiseLinksTable} where cruise = ? and platform = ? and leg = ?"""
             return jdbcTemplate.queryForList(sqlStmt, cruise, platform, leg)
         }
