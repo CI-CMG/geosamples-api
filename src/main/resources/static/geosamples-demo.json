@@ -7,7 +7,7 @@
       "variables": {}
     },
     {
-      "url": "http://localhost:8080/geosamples-api/",
+      "url": "http://localhost:8080/imlgs/",
       "description": "embedded server",
       "variables": {}
     },
@@ -1681,7 +1681,7 @@
   },
   "components": {
     "schemas": {
-      "GeosamplesDTO": {
+      "GeosampleSearchParameters": {
         "type": "object",
         "properties": {
           "repository": {
