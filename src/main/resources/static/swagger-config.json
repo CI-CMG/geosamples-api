@@ -1,5 +1,5 @@
 {
-  "configUrl": "/geosamples-api/swagger-config.json",
-  "url": "/geosamples-api/geosamples-demo.json",
+  "configUrl": "/imlgs/swagger-config.json",
+  "url": "/imlgs/geosamples-demo.json",
   "validatorUrl": ""
 }
