@@ -155,7 +155,6 @@ class ImlgsController {
 
 
     @Operation(summary="Find all cruises referenced in the IMLGS")
-    @Hidden
     @CrossOrigin
     @GetMapping("/cruises")
     def getCruiseNames(
@@ -229,7 +228,6 @@ class ImlgsController {
 
 
     @Operation(summary="Find interval records in the IMLGS. Warning: large response without criteria")
-    @Hidden
     @CrossOrigin
     @GetMapping("/intervals")
     def getIntervals(

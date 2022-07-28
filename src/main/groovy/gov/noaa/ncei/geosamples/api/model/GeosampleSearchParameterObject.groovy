@@ -5,7 +5,7 @@ import groovy.transform.ToString
 import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
-
+import io.swagger.v3.oas.annotations.Hidden
 import javax.validation.constraints.Max
 import javax.validation.constraints.Min
 import javax.validation.constraints.Size
@@ -17,12 +17,15 @@ import io.swagger.v3.oas.annotations.media.Schema
 @Component
 @ToString(includeNames=true,ignoreNulls=true,includePackage=false)
 class GeosampleSearchParameterObject {
-    @Value('${geosamples.sample_table: mud.curators_sample_tsqp}') String sampleTable
     String repository
     String bbox
+    @Hidden
     Double xmin
+    @Hidden
     Double ymin
+    @Hidden
     Double xmax
+    @Hidden
     Double ymax
     String platform
     String lake
@@ -45,7 +48,6 @@ class GeosampleSearchParameterObject {
     String age
     @Size(min=12, max=12)
     String imlgs
-    String publish
 
     // paging controls
     @Min(0L)
