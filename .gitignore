@@ -2,6 +2,8 @@
 **/application-oracle.properties
 **/application-postgres.properties
 
+.gradle
+.DS_Store
 HELP.md
 target/
 !.mvn/wrapper/maven-wrapper.jar
