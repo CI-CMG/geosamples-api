@@ -13,44 +13,48 @@ import org.springframework.stereotype.Component
 @Slf4j
 @Component
 class SearchParamsHelper {
-    @Value('${geosamples.sample_table: mud.curators_sample_tsqp}') String sampleTable
-    @Value('${geosamples.interval_table: mud.curators_interval}') String intervalTable
-    @Value('${geosamples.facility_table: mud.curators_facility}') String facilityTable
-
+    @Value('${geosamples.sample_table}') String sampleTable
+    @Value('${geosamples.interval_table}') String intervalTable
+    @Value('${geosamples.facility_table}') String facilityTable
+    @Value('${geosamples.cruise_facility_table}') String cruiseFacilityTable
+    @Value('${geosamples.cruise_platform_table}') String cruisePlatformTable
+    @Value('${geosamples.platform_table}') String platformTable
+    @Value('${geosamples.cruise_table}') String cruiseTable
+    @Value('${geosamples.leg_table}') String legTable
 
     /**
      * helper method to build SQL where clause and associated query values list.
      * WARNING: this method has an implicit coupling between the parameter names
      * and the database columns
      */
-    private Map<String,List> buildWhereClauseAndCriteriaList(GeosampleSearchParameterObject searchParams, defaultCriteria = []) {
+    private Map<String,List> buildWhereClauseAndCriteriaList(GeosampleSearchParameterObject searchParams, defaultCriteria = [], intervalQuery = false) {
         List criteria = new ArrayList(defaultCriteria)
         List criteriaValues = []
 
         /* start of criteria */
         if (searchParams.repository) {
-            criteria << "facility_code = ?"
+            criteria << "f.facility_code = ?"
             criteriaValues << searchParams.repository
         }
         if (searchParams.bbox) {
-            criteria << "lon >= ? and lat >= ? and lon <= ? and lat <= ?"
+            criteria << "s.lon >= ? and s.lat >= ? and s.lon <= ? and s.lat <= ?"
             criteriaValues += [searchParams.xmin, searchParams.ymin, searchParams.xmax, searchParams.ymax]
         }
         if (searchParams.platform) {
-            criteria << "platform = ?"
+            criteria << "p.platform = ?"
             criteriaValues << searchParams.platform
         }
         if (searchParams.lake) {
-            criteria << "lake = ?"
+            criteria << "s.lake = ?"
             criteriaValues << searchParams.lake
         }
         if (searchParams.cruise) {
-            criteria << "(cruise = ? or leg = ?)"
+            criteria << "(c.cruise_name = ? or l.leg_name = ?)"
             criteriaValues << searchParams.cruise
             criteriaValues << searchParams.cruise
         }
         if (searchParams.device) {
-            criteria << 'device = ?'
+            criteria << 's.device = ?'
             criteriaValues << searchParams.device
         }
 //        if (this.startDate) {
@@ -59,59 +63,83 @@ class SearchParamsHelper {
 //        }
         // BEGIN_DATE is text field in format YYYYMMDD
         if (searchParams.startDate) {
-            criteria << "begin_date like ?"
+            criteria << "s.begin_date like ?"
             criteriaValues << "${searchParams.startDate}%"
         }
         if (searchParams.minDepth) {
-            criteria << 'water_depth >= ?'
+            criteria << 's.water_depth >= ?'
             criteriaValues << searchParams.minDepth
         }
         if (searchParams.maxDepth) {
-            criteria << 'water_depth <= ?'
+            criteria << 's.water_depth <= ?'
             criteriaValues << searchParams.maxDepth
         }
         if (searchParams.igsn) {
-            criteria << 'igsn = ?'
+            criteria << 's.igsn = ?'
             criteriaValues << searchParams.igsn
         }
         if (searchParams.imlgs) {
-            criteria << "imlgs = ?"
+            criteria << "s.imlgs = ?"
             criteriaValues << searchParams.imlgs
         }
         if (searchParams.lithology) {
-            criteria << """imlgs in (select imlgs from ${intervalTable} where (lith1 like ? or lith2 like ? or 
+            if(intervalQuery) {
+                criteria << """(i.lith1 like ? or i.lith2 like ? or i.rock_lith like ?)"""
+            } else {
+                criteria << """s.imlgs in (select imlgs from ${intervalTable} where (lith1 like ? or lith2 like ? or 
                     rock_lith like ?))"""
+            }
             criteriaValues << "%${searchParams.lithology}%"
             criteriaValues << "%${searchParams.lithology}%"
             criteriaValues << "%${searchParams.lithology}%"
         }
         if (searchParams.texture) {
-            criteria << "imlgs in (select imlgs from ${intervalTable} where (text1 like ? or text2 like ?))"
+            if(intervalQuery) {
+                criteria << "(i.text1 like ? or i.text2 like ?)"
+            } else {
+                criteria << "s.imlgs in (select imlgs from ${intervalTable} where (text1 like ? or text2 like ?))"
+            }
             criteriaValues << "%${searchParams.texture}%"
             criteriaValues << "%${searchParams.texture}%"
         }
         if (searchParams.mineralogy) {
-            criteria << "imlgs in (select imlgs from ${intervalTable} where rock_min like ?)"
+            if(intervalQuery) {
+                criteria << "i.rock_min like ?"
+            } else {
+                criteria << "s.imlgs in (select imlgs from ${intervalTable} where rock_min like ?)"
+            }
             criteriaValues << "%${searchParams.mineralogy}%"
         }
         if (searchParams.weathering) {
-            criteria << "imlgs in (select imlgs from ${intervalTable} where weath_meta like ?)"
+            if(intervalQuery) {
+                criteria << "i.weath_meta like ?"
+            } else {
+                criteria << "s.imlgs in (select imlgs from ${intervalTable} where weath_meta like ?)"
+            }
             criteriaValues << "%${searchParams.weathering}%"
         }
         if (searchParams.metamorphism) {
-            criteria << "imlgs in (select imlgs from ${intervalTable} where weath_meta like ?)"
+            if(intervalQuery) {
+                criteria << "i.weath_meta like ?"
+            } else {
+                criteria << "s.imlgs in (select imlgs from ${intervalTable} where weath_meta like ?)"
+            }
             criteriaValues << "%${searchParams.metamorphism}%"
         }
         if (searchParams.storageMethod) {
-            criteria << 'storage_meth = ?'
+            criteria << 's.storage_meth = ?'
             criteriaValues << searchParams.storageMethod
         }
         if (searchParams.province) {
-            criteria << 'province = ?'
+            criteria << 's.province = ?'
             criteriaValues << searchParams.province
         }
         if (searchParams.age) {
-            criteria << 'age = ?'
+            if(intervalQuery) {
+                criteria << "i.age like ?"
+            } else {
+                criteria << "s.imlgs in (select imlgs from ${intervalTable} where age like ?)"
+            }
             criteriaValues << searchParams.age
         }
         /* end of criteria */

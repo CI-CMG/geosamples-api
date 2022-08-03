@@ -23,8 +23,17 @@ class IntervalRepository {
     JdbcTemplate jdbcTemplate;
 
     // inject values from application-<profilename>.properties
-    @Value('${geosamples.sample_table: mud.curators_sample_tsqp}') String sampleTable
-    @Value('${geosamples.interval_table: mud.curators_interval}') String intervalTable
+    @Value('${geosamples.sample_table}') String sampleTable
+    @Value('${geosamples.interval_table}') String intervalTable
+    @Value('${geosamples.facility_table}') String facilityTable
+    @Value('${geosamples.links_table}') String linksTable
+    @Value('${geosamples.cruise_links_table}') String cruiseLinksTable
+    @Value('${geosamples.cruise_table}') String cruiseTable
+    @Value('${geosamples.leg_table}') String legTable
+    @Value('${geosamples.platform_table}') String platformTable
+    @Value('${geosamples.cruise_platform_table}') String cruisePlatformTable
+    @Value('${geosamples.cruise_facility_table}') String cruiseFacilityTable
+
 
     // all possible fields that could be returned
     //    private final List allIntervalFields = [
@@ -39,29 +48,74 @@ class IntervalRepository {
 
     // all fields selected to return
     static private final List allIntervalFields = [
-        'facility_code', 'platform', 'cruise', 'sample', 'device', 'interval', 'depth_top',
-        'depth_bot', 'lith1', 'text1', 'lith2', 'text2',
-        'comp1', 'comp2', 'comp3', 'comp4', 'comp5', 'comp6', 'description', 'age', 'absolute_age_top',
-        'absolute_age_bot', 'weight', 'rock_lith', 'rock_min', 'weath_meta', 'remark', 'munsell_code',
-        'exhaust_code', 'photo_link', 'lake', 'int_comments', 'igsn', 'imlgs'
+        'f.facility_code as facility_code',
+        'p.platform as platform',
+        'c.cruise_name as cruise',
+        's.sample as sample',
+        's.device as device',
+        'i.interval as interval',
+        'i.depth_top as depth_top',
+        'i.depth_bot as depth_bot',
+        'i.lith1 as lith1',
+        'i.text1 as text1',
+        'i.lith2 as lith2',
+        'i.text2 as text2',
+        'i.comp1 as comp1',
+        'i.comp2 as comp2',
+        'i.comp3 as comp3',
+        'i.comp4 as comp4',
+        'i.comp5 as comp5',
+        'i.comp6 as comp6',
+        'i.description as description',
+        'i.age as age',
+        'i.absolute_age_top as absolute_age_top',
+        'i.absolute_age_bot as absolute_age_bot',
+        'i.weight as weight',
+        'i.rock_lith as rock_lith',
+        'i.rock_min as rock_min',
+        'i.weath_meta as weath_meta',
+        'i.remark as remark',
+        'i.munsell_code as munsell_code',
+        'i.exhaust_code as exhaust_code',
+        'i.photo_link as photo_link',
+        'i.lake as lake',
+        'i.int_comments as int_comments',
+        'i.igsn as igsn',
+        'i.imlgs as imlgs'
     ]
 
 
     // TODO have a separate method which returns Interval objects rather than List<Map>?
     List getIntervals(GeosampleSearchParameterObject searchParams) {
         // searchParams are criteria against Geosamples table NOT Intervals table
-        Map criteria = this.searchParamsHelper.buildWhereClauseAndCriteriaList(searchParams)
-        String sqlStmt = """select ${allIntervalFields.join(', ')} from ${intervalTable} where imlgs in
-        (select imlgs from ${sampleTable} ${criteria.whereClause}) order by imlgs, interval"""
+        Map criteria = this.searchParamsHelper.buildWhereClauseAndCriteriaList(searchParams, [], true)
+        String sqlStmt = """select ${allIntervalFields.join(', ')} 
+                            from ${intervalTable} i
+                            inner join ${sampleTable} s on i.imlgs = s.imlgs 
+                            inner join ${cruiseTable} c on s.cruise_id = c.id 
+                            inner join ${cruisePlatformTable} cp on s.cruise_platform_id = cp.id 
+                            inner join ${platformTable} p on cp.platform_id = p.id
+                            inner join ${cruiseFacilityTable} cf on s.cruise_facility_id = cf.id 
+                            inner join ${facilityTable} f on cf.facility_id = f.id 
+                            left join ${legTable} l on s.leg_id = l.id 
+                             ${criteria.whereClause} order by imlgs, interval"""
         log.debug(sqlStmt)
         return jdbcTemplate.queryForList(sqlStmt, *criteria.values)
     }
 
 
     Map<String,Object> getIntervalsCount(GeosampleSearchParameterObject searchParams) {
-        Map criteria = this.searchParamsHelper.buildWhereClauseAndCriteriaList(searchParams)
-        String queryString = """select count(*) as count from ${intervalTable} where imlgs in 
-        (select imlgs from ${sampleTable} ${criteria.whereClause}"""
+        Map criteria = this.searchParamsHelper.buildWhereClauseAndCriteriaList(searchParams, [], true)
+        String queryString = """select count(*) as count
+                            from ${intervalTable} i
+                            inner join ${sampleTable} s on i.imlgs = s.imlgs 
+                            inner join ${cruiseTable} c on s.cruise_id = c.id 
+                            inner join ${cruisePlatformTable} cp on s.cruise_platform_id = cp.id 
+                            inner join ${platformTable} p on cp.platform_id = p.id
+                            inner join ${cruiseFacilityTable} cf on s.cruise_facility_id = cf.id 
+                            inner join ${facilityTable} f on cf.facility_id = f.id 
+                            left join ${legTable} l on s.leg_id = l.id 
+                             ${criteria.whereClause}"""
         return jdbcTemplate.queryForMap(queryString, *criteria.values)
     }
 
@@ -71,13 +125,37 @@ class IntervalRepository {
      * may be constrained by search parameters, e.g. platform, repository, etc.
      */
     List getUniqueLithologyValues(GeosampleSearchParameterObject searchParams) {
-        Map criteria = this.searchParamsHelper.buildWhereClauseAndCriteriaList(searchParams)
+        Map criteria = this.searchParamsHelper.buildWhereClauseAndCriteriaList(searchParams, [], true)
         String queryString = """select distinct lithology from (
-            (select distinct lith1 as lithology from ${intervalTable} where imlgs in (select imlgs from ${sampleTable} ${criteria.whereClause}))
+            (select distinct i.lith1 as lithology from ${intervalTable} i 
+                    inner join ${sampleTable} s on i.imlgs = s.imlgs 
+                    inner join ${cruiseTable} c on s.cruise_id = c.id 
+                    inner join ${cruisePlatformTable} cp on s.cruise_platform_id = cp.id 
+                    inner join ${platformTable} p on cp.platform_id = p.id
+                    inner join ${cruiseFacilityTable} cf on s.cruise_facility_id = cf.id 
+                    inner join ${facilityTable} f on cf.facility_id = f.id 
+                    left join ${legTable} l on s.leg_id = l.id 
+                 ${criteria.whereClause})
             union
-            (select distinct lith2 as lithology from ${intervalTable} where imlgs in (select imlgs from ${sampleTable} ${criteria.whereClause}))
+            (select distinct i.lith2 as lithology from ${intervalTable} i 
+                    inner join ${sampleTable} s on i.imlgs = s.imlgs 
+                    inner join ${cruiseTable} c on s.cruise_id = c.id 
+                    inner join ${cruisePlatformTable} cp on s.cruise_platform_id = cp.id 
+                    inner join ${platformTable} p on cp.platform_id = p.id
+                    inner join ${cruiseFacilityTable} cf on s.cruise_facility_id = cf.id 
+                    inner join ${facilityTable} f on cf.facility_id = f.id 
+                    left join ${legTable} l on s.leg_id = l.id 
+                 ${criteria.whereClause})
             union
-            (select distinct rock_lith as lithology from ${intervalTable} where imlgs in (select imlgs from ${sampleTable} ${criteria.whereClause}))
+            (select distinct i.rock_lith as lithology from ${intervalTable} i
+                    inner join ${sampleTable} s on i.imlgs = s.imlgs 
+                    inner join ${cruiseTable} c on s.cruise_id = c.id 
+                    inner join ${cruisePlatformTable} cp on s.cruise_platform_id = cp.id 
+                    inner join ${platformTable} p on cp.platform_id = p.id
+                    inner join ${cruiseFacilityTable} cf on s.cruise_facility_id = cf.id 
+                    inner join ${facilityTable} f on cf.facility_id = f.id 
+                    left join ${legTable} l on s.leg_id = l.id 
+                 ${criteria.whereClause})
         ) a where lithology is not null order by lithology"""
         def resultSet = jdbcTemplate.queryForList(queryString, *criteria.values, *criteria.values, *criteria.values)
         return resultSet['lithology']
@@ -89,11 +167,27 @@ class IntervalRepository {
      * may be constrained by search parameters, e.g. platform, repository, etc.
      */
     List getUniqueTextureValues(GeosampleSearchParameterObject searchParams) {
-        Map criteria = this.searchParamsHelper.buildWhereClauseAndCriteriaList(searchParams)
+        Map criteria = this.searchParamsHelper.buildWhereClauseAndCriteriaList(searchParams, [], true)
         String queryString = """select distinct texture from (
-                (select distinct text1 as texture from ${intervalTable} where imlgs in (select imlgs from ${sampleTable} ${criteria.whereClause}))
+                (select distinct i.text1 as texture from ${intervalTable} i 
+                    inner join ${sampleTable} s on i.imlgs = s.imlgs 
+                    inner join ${cruiseTable} c on s.cruise_id = c.id 
+                    inner join ${cruisePlatformTable} cp on s.cruise_platform_id = cp.id 
+                    inner join ${platformTable} p on cp.platform_id = p.id
+                    inner join ${cruiseFacilityTable} cf on s.cruise_facility_id = cf.id 
+                    inner join ${facilityTable} f on cf.facility_id = f.id 
+                    left join ${legTable} l on s.leg_id = l.id 
+                  ${criteria.whereClause})
                 union
-                (select distinct text2 as texture from ${intervalTable} where imlgs in (select imlgs from ${sampleTable} ${criteria.whereClause}))
+                (select distinct i.text2 as texture from ${intervalTable} i 
+                    inner join ${sampleTable} s on i.imlgs = s.imlgs 
+                    inner join ${cruiseTable} c on s.cruise_id = c.id 
+                    inner join ${cruisePlatformTable} cp on s.cruise_platform_id = cp.id 
+                    inner join ${platformTable} p on cp.platform_id = p.id
+                    inner join ${cruiseFacilityTable} cf on s.cruise_facility_id = cf.id 
+                    inner join ${facilityTable} f on cf.facility_id = f.id 
+                    left join ${legTable} l on s.leg_id = l.id 
+                  ${criteria.whereClause})
             ) a where texture is not null order by texture"""
         def resultSet = jdbcTemplate.queryForList(queryString, *criteria.values, *criteria.values)
         return resultSet['texture']
@@ -105,9 +199,16 @@ class IntervalRepository {
      * may be constrained by search parameters, e.g. platform, repository, etc.
      */
     List getUniqueMineralogyValues(GeosampleSearchParameterObject searchParams) {
-        Map criteria = this.searchParamsHelper.buildWhereClauseAndCriteriaList(searchParams)
-        String queryString = """select distinct rock_min as mineralogy from ${intervalTable} where rock_min is not null 
-        and imlgs in (select imlgs from ${sampleTable} ${criteria.whereClause}) order by rock_min"""
+        Map criteria = this.searchParamsHelper.buildWhereClauseAndCriteriaList(searchParams, [], true)
+        String queryString = """select distinct i.rock_min as mineralogy from ${intervalTable} i 
+                    inner join ${sampleTable} s on i.imlgs = s.imlgs 
+                    inner join ${cruiseTable} c on s.cruise_id = c.id 
+                    inner join ${cruisePlatformTable} cp on s.cruise_platform_id = cp.id 
+                    inner join ${platformTable} p on cp.platform_id = p.id
+                    inner join ${cruiseFacilityTable} cf on s.cruise_facility_id = cf.id 
+                    inner join ${facilityTable} f on cf.facility_id = f.id 
+                    left join ${legTable} l on s.leg_id = l.id 
+        ${criteria.whereClause ? criteria.whereClause + ' and i.rock_min is not null' : 'where i.rock_min is not null'} order by rock_min"""
         def resultSet = jdbcTemplate.queryForList(queryString, *criteria.values)
         return resultSet['mineralogy']
     }
@@ -118,9 +219,16 @@ class IntervalRepository {
      * may be constrained by search parameters, e.g. platform, repository, etc.
      */
     List getUniqueWeatheringValues(GeosampleSearchParameterObject searchParams) {
-        Map criteria = this.searchParamsHelper.buildWhereClauseAndCriteriaList(searchParams)
-        String queryString = """select distinct weath_meta from ${intervalTable} where weath_meta is not null
-        and imlgs in (select imlgs from ${sampleTable} ${criteria.whereClause}) order by weath_meta"""
+        Map criteria = this.searchParamsHelper.buildWhereClauseAndCriteriaList(searchParams, [], true)
+        String queryString = """select distinct i.weath_meta as weath_meta from ${intervalTable} i 
+                    inner join ${sampleTable} s on i.imlgs = s.imlgs 
+                    inner join ${cruiseTable} c on s.cruise_id = c.id 
+                    inner join ${cruisePlatformTable} cp on s.cruise_platform_id = cp.id 
+                    inner join ${platformTable} p on cp.platform_id = p.id
+                    inner join ${cruiseFacilityTable} cf on s.cruise_facility_id = cf.id 
+                    inner join ${facilityTable} f on cf.facility_id = f.id 
+                    left join ${legTable} l on s.leg_id = l.id 
+       ${criteria.whereClause ? criteria.whereClause + ' and i.weath_meta is not null' : 'where i.weath_meta is not null'} order by weath_meta """
         log.debug(queryString)
         def resultSet = jdbcTemplate.queryForList(queryString, *criteria.values)
         // split out the weathering code from the combined value. Assumes separator is consistent
@@ -133,9 +241,16 @@ class IntervalRepository {
      * may be constrained by search parameters, e.g. platform, repository, etc.
      */
     List getUniqueMetamorphismValues(GeosampleSearchParameterObject searchParams) {
-        Map criteria = this.searchParamsHelper.buildWhereClauseAndCriteriaList(searchParams)
-        String queryString = """select distinct weath_meta from ${intervalTable} where weath_meta is not null
-        and imlgs in (select imlgs from ${sampleTable} ${criteria.whereClause}) order by weath_meta"""
+        Map criteria = this.searchParamsHelper.buildWhereClauseAndCriteriaList(searchParams, [], true)
+        String queryString = """select distinct i.weath_meta as weath_meta from ${intervalTable} i 
+                    inner join ${sampleTable} s on i.imlgs = s.imlgs 
+                    inner join ${cruiseTable} c on s.cruise_id = c.id 
+                    inner join ${cruisePlatformTable} cp on s.cruise_platform_id = cp.id 
+                    inner join ${platformTable} p on cp.platform_id = p.id
+                    inner join ${cruiseFacilityTable} cf on s.cruise_facility_id = cf.id 
+                    inner join ${facilityTable} f on cf.facility_id = f.id 
+                    left join ${legTable} l on s.leg_id = l.id 
+       ${criteria.whereClause ? criteria.whereClause + ' and i.weath_meta is not null' : 'where i.weath_meta is not null'} order by weath_meta """
         log.debug(queryString)
         def resultSet = jdbcTemplate.queryForList(queryString, *criteria.values)
         // split out the weathering code from the combined value. Assumes separator is consistent
@@ -148,9 +263,16 @@ class IntervalRepository {
      * may be constrained by search parameters, e.g. platform, repository, etc.
      */
     List getUniqueGeologicAgeValues(GeosampleSearchParameterObject searchParams) {
-        Map criteria = this.searchParamsHelper.buildWhereClauseAndCriteriaList(searchParams)
-        String queryString = """select distinct age from ${intervalTable} where age is not null
-        and imlgs in (select imlgs from ${sampleTable} ${criteria.whereClause}) order by age"""
+        Map criteria = this.searchParamsHelper.buildWhereClauseAndCriteriaList(searchParams, [], true)
+        String queryString = """select distinct i.age as age from ${intervalTable} i 
+                inner join ${sampleTable} s on i.imlgs = s.imlgs 
+                inner join ${cruiseTable} c on s.cruise_id = c.id 
+                inner join ${cruisePlatformTable} cp on s.cruise_platform_id = cp.id 
+                inner join ${platformTable} p on cp.platform_id = p.id
+                inner join ${cruiseFacilityTable} cf on s.cruise_facility_id = cf.id 
+                inner join ${facilityTable} f on cf.facility_id = f.id 
+                left join ${legTable} l on s.leg_id = l.id 
+        ${criteria.whereClause ? criteria.whereClause + ' and i.age is not null' : 'where i.age is not null'} order by age"""
         log.debug(queryString)
         def resultSet = jdbcTemplate.queryForList(queryString, *criteria.values)
         return resultSet['age']

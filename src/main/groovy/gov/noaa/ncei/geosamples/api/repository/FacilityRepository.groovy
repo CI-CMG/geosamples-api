@@ -26,20 +26,23 @@ class FacilityRepository {
     JdbcTemplate jdbcTemplate
 
     // inject values from application-<profilename>.properties
-    @Value('${geosamples.sample_table: mud.curators_sample_tsqp}') String sampleTable
-    @Value('${geosamples.facility_table: mud.curators_facility}') String facilityTable
+    @Value('${geosamples.sample_table}') String sampleTable
+    @Value('${geosamples.facility_table}') String facilityTable
+    @Value('${geosamples.cruise_facility_table}') String cruiseFacilityTable
 
 
     List<Facility> getRepositories(GeosampleSearchParameterObject searchParams) {
         Map criteria = this.searchParamsHelper.buildWhereClauseAndCriteriaList(searchParams)
 
         //drive query from curators_sample_tsqp since only it has many of the parameters to support search criteria
-        String queryString = """select sample_count, b.facility_code, b.facility, b.facility_comment
+        String queryString = """select a.sample_count as sample_count, f.facility_code as facility_code, f.facility as facility, f.facility_comment as facility_comment
             from
-            (select count(*) as sample_count, facility_code from ${sampleTable} a ${criteria.whereClause} group by facility_code) a
-            inner join
-            (select facility_code, facility, facility_comment from ${facilityTable}) b
-            on a.facility_code = b.facility_code order by facility_code"""
+            (select count(*) as sample_count, f.id as id from ${sampleTable} s
+               inner join ${cruiseFacilityTable} cf on s.cruise_facility_id = cf.id 
+               inner join ${facilityTable} f on cf.facility_id = f.id
+              ${criteria.whereClause} group by f.id) a
+            inner join ${facilityTable} f on a.id = f.id
+            order by facility_code"""
         log.debug(queryString)
         return jdbcTemplate.query(queryString, new BeanPropertyRowMapper(Facility.class), *criteria.values)
     }
@@ -62,9 +65,11 @@ class FacilityRepository {
         Map criteria = this.searchParamsHelper.buildWhereClauseAndCriteriaList(searchParams)
 
         //show only facility names actually used in IMLGS
-        String queryString = """select distinct a.facility_code, b.facility
-           from ${sampleTable} a inner join ${facilityTable} b
-           on a.FACILITY_CODE = b.FACILITY_CODE ${criteria.whereClause} order by facility_code"""
+        String queryString = """select distinct f.facility_code as facility_code, f.facility as facility
+           from ${sampleTable} s 
+               inner join ${cruiseFacilityTable} cf on s.cruise_facility_id = cf.id 
+               inner join ${facilityTable} f on cf.facility_id = f.id
+           ${criteria.whereClause} order by facility_code"""
         return jdbcTemplate.queryForList(queryString, *criteria.values)
     }
 }

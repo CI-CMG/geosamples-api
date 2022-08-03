@@ -11,8 +11,6 @@ import javax.validation.constraints.Size
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonInclude(Include.NON_NULL)
 class Sample {
-    @NotNull
-    Integer objectid
     @NotNull @Size(min=12, max=12)
     String imlgs
     String facilityCode
