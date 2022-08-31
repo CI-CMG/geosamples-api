@@ -6,11 +6,11 @@ import gov.noaa.ncei.geosamples.api.repository.FacilityRepository
 import gov.noaa.ncei.geosamples.api.repository.IntervalRepository
 import gov.noaa.ncei.geosamples.api.repository.SampleRepository
 import groovy.util.logging.Slf4j
-import io.swagger.v3.oas.annotations.Hidden
 import io.swagger.v3.oas.annotations.OpenAPIDefinition
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.servers.Server
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.springdoc.api.annotations.ParameterObject
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpHeaders
 import org.springframework.web.bind.annotation.CrossOrigin
@@ -55,7 +55,7 @@ class ImlgsController {
             @RequestParam(defaultValue="false", value="count_only") boolean countOnly,
             @RequestParam(defaultValue="false", value="full_record") boolean fullRecord,
             @RequestParam(defaultValue="json") String format,
-            @Valid GeosampleSearchParameterObject searchParams,
+            @ParameterObject @Valid GeosampleSearchParameterObject searchParams,
             HttpServletResponse response) {
 
         // TODO replace w/ declarative validation. Perhaps enum? see https://www.baeldung.com/spring-enum-request-param
@@ -94,7 +94,7 @@ class ImlgsController {
     @Operation(summary="Find the min/max water_depth of geosamples matching given search paramters")
     @CrossOrigin
     @GetMapping("/depth_range")
-    def getDepthRange(@Valid GeosampleSearchParameterObject searchParams) {
+    def getDepthRange(@ParameterObject @Valid GeosampleSearchParameterObject searchParams) {
         return sampleRepository.getDepthRange(searchParams)
     }
 
@@ -102,7 +102,7 @@ class ImlgsController {
     @Operation(summary="Find all storage methods used in the IMLGS")
     @CrossOrigin
     @GetMapping("/storage_methods")
-    def getStorageMethods(@Valid GeosampleSearchParameterObject searchParams) {
+    def getStorageMethods(@ParameterObject @Valid GeosampleSearchParameterObject searchParams) {
         if (searchParams.storageMethod) {
             throw new GeosamplesBadRequestException("resource does not support request parameter: storage_method")
         }
@@ -113,7 +113,7 @@ class ImlgsController {
     @Operation(summary="Find all physiographic provinces used in the IMLGS")
     @CrossOrigin
     @GetMapping("/physiographic_provinces")
-    def getPhysiographicProvinces(@Valid GeosampleSearchParameterObject searchParams) {
+    def getPhysiographicProvinces(@ParameterObject @Valid GeosampleSearchParameterObject searchParams) {
         if (searchParams.province) {
             throw new GeosamplesBadRequestException("resource does not support request parameter: province")
         }
@@ -124,7 +124,7 @@ class ImlgsController {
     @Operation(summary="Find all sampling devices used in the IMLGS")
     @CrossOrigin
     @GetMapping("/devices")
-    def getDeviceNames(@Valid GeosampleSearchParameterObject searchParams) {
+    def getDeviceNames(@ParameterObject @Valid GeosampleSearchParameterObject searchParams) {
         if (searchParams.device) {
             throw new GeosamplesBadRequestException("resource does not support request parameter: device")
         }
@@ -135,7 +135,7 @@ class ImlgsController {
     @Operation(summary="Find all lakes referenced in the IMLGS")
     @CrossOrigin
     @GetMapping("/lakes")
-    def getLakes(@Valid GeosampleSearchParameterObject searchParams) {
+    def getLakes(@ParameterObject @Valid GeosampleSearchParameterObject searchParams) {
         if (searchParams.lake) {
             throw new GeosamplesBadRequestException("resource does not support request parameter: lake")
         }
@@ -146,7 +146,7 @@ class ImlgsController {
     @Operation(summary="Find all IGSN numbers used in the IMLGS")
     @CrossOrigin
     @GetMapping("/igsn")
-    def getIsgnValues(@Valid GeosampleSearchParameterObject searchParams) {
+    def getIsgnValues(@ParameterObject @Valid GeosampleSearchParameterObject searchParams) {
         if (searchParams.igsn) {
             throw new GeosamplesBadRequestException("resource does not support request parameter: igsn")
         }
@@ -159,7 +159,7 @@ class ImlgsController {
     @GetMapping("/cruises")
     def getCruiseNames(
             @RequestParam(defaultValue="false", value="name_only") boolean nameOnly,
-            @Valid GeosampleSearchParameterObject searchParams
+            @ParameterObject @Valid GeosampleSearchParameterObject searchParams
     ) {
         if (searchParams.cruise) {
             throw new GeosamplesBadRequestException("resource does not support request parameter: cruise")
@@ -195,7 +195,7 @@ class ImlgsController {
     @GetMapping("/repositories")
     def getRepositories(
             @RequestParam(defaultValue="false", value="name_only") boolean nameOnly,
-            @Valid GeosampleSearchParameterObject searchParams
+            @ParameterObject @Valid GeosampleSearchParameterObject searchParams
     ) {
         if (searchParams.repository) {
             throw new GeosamplesBadRequestException("resource does not support request parameter: repository")
@@ -219,7 +219,7 @@ class ImlgsController {
     @Operation(summary="List the unique platform names referenced in the IMLGS")
     @CrossOrigin
     @GetMapping("/platforms")
-    List getPlatforms(@Valid GeosampleSearchParameterObject searchParams) {
+    List getPlatforms(@ParameterObject @Valid GeosampleSearchParameterObject searchParams) {
         if (searchParams.platform) {
             throw new GeosamplesBadRequestException("resource does not support request parameter: platform")
         }
@@ -233,7 +233,7 @@ class ImlgsController {
     def getIntervals(
             @RequestParam(defaultValue="false", value="count_only") boolean countOnly,
             @RequestParam(defaultValue="json") String format,
-            @Valid GeosampleSearchParameterObject searchParams,
+            @ParameterObject @Valid GeosampleSearchParameterObject searchParams,
             HttpServletResponse response
     ) {
         // TODO replace w/ declarative validation. Perhaps enum? see https://www.baeldung.com/spring-enum-request-param
@@ -256,7 +256,7 @@ class ImlgsController {
     @Operation(summary="Find lithology values used in the IMLGS")
     @CrossOrigin
     @GetMapping("/lithologies")
-    List getLithologies(@Valid GeosampleSearchParameterObject searchParams) {
+    List getLithologies(@ParameterObject @Valid GeosampleSearchParameterObject searchParams) {
         if (searchParams.lithology) {
             throw new GeosamplesBadRequestException("resource does not support request parameter: lithology")
         }
@@ -267,7 +267,7 @@ class ImlgsController {
     @Operation(summary="Find texture values used in the IMLGS")
     @CrossOrigin
     @GetMapping("/textures")
-    List getTextures(@Valid GeosampleSearchParameterObject searchParams) {
+    List getTextures(@ParameterObject @Valid GeosampleSearchParameterObject searchParams) {
         if (searchParams.texture) {
             throw new GeosamplesBadRequestException("resource does not support request parameter: texture")
         }
@@ -278,7 +278,7 @@ class ImlgsController {
     @Operation(summary="Find mineralogy values used in the IMLGS")
     @CrossOrigin
     @GetMapping("/mineralogies")
-    List getMineralogies(@Valid GeosampleSearchParameterObject searchParams) {
+    List getMineralogies(@ParameterObject @Valid GeosampleSearchParameterObject searchParams) {
         if (searchParams.mineralogy) {
             throw new GeosamplesBadRequestException("resource does not support request parameter: mineralogy")
         }
@@ -289,7 +289,7 @@ class ImlgsController {
     @Operation(summary="Find weathering values used in the IMLGS")
     @CrossOrigin
     @GetMapping("/weathering")
-    List getWeatheringValues(@Valid GeosampleSearchParameterObject searchParams) {
+    List getWeatheringValues(@ParameterObject @Valid GeosampleSearchParameterObject searchParams) {
         if (searchParams.weathering) {
             throw new GeosamplesBadRequestException("resource does not support request parameter: weathering")
         }
@@ -300,7 +300,7 @@ class ImlgsController {
     @Operation(summary="Find metamorphism values used in the IMLGS")
     @CrossOrigin
     @GetMapping("/metamorphism")
-    List getMetamorphismValues(@Valid GeosampleSearchParameterObject searchParams) {
+    List getMetamorphismValues(@ParameterObject @Valid GeosampleSearchParameterObject searchParams) {
         if (searchParams.metamorphism) {
             throw new GeosamplesBadRequestException("resource does not support request parameter: metamorphism")
         }
@@ -311,7 +311,7 @@ class ImlgsController {
     @Operation(summary="Find geologic ages referenced in the IMLGS")
     @CrossOrigin
     @GetMapping("/geologic_ages")
-    List getGeologicAgeValues(@Valid GeosampleSearchParameterObject searchParams) {
+    List getGeologicAgeValues(@ParameterObject @Valid GeosampleSearchParameterObject searchParams) {
         if (searchParams.age) {
             throw new GeosamplesBadRequestException("resource does not support request parameter: age")
         }
