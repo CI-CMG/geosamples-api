@@ -349,9 +349,14 @@ class ImlgsController {
      * considerable memory use considerations
      */
     static List<Map> convertPropertyNamesToLowerCase(List<Map> resultSet) {
-        List newResultSet = resultSet.collect { row ->
-            row.collectEntries { key, value ->
-                [(key.toLowerCase()): value]
+        List<Map<String, Object>> newResultSet = new ArrayList<>(resultSet.size());
+        for (Map map : resultSet) {
+            Map<String, Object> newMap = new HashMap<>();
+            newResultSet.add(newMap);
+            for (Map.Entry e : map ) {
+                if(e.getValue() != null) {
+                    newMap.put(((String)e.getKey()).toLowerCase(Locale.ENGLISH), e.getValue());
+                }
             }
         }
         return newResultSet

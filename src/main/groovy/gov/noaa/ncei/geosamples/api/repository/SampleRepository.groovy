@@ -1,5 +1,6 @@
 package gov.noaa.ncei.geosamples.api.repository
 
+import gov.noaa.ncei.geosamples.api.ServiceProperties
 import gov.noaa.ncei.geosamples.api.error.GeosamplesBadRequestException
 import groovy.util.logging.Slf4j
 import gov.noaa.ncei.geosamples.api.model.GeosampleSearchParameterObject
@@ -20,26 +21,45 @@ import org.springframework.stereotype.Repository
 @Slf4j
 @Repository
 class SampleRepository {
-    @Autowired
-    SearchParamsHelper searchParamsHelper
 
-    @Autowired
-    JdbcTemplate jdbcTemplate
+
+
+
+
 
     static private final String orderByClause = " order by cruise, begin_date, leg, sample, device"
 //    static final String orderByClause = " order by a.cruise, a.begin_date, a.leg, a.sample, a.device"
 
     // inject values from application-<profilename>.properties
-    @Value('${geosamples.sample_table}') String sampleTable
-    @Value('${geosamples.interval_table}') String intervalTable
-    @Value('${geosamples.facility_table}') String facilityTable
-    @Value('${geosamples.links_table}') String linksTable
-    @Value('${geosamples.cruise_links_table}') String cruiseLinksTable
-    @Value('${geosamples.cruise_table}') String cruiseTable
-    @Value('${geosamples.leg_table}') String legTable
-    @Value('${geosamples.platform_table}') String platformTable
-    @Value('${geosamples.cruise_platform_table}') String cruisePlatformTable
-    @Value('${geosamples.cruise_facility_table}') String cruiseFacilityTable
+    private final String sampleTable;
+    private final String intervalTable;
+    private final String facilityTable;
+    private final String linksTable;
+    private final String cruiseLinksTable;
+    private final String cruiseTable;
+    private final String legTable;
+    private final String platformTable;
+    private final String cruisePlatformTable;
+    private final String cruiseFacilityTable;
+
+    private final SearchParamsHelper searchParamsHelper;
+    private final JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    SampleRepository(SearchParamsHelper searchParamsHelper, ServiceProperties properties, JdbcTemplate jdbcTemplate) {
+        this.searchParamsHelper = searchParamsHelper;
+        this.jdbcTemplate = jdbcTemplate;
+        sampleTable = properties.getSampleTable();
+        intervalTable = properties.getIntervalTable();
+        facilityTable = properties.getFacilityTable();
+        linksTable = properties.getLinksTable();
+        cruiseLinksTable = properties.getCruiseLinksTable();
+        cruiseTable = properties.getCruiseTable();
+        legTable = properties.getLegTable();
+        platformTable = properties.getPlatformTable();
+        cruisePlatformTable = properties.getCruisePlatformTable();
+        cruiseFacilityTable = properties.getCruiseFacilityTable();
+    }
 
 
     // skip SHAPE column since there are problems serializing SDO_Geometry into JSON
@@ -228,8 +248,8 @@ class SampleRepository {
                 "  inner join ${platformTable} p on cp.platform_id = p.id " +
                 "  inner join ${cruiseFacilityTable} cf on s.cruise_facility_id = cf.id " +
                 "  inner join ${facilityTable} f on cf.facility_id = f.id " +
-                "  left join ${legTable} l on s.leg_id = l.id" +
-                "${criteria.whereClause} order by storage_meth"
+                "  left join ${legTable} l on s.leg_id = l.id " +
+                "${criteria.whereClause ? criteria.whereClause + ' and s.storage_meth is not null' : ' where s.storage_meth is not null'} order by storage_meth"
         def resultSet = jdbcTemplate.queryForList(queryString, *criteria.values)
         return resultSet['storage_meth']
     }
@@ -247,8 +267,8 @@ class SampleRepository {
                 "  inner join ${platformTable} p on cp.platform_id = p.id " +
                 "  inner join ${cruiseFacilityTable} cf on s.cruise_facility_id = cf.id " +
                 "  inner join ${facilityTable} f on cf.facility_id = f.id " +
-                "  left join ${legTable} l on s.leg_id = l.id" +
-                "${criteria.whereClause} order by province"
+                "  left join ${legTable} l on s.leg_id = l.id " +
+                "${criteria.whereClause ? criteria.whereClause + ' and s.province is not null' : ' where s.province is not null'} order by province"
         def resultSet = jdbcTemplate.queryForList(queryString, *criteria.values)
         return resultSet['province']
     }
@@ -266,8 +286,8 @@ class SampleRepository {
                 "  inner join ${platformTable} p on cp.platform_id = p.id " +
                 "  inner join ${cruiseFacilityTable} cf on s.cruise_facility_id = cf.id " +
                 "  inner join ${facilityTable} f on cf.facility_id = f.id " +
-                "  left join ${legTable} l on s.leg_id = l.id" +
-                "${criteria.whereClause} order by device"
+                "  left join ${legTable} l on s.leg_id = l.id " +
+                "${criteria.whereClause ? criteria.whereClause + ' and s.device is not null' : ' where s.device is not null'} order by device"
         def resultSet = jdbcTemplate.queryForList(queryString, *criteria.values)
         return resultSet['device']
     }
@@ -285,8 +305,8 @@ class SampleRepository {
                 "  inner join ${platformTable} p on cp.platform_id = p.id " +
                 "  inner join ${cruiseFacilityTable} cf on s.cruise_facility_id = cf.id " +
                 "  inner join ${facilityTable} f on cf.facility_id = f.id " +
-                "  left join ${legTable} l on s.leg_id = l.id" +
-                "${criteria.whereClause} order by lake"
+                "  left join ${legTable} l on s.leg_id = l.id " +
+                "${criteria.whereClause ? criteria.whereClause + ' and s.lake is not null' : ' where s.lake is not null'} order by lake"
         def resultSet = jdbcTemplate.queryForList(queryString, *criteria.values)
         return resultSet['lake']
     }
@@ -304,8 +324,8 @@ class SampleRepository {
                 "  inner join ${platformTable} p on cp.platform_id = p.id " +
                 "  inner join ${cruiseFacilityTable} cf on s.cruise_facility_id = cf.id " +
                 "  inner join ${facilityTable} f on cf.facility_id = f.id " +
-                "  left join ${legTable} l on s.leg_id = l.id" +
-                "${criteria.whereClause} order by igsn"
+                "  left join ${legTable} l on s.leg_id = l.id " +
+                "${criteria.whereClause ? criteria.whereClause + ' and s.igsn is not null' : ' where s.igsn is not null'} order by igsn"
         def resultSet = jdbcTemplate.queryForList(queryString, *criteria.values)
         return resultSet['igsn']
     }

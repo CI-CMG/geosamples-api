@@ -1,6 +1,6 @@
 package gov.noaa.ncei.geosamples.api.repository
 
-
+import gov.noaa.ncei.geosamples.api.ServiceProperties
 import gov.noaa.ncei.geosamples.api.model.GeosampleSearchParameterObject
 import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
@@ -16,23 +16,33 @@ import org.springframework.stereotype.Repository
 @Slf4j
 @Repository
 class IntervalRepository {
-    @Autowired
-    SearchParamsHelper searchParamsHelper
 
-    @Autowired
-    JdbcTemplate jdbcTemplate;
+    private final SearchParamsHelper searchParamsHelper
+    private final JdbcTemplate jdbcTemplate;
 
     // inject values from application-<profilename>.properties
-    @Value('${geosamples.sample_table}') String sampleTable
-    @Value('${geosamples.interval_table}') String intervalTable
-    @Value('${geosamples.facility_table}') String facilityTable
-    @Value('${geosamples.links_table}') String linksTable
-    @Value('${geosamples.cruise_links_table}') String cruiseLinksTable
-    @Value('${geosamples.cruise_table}') String cruiseTable
-    @Value('${geosamples.leg_table}') String legTable
-    @Value('${geosamples.platform_table}') String platformTable
-    @Value('${geosamples.cruise_platform_table}') String cruisePlatformTable
-    @Value('${geosamples.cruise_facility_table}') String cruiseFacilityTable
+    private final String sampleTable;
+    private final String intervalTable;
+    private final String facilityTable;
+    private final String cruiseTable;
+    private final String legTable;
+    private final String platformTable;
+    private final String cruisePlatformTable;
+    private final String cruiseFacilityTable;
+
+    @Autowired
+    IntervalRepository(SearchParamsHelper searchParamsHelper, JdbcTemplate jdbcTemplate, ServiceProperties properties) {
+        this.searchParamsHelper = searchParamsHelper;
+        this.jdbcTemplate = jdbcTemplate;
+        sampleTable = properties.getSampleTable();
+        intervalTable = properties.getIntervalTable();
+        facilityTable = properties.getFacilityTable();
+        cruiseTable = properties.getCruiseTable();
+        legTable = properties.getLegTable();
+        platformTable = properties.getPlatformTable();
+        cruisePlatformTable = properties.getCruisePlatformTable();
+        cruiseFacilityTable = properties.getCruiseFacilityTable();
+    }
 
 
     // all possible fields that could be returned

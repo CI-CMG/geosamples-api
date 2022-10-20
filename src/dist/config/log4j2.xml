@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="info" monitorInterval="30">
+
+  <Properties>
+    <Property name="svc.home">.</Property>
+  </Properties>
+
+  <Appenders>
+    <Console name="Console" target="SYSTEM_OUT">
+      <PatternLayout>
+        <Pattern>
+          %style{%d{ISO8601}}{dim} %highlight{%5level} %style{%pid{-}}{magenta} %style{---}{dim} %style{[%15.15t]}{dim} %style{%c}{blue} %style{:}{dim} %highlight{%m%n%throwable}
+        </Pattern>
+      </PatternLayout>
+    </Console>
+
+    <RollingRandomAccessFile
+      name="File"
+      fileName="${sys:svc.home}/log/application.log"
+      filePattern="${sys:svc.home}/log/application-%i.log.gz">
+      <PatternLayout>
+        <Pattern>%d{ISO8601} %5level %pid{-} --- [%15.15t] %c : %m%n%throwable</Pattern>
+      </PatternLayout>
+      <Policies>
+        <SizeBasedTriggeringPolicy size="100 MB"/>
+      </Policies>
+      <DefaultRolloverStrategy max="10"/>
+    </RollingRandomAccessFile>
+  </Appenders>
+
+  <Loggers>
+    <Logger name="gov.noaa.ncei" level="info" additivity="false">
+      <AppenderRef ref="File"/>
+    </Logger>
+    <Root level="warn">
+      <AppenderRef ref="File"/>
+    </Root>
+  </Loggers>
+
+</Configuration>

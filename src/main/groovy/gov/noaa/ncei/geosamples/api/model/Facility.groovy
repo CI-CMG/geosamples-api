@@ -1,5 +1,6 @@
 package gov.noaa.ncei.geosamples.api.model
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonInclude.Include
 import com.fasterxml.jackson.databind.PropertyNamingStrategies
@@ -24,4 +25,21 @@ class Facility {
     String urlLink
     String ftpLink
     String otherLink
+
+    public void setDoiLink(String otherLink) {
+        this.otherLink = otherLink;
+    }
+
+    @JsonIgnore
+    public String getDoiLink() {
+        return otherLink;
+    }
+
+    public void setOtherLink(String otherLink) {
+        this.otherLink = otherLink;
+    }
+
+    public String getOtherLink() {
+        return otherLink;
+    }
 }

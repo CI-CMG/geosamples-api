@@ -1,0 +1,27 @@
+-server
+-XX:+UseG1GC
+-Xms256m
+-Xmx1g
+-XX:MaxMetaspaceSize=128m
+-XX:NewRatio=1
+
+-Dlog4j2.configurationFile=${svc.home}/config/log4j2.xml
+-Dlog4j2.disableJmx
+-Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager
+
+-XX:+HeapDumpOnOutOfMemoryError
+-XX:HeapDumpPath=${svc.home}/heap-dump-${date}.hprof
+
+-Djava.net.preferIPv4Stack=true
+
+# Uncomment if not using the Java default truststore
+#-Djavax.net.ssl.trustStore=${svc.home}/config/truststore.jks
+#-Djavax.net.ssl.trustStorePassword=changeit
+
+#-Djava.rmi.server.hostname=<external IP>
+#-Dcom.sun.management.jmxremote.port=<port>
+#-Dcom.sun.management.jmxremote.authenticate=false
+#-Dcom.sun.management.jmxremote.ssl=false
+
+# Uncomment to enable remote debugging
+#-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=9103

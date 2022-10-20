@@ -1,0 +1,19 @@
+[Unit]
+Description=Geosamples API Service
+After=network.target
+
+
+[Service]
+Type=simple
+Restart=always
+StartLimitInterval=0
+RestartSec=5
+User=${USER}
+ExecStart="${SVC_HOME}/run.sh"
+Environment="JAVA_HOME=${JAVA_HOME}"
+StandardOutput=journal
+StandardError=inherit
+
+
+[Install]
+WantedBy=multi-user.target

@@ -1,8 +1,9 @@
 package gov.noaa.ncei.geosamples.api.repository
 
-
+import gov.noaa.ncei.geosamples.api.ServiceProperties
 import gov.noaa.ncei.geosamples.api.model.GeosampleSearchParameterObject
 import groovy.util.logging.Slf4j
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 
@@ -13,14 +14,27 @@ import org.springframework.stereotype.Component
 @Slf4j
 @Component
 class SearchParamsHelper {
-    @Value('${geosamples.sample_table}') String sampleTable
-    @Value('${geosamples.interval_table}') String intervalTable
-    @Value('${geosamples.facility_table}') String facilityTable
-    @Value('${geosamples.cruise_facility_table}') String cruiseFacilityTable
-    @Value('${geosamples.cruise_platform_table}') String cruisePlatformTable
-    @Value('${geosamples.platform_table}') String platformTable
-    @Value('${geosamples.cruise_table}') String cruiseTable
-    @Value('${geosamples.leg_table}') String legTable
+
+    private final String sampleTable;
+    private final String intervalTable;
+    private final String facilityTable;
+    private final String cruiseFacilityTable;
+    private final String cruisePlatformTable;
+    private final String platformTable;
+    private final String cruiseTable;
+    private final String legTable;
+
+    @Autowired
+    SearchParamsHelper(ServiceProperties properties) {
+        sampleTable = properties.getSampleTable();
+        intervalTable = properties.getIntervalTable();
+        facilityTable = properties.getFacilityTable();
+        cruiseFacilityTable = properties.getCruiseFacilityTable();
+        cruisePlatformTable = properties.getCruisePlatformTable();
+        platformTable = properties.getPlatformTable();
+        cruiseTable = properties.getCruiseTable();
+        legTable = properties.getLegTable();
+    }
 
     /**
      * helper method to build SQL where clause and associated query values list.

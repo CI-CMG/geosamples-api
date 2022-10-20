@@ -5,17 +5,41 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.1</version>
+		<version>2.7.4</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
+
 	<groupId>gov.noaa.ncei.geosamples</groupId>
-	<artifactId>geosamples</artifactId>
+	<artifactId>geosamples-api</artifactId>
 	<version>2.0.0</version>
 	<name>geosamples</name>
 	<description>GeoSamples API</description>
+
 	<properties>
 		<java.version>1.8</java.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
+
+  <scm>
+    <connection>scm:git:git@github.com:CI-CMG/geosamples-api.git</connection>
+    <developerConnection>scm:git:git@github.com:CI-CMG/geosamples-api.git</developerConnection>
+    <url>https://github.com/CI-CMG/geosamples-api</url>
+    <tag>HEAD</tag>
+  </scm>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.oracle.database.jdbc</groupId>
+        <artifactId>ojdbc-bom</artifactId>
+        <version>21.7.0.0</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -32,6 +56,12 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-starter-logging</artifactId>
+        </exclusion>
+      </exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.codehaus.groovy</groupId>
@@ -57,16 +87,10 @@
 			<artifactId>springdoc-openapi-data-rest</artifactId>
 			<version>1.6.11</version>
 		</dependency>
-		<dependency>
-			<groupId>com.oracle.database.jdbc</groupId>
-			<artifactId>ojdbc8</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.postgresql</groupId>
-			<artifactId>postgresql</artifactId>
-			<scope>runtime</scope>
-		</dependency>
+    <dependency>
+      <groupId>com.oracle.database.jdbc</groupId>
+      <artifactId>ojdbc11</artifactId>
+    </dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -77,9 +101,110 @@
 			<artifactId>commons-csv</artifactId>
 			<version>1.9.0</version>
 		</dependency>
+    <dependency>
+      <groupId>org.flywaydb</groupId>
+      <artifactId>flyway-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-log4j2</artifactId>
+    </dependency>
+
 	</dependencies>
 
 	<build>
+
+
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>false</filtering>
+      </resource>
+      <resource>
+        <directory>src/main/resources-filtered</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
+
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-clean-plugin</artifactId>
+          <version>3.2.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>3.3.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.10.1</version>
+        </plugin>
+        <plugin>
+          <groupId>com.github.eirslett</groupId>
+          <artifactId>frontend-maven-plugin</artifactId>
+          <version>1.12.1</version>
+        </plugin>
+        <plugin>
+          <groupId>io.fabric8</groupId>
+          <artifactId>docker-maven-plugin</artifactId>
+          <version>0.40.2</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>2.22.2</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-failsafe-plugin</artifactId>
+          <version>2.22.2</version>
+        </plugin>
+        <plugin>
+          <groupId>com.github.spotbugs</groupId>
+          <artifactId>spotbugs-maven-plugin</artifactId>
+          <version>4.7.2.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.owasp</groupId>
+          <artifactId>dependency-check-maven</artifactId>
+          <version>7.2.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.jacoco</groupId>
+          <artifactId>jacoco-maven-plugin</artifactId>
+          <version>0.8.8</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-release-plugin</artifactId>
+          <version>2.5.3</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <version>3.4.2</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>3.0.0</version>
+          <configuration>
+            <deployAtEnd>true</deployAtEnd>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+
+
+
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
@@ -89,6 +214,8 @@
 						<profile>postgres</profile>
 						<profile>oracle</profile>
 					</profiles>
+          <classifier>exe</classifier>
+          <layout>ZIP</layout>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -110,7 +237,75 @@
 					</execution>
 				</executions>
 			</plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <tarLongFileMode>posix</tarLongFileMode>
+          <appendAssemblyId>false</appendAssemblyId>
+          <descriptors>
+            <descriptor>src/assembly/dist.xml</descriptor>
+          </descriptors>
+        </configuration>
+        <executions>
+          <execution>
+            <id>make-assembly</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
 		</plugins>
 	</build>
+
+
+  <profiles>
+    <profile>
+      <id>it</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>io.fabric8</groupId>
+            <artifactId>docker-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>start-docker</id>
+                <phase>pre-integration-test</phase>
+                <goals>
+                  <goal>start</goal>
+                </goals>
+                <configuration>
+                  <images>
+                    <image>
+                      <name>cirescmg/crowbar-db:20210416</name>
+                      <alias>geosamples-ingest-test</alias>
+                      <run>
+                        <ports>
+                          <port>15215:1521</port>
+                        </ports>
+                        <wait>
+                          <log>Completed: ALTER DATABASE OPEN</log>
+                          <time>120000</time>
+                        </wait>
+                      </run>
+                    </image>
+                  </images>
+                </configuration>
+              </execution>
+              <execution>
+                <id>stop-docker</id>
+                <phase>post-integration-test</phase>
+                <goals>
+                  <goal>stop</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
 </project>

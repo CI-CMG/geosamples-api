@@ -3,6 +3,7 @@ package gov.noaa.ncei.geosamples.api
 import groovy.util.logging.Slf4j
 import org.apache.catalina.connector.Connector
 import org.apache.coyote.ajp.AjpNioProtocol
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory
@@ -14,18 +15,20 @@ import org.springframework.web.filter.CommonsRequestLoggingFilter
 @Slf4j
 @Configuration
 class ServerSetup {
-    @Value('${ajp.port:8009}')
-    int ajpPort
 
-    @Value('${ajp.enabled:true}')
-    boolean ajpEnabled
 
-    @Value('${ajp.secret:none}')
-    String ajpSecret
+    private final int ajpPort;
+    private final boolean ajpEnabled;
+    private final String ajpSecret;
+    private final String serverAddress;
 
-    // can be IP address for fully-qualified hostname. Default to binding on all addresses
-    @Value('${ajp.server.address:0.0.0.0}')
-    String serverAddress
+    @Autowired
+    ServerSetup(ServiceProperties properties) {
+        ajpPort = properties.getAjpPort();
+        ajpEnabled = properties.getAjpEnabled()
+        ajpSecret = properties.getAjpSecret();
+        serverAddress = properties.getAjpServerAddress();
+    }
 
     @Bean
     ServletWebServerFactory servletContainer() {

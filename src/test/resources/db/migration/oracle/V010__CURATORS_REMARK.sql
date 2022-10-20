@@ -1,0 +1,11 @@
+INSERT INTO ${schema_name}.CURATORS_REMARK (REMARK_CODE, REMARK, PUBLISH, PREVIOUS_STATE, SOURCE_URI) VALUES ('0', 'no glass', 'Y', 'Y', null);
+INSERT INTO ${schema_name}.CURATORS_REMARK (REMARK_CODE, REMARK, PUBLISH, PREVIOUS_STATE, SOURCE_URI) VALUES ('1', 'some samples exhibit fresh glass', 'Y', 'Y', null);
+INSERT INTO ${schema_name}.CURATORS_REMARK (REMARK_CODE, REMARK, PUBLISH, PREVIOUS_STATE, SOURCE_URI) VALUES ('2', '>50% samples exhibit fresh glass', 'Y', 'Y', null);
+INSERT INTO ${schema_name}.CURATORS_REMARK (REMARK_CODE, REMARK, PUBLISH, PREVIOUS_STATE, SOURCE_URI) VALUES ('3', 'some samples exhibit palagonitized glass', 'Y', 'Y', null);
+INSERT INTO ${schema_name}.CURATORS_REMARK (REMARK_CODE, REMARK, PUBLISH, PREVIOUS_STATE, SOURCE_URI) VALUES ('4', '>50% samples exhibit palagonitized glass', 'Y', 'Y', null);
+INSERT INTO ${schema_name}.CURATORS_REMARK (REMARK_CODE, REMARK, PUBLISH, PREVIOUS_STATE, SOURCE_URI) VALUES ('5', 'notable Mn/Fe oxide coatings', 'Y', 'Y', null);
+INSERT INTO ${schema_name}.CURATORS_REMARK (REMARK_CODE, REMARK, PUBLISH, PREVIOUS_STATE, SOURCE_URI) VALUES ('6', 'some samples with fresh glass & Mn/Fe oxide coatings', 'Y', 'Y', null);
+INSERT INTO ${schema_name}.CURATORS_REMARK (REMARK_CODE, REMARK, PUBLISH, PREVIOUS_STATE, SOURCE_URI) VALUES ('7', '>50% of samples exhibit fresh glass & Mn/Fe oxide coatings', 'Y', 'Y', null);
+INSERT INTO ${schema_name}.CURATORS_REMARK (REMARK_CODE, REMARK, PUBLISH, PREVIOUS_STATE, SOURCE_URI) VALUES ('8', 'some samples exhibit palagonitized glass & Mn/Fe oxide coatings', 'Y', 'Y', null);
+INSERT INTO ${schema_name}.CURATORS_REMARK (REMARK_CODE, REMARK, PUBLISH, PREVIOUS_STATE, SOURCE_URI) VALUES ('9', '>50% of samples exhibit palagonitized glass & Mn/Fe oxide coatings', 'Y', 'Y', null);
+INSERT INTO ${schema_name}.CURATORS_REMARK (REMARK_CODE, REMARK, PUBLISH, PREVIOUS_STATE, SOURCE_URI) VALUES ('a', 'thin Mn/Fe oxide', 'Y', 'Y', null);

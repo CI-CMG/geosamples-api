@@ -1,0 +1,1 @@
+INSERT INTO ${schema_name}.CURATORS_EXHAUST (EXHAUST_CODE, EXHAUST, PUBLISH, PREVIOUS_STATE) VALUES ('X', 'material exhausted', 'Y', 'Y');
