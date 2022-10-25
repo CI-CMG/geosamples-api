@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="info">
+
+  <Appenders>
+    <Console name="Console" target="SYSTEM_OUT">
+      <PatternLayout>
+        <Pattern>
+          %style{%d{ISO8601}}{dim} %highlight{%5level} %style{%pid{-}}{magenta} %style{---}{dim} %style{[%15.15t]}{dim} %style{%c}{blue} %style{:}{dim} %highlight{%m%n%throwable}
+        </Pattern>
+      </PatternLayout>
+    </Console>
+  </Appenders>
+
+
+  <Loggers>
+    <Logger name="gov.noaa.ncei" level="debug" additivity="false">
+      <AppenderRef ref="Console"/>
+    </Logger>
+<!--    <Logger name="org.hibernate.SQL" level="debug" additivity="false">-->
+<!--      <AppenderRef ref="Console"/>-->
+<!--    </Logger>-->
+<!--    <Logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="debug" additivity="false">-->
+<!--      <AppenderRef ref="Console"/>-->
+<!--    </Logger>-->
+    <Root level="info">
+      <AppenderRef ref="Console"/>
+    </Root>
+  </Loggers>
+
+</Configuration>

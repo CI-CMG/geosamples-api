@@ -1,7 +1,7 @@
 -server
 -XX:+UseG1GC
 -Xms256m
--Xmx1g
+-Xmx2g
 -XX:MaxMetaspaceSize=128m
 -XX:NewRatio=1
 

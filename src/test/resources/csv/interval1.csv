@@ -1,0 +1,5 @@
+facility_code,platform,cruise,sample,device,interval,depth_top,depth_bot,lith1,text1,lith2,text2,comp1,comp2,comp3,comp4,comp5,comp6,description,age,absolute_age_top,absolute_age_bot,weight,rock_lith,rock_min,weath_meta,remark,munsell_code,exhaust_code,photo_link,lake,int_comments,igsn,imlgs,id
+AOML,Sea Biskit,CRUISE_1,sample1,"trap, sediment",1,4,5,terrigenous,gravel,evaporite,sandy mud or ooze,"calcareous, spines","siliceous, sponge spicules",iron or iron oxide,fish teeth,zeolites,chert or porcelanite,foo,Quaternary,ageTop,ageBot,44.4,sedimentary (pyroclastic),xenoliths,weathering - light,no glass,10R 6/4,X,photo,wet,bar,igsn1,@imlgs1@,@id1@
+AOML,Sea Biskit,CRUISE_1,sample1,"trap, sediment",2,,,volcanics,lapilli,,,,,,,,,,Jurassic,,,,,garnet,metamorphism - amphibolite,,,,,,,,@imlgs2@,@id2@
+AOML,Sea Biskit,CRUISE_1,sample2,"core, dart",1,,,,,dolomite,crusts,,,,,,,,Permian,,,,,biotite,"weathering - heavy, very",,,,,,,,@imlgs3@,@id3@
+AOML,Sea Biskit,CRUISE_1,sample2,"core, dart",2,,,,,,,,,,,,,,Cambrian,,,,"igneous (extrusive/volcanic), latite",,,,,,,,,,@imlgs4@,@id4@

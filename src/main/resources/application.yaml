@@ -1,0 +1,74 @@
+geosamples:
+  schema: mud
+  sample-table: ${geosamples.schema}.curators_sample_tsqp
+  facility-table: ${geosamples.schema}.curators_facility
+  interval-table: ${geosamples.schema}.curators_interval
+  links-table: ${geosamples.schema}.curators_sample_links
+  cruise-links_table: ${geosamples.schema}.curators_cruise_links
+  cruise-facility_table: ${geosamples.schema}.curators_cruise_facility
+  cruise-platform_table: ${geosamples.schema}.curators_cruise_platform
+  platform-table: ${geosamples.schema}.platform_master
+  cruise-table: ${geosamples.schema}.curators_cruise
+  leg-table: ${geosamples.schema}.curators_leg
+
+
+server:
+  servlet:
+    context-path: '/imlgs'
+  compression:
+    enabled: true
+  tomcat:
+    accesslog:
+      directory: '${svc.home}/log'
+      enabled: true
+      max-days: 31
+    redirect-context-root: false
+    use-relative-redirects: true
+  error:
+    whitelabel:
+      enabled: false
+  port: 5723
+  ssl:
+    enabled: true
+    key-store: '${svc.home}/config/keystore.p12'
+    key-store-password: ''
+    key-store-type: PKCS12
+    key-alias: ''
+
+spring:
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+    default-property-inclusion: non_null
+  mvc:
+    throw-exception-if-no-handler-found: true
+  jmx:
+    enabled: false
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+        default_schema: ${geosamples.schema}
+        dialect: org.hibernate.spatial.dialect.oracle.OracleSpatial10gDialect
+        spatial:
+          connection_finder: gov.noaa.ncei.geosamples.api.repository.PooledConnectionFinder
+    open-in-view: false
+  datasource:
+    driver-class-name: oracle.jdbc.OracleDriver
+    url:
+    username:
+    password:
+  flyway:
+    locations: classpath:db/migration/{vendor}
+    enabled: false
+    baseline-on-migrate: true
+    baseline-version: '000'
+    user: '${spring.datasource.username}'
+    password: '${spring.datasource.password}'
+    default-schema: '${spring.jpa.properties.hibernate.default_schema}'
+    placeholders:
+      schema_name: '${spring.jpa.properties.hibernate.default_schema}'
+    schemas:
+      - '${spring.jpa.properties.hibernate.default_schema}'
+    create-schemas: false
