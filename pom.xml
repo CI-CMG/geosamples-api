@@ -29,6 +29,9 @@
     <java.version>1.8</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <!-- Security Vulnerability Updates-->
+    <postgresql.version>42.5.0</postgresql.version>
+    <snakeyaml.version>1.33</snakeyaml.version>
   </properties>
 
   <dependencyManagement>
@@ -212,7 +215,7 @@
         <plugin>
           <groupId>com.github.spotbugs</groupId>
           <artifactId>spotbugs-maven-plugin</artifactId>
-          <version>4.7.2.0</version>
+          <version>4.7.2.1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -342,7 +345,7 @@
           </execution>
         </executions>
         <configuration>
-<!--?          <excludeFilterFile>spotbugs-exclude.xml</excludeFilterFile>-->
+          <excludeFilterFile>spotbugs-exclude.xml</excludeFilterFile>
         </configuration>
       </plugin>
       <plugin>

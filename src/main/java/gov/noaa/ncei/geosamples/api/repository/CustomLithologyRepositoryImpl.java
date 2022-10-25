@@ -52,12 +52,6 @@ public class CustomLithologyRepositoryImpl implements CustomLithologyRepository 
     return new QueryContext<>(from, query, cb);
   }
 
-  private long count(Specification<CuratorsLithologyEntity> spec) {
-    QueryContext<CuratorsLithologyEntity, Long> qc = query(Long.class, spec);
-    qc.getQuery().select(qc.getCriteriaBuilder().count(qc.getRoot().get(CuratorsLithologyEntity_.LITHOLOGY)));
-    return entityManager.createQuery(qc.getQuery()).getSingleResult();
-  }
-
   private static long getOffset(int page, int pageSize) {
     return (long) page * (long) pageSize;
   }
