@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 public interface CuratorsSampleTsqpRepository extends JpaRepository<CuratorsSampleTsqpEntity, String>,
     JpaSpecificationExecutor<CuratorsSampleTsqpEntity>, CustomRepository<CuratorsSampleTsqpEntity>  {
 
-  @Query("select count(S) from CuratorsSampleTsqpEntity S join S.cruiseFacility CF join CF.facility F where F.id = :facilityId")
+  @Query("select count(S) from CuratorsSampleTsqpEntity S join S.cruiseFacility CF join CF.facility F where F.id = :facilityId and S.publish = 'Y'")
   Integer countFacilitySamples(@Param("facilityId") Long facilityId);
 
 }
