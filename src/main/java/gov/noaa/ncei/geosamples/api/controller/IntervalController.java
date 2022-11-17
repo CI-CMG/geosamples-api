@@ -14,14 +14,12 @@ import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@CrossOrigin
 @RequestMapping("/api/intervals")
 public class IntervalController {
 
@@ -35,25 +33,25 @@ public class IntervalController {
   }
 
 
-  @CrossOrigin
+  
   @GetMapping(path = "/count", produces = MediaType.APPLICATION_JSON_VALUE)
   public CountView getCount(@ParameterObject @Valid GeosampleSearchParameterObject searchParams) {
     return intervalService.count(searchParams);
   }
 
-  @CrossOrigin
+  
   @GetMapping(path = "/detail", produces = MediaType.APPLICATION_JSON_VALUE)
   public PagedItemsView<IntervalView> getDetail(@ParameterObject @Valid GeosampleSearchParameterObject searchParams) {
     return intervalService.search(searchParams);
   }
 
-  @CrossOrigin
+  
   @GetMapping(path = "/detail/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
   public IntervalView getDetail(@PathVariable("id") Long id) {
     return intervalService.load(id);
   }
 
-  @CrossOrigin
+  
   @GetMapping(path = "/csv", produces = TEXT_CSV_VALUE)
   public void getSamplesCsv(@ParameterObject @Valid GeosampleSearchParameterObject searchParams, HttpServletResponse response) {
     response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=geosamples_export.csv");
