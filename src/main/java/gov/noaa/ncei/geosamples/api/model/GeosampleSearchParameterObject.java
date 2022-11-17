@@ -56,7 +56,7 @@ public class GeosampleSearchParameterObject implements PagingParameters {
   @Min(1)
   private int page;
   @Min(1)
-  @Max(500)
+  @Max(2000)
   @Parameter(name = "items_per_page")
   private int itemsPerPage;
 
