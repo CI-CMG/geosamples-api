@@ -1,5 +1,8 @@
 package gov.noaa.ncei.geosamples.api.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Interval {
 
 
@@ -27,7 +30,7 @@ public class Interval {
   private String comp5;
   private String comp6;
   private String description;
-  private String age;
+  private List<String> ages;
   private String absoluteAgeTop;
   private String absoluteAgeBot;
   private Double weight;
@@ -242,12 +245,15 @@ public class Interval {
     this.description = description;
   }
 
-  public String getAge() {
-    return age;
+  public List<String> getAges() {
+    return ages;
   }
 
-  public void setAge(String age) {
-    this.age = age;
+  public void setAges(List<String> ages) {
+    if (ages == null) {
+      ages = new ArrayList<>(0);
+    }
+    this.ages = ages;
   }
 
   public String getAbsoluteAgeTop() {
