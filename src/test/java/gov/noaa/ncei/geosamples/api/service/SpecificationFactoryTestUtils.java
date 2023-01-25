@@ -663,7 +663,7 @@ public class SpecificationFactoryTestUtils {
     interval.setText2(fields.getText2());
     interval.setRockMin(fields.getRockMin());
     interval.setWeathMeta(fields.getWeathMeta());
-    interval.setAge(fields.getAge());
+    interval.setAges(Collections.singleton(fields.getAge()));
     interval.setPublish(publish);
     return interval;
   }

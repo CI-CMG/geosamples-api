@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import gov.noaa.ncei.geosamples.api.TestUtils;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -122,7 +123,7 @@ class IntervalControllerIT {
     interval1.setText2("sandy mud or ooze");
     interval1.setRockMin("xenoliths");
     interval1.setWeathMeta("weathering - light");
-    interval1.setAge("Quaternary");
+    interval1.setAges(Collections.singletonList("Quaternary"));
 
     Interval interval2 = new Interval();
     interval2.setInterval(2);
@@ -130,7 +131,7 @@ class IntervalControllerIT {
     interval2.setText1("lapilli");
     interval2.setRockMin("garnet");
     interval2.setWeathMeta("metamorphism - amphibolite");
-    interval2.setAge("Jurassic");
+    interval2.setAges(Collections.singletonList("Jurassic"));
 
     testUtils.insertInterval(cruiseName1, year1, sample1.getSample(), interval1);
     testUtils.insertInterval(cruiseName1, year1, sample1.getSample(), interval2);
@@ -142,12 +143,12 @@ class IntervalControllerIT {
     interval3.setText2("crusts");
     interval3.setRockMin("biotite");
     interval3.setWeathMeta("weathering - heavy, very");
-    interval3.setAge("Permian");
+    interval3.setAges(Collections.singletonList("Permian"));
 
     Interval interval4 = new Interval();
     interval4.setInterval(2);
     interval4.setRockLith("igneous (extrusive/volcanic), latite");
-    interval4.setAge("Cambrian");
+    interval4.setAges(Collections.singletonList("Cambrian"));
 
     testUtils.insertInterval(cruiseName1, year1, sample2.getSample(), interval3);
     testUtils.insertInterval(cruiseName1, year1, sample2.getSample(), interval4);
@@ -190,7 +191,7 @@ class IntervalControllerIT {
     interval6.setText1("ash");
     interval6.setRockMin("muscovite");
     interval6.setWeathMeta("metamorphism - serpentinized");
-    interval6.setAge("Triassic");
+    interval6.setAges(Collections.singletonList("Triassic"));
 
     testUtils.insertInterval(cruiseName2, year2, sample3.getSample(), interval5);
     testUtils.insertInterval(cruiseName2, year2, sample3.getSample(), interval6);
@@ -358,7 +359,7 @@ class IntervalControllerIT {
     interval1.setText2("sandy mud or ooze");
     interval1.setRockMin("xenoliths");
     interval1.setWeathMeta("weathering - light");
-    interval1.setAge("Quaternary");
+    interval1.setAges(Collections.singletonList("Quaternary"));
 
     Interval interval2 = new Interval();
     interval2.setInterval(2);
@@ -366,7 +367,7 @@ class IntervalControllerIT {
     interval2.setText1("lapilli");
     interval2.setRockMin("garnet");
     interval2.setWeathMeta("metamorphism - amphibolite");
-    interval2.setAge("Jurassic");
+    interval2.setAges(Collections.singletonList("Jurassic"));
 
     testUtils.insertInterval(cruiseName1, year1, sample1.getSample(), interval1);
     testUtils.insertInterval(cruiseName1, year1, sample1.getSample(), interval2);
@@ -378,12 +379,12 @@ class IntervalControllerIT {
     interval3.setText2("crusts");
     interval3.setRockMin("biotite");
     interval3.setWeathMeta("weathering - heavy, very");
-    interval3.setAge("Permian");
+    interval3.setAges(Collections.singletonList("Permian"));
 
     Interval interval4 = new Interval();
     interval4.setInterval(2);
     interval4.setRockLith("igneous (extrusive/volcanic), latite");
-    interval4.setAge("Cambrian");
+    interval4.setAges(Collections.singletonList("Cambrian"));
 
     testUtils.insertInterval(cruiseName1, year1, sample2.getSample(), interval3);
     testUtils.insertInterval(cruiseName1, year1, sample2.getSample(), interval4);
@@ -426,7 +427,7 @@ class IntervalControllerIT {
     interval6.setText1("ash");
     interval6.setRockMin("muscovite");
     interval6.setWeathMeta("metamorphism - serpentinized");
-    interval6.setAge("Triassic");
+    interval6.setAges(Collections.singletonList("Triassic"));
 
     testUtils.insertInterval(cruiseName2, year2, sample3.getSample(), interval5);
     testUtils.insertInterval(cruiseName2, year2, sample3.getSample(), interval6);
@@ -522,7 +523,7 @@ class IntervalControllerIT {
     interval1.setText2("sandy mud or ooze");
     interval1.setRockMin("xenoliths");
     interval1.setWeathMeta("weathering - light");
-    interval1.setAge("Quaternary");
+    interval1.setAges(Collections.singletonList("Quaternary"));
 
     Interval interval2 = new Interval();
     interval2.setInterval(2);
@@ -530,7 +531,7 @@ class IntervalControllerIT {
     interval2.setText1("lapilli");
     interval2.setRockMin("garnet");
     interval2.setWeathMeta("metamorphism - amphibolite");
-    interval2.setAge("Jurassic");
+    interval2.setAges(Collections.singletonList("Jurassic"));
 
     testUtils.insertInterval(cruiseName1, year1, sample1.getSample(), interval1);
     testUtils.insertInterval(cruiseName1, year1, sample1.getSample(), interval2);
@@ -542,12 +543,12 @@ class IntervalControllerIT {
     interval3.setText2("crusts");
     interval3.setRockMin("biotite");
     interval3.setWeathMeta("weathering - heavy, very");
-    interval3.setAge("Permian");
+    interval3.setAges(Collections.singletonList("Permian"));
 
     Interval interval4 = new Interval();
     interval4.setInterval(2);
     interval4.setRockLith("igneous (extrusive/volcanic), latite");
-    interval4.setAge("Cambrian");
+    interval4.setAges(Collections.singletonList("Cambrian"));
 
     testUtils.insertInterval(cruiseName1, year1, sample2.getSample(), interval3);
     testUtils.insertInterval(cruiseName1, year1, sample2.getSample(), interval4);
@@ -590,7 +591,7 @@ class IntervalControllerIT {
     interval6.setText1("ash");
     interval6.setRockMin("muscovite");
     interval6.setWeathMeta("metamorphism - serpentinized");
-    interval6.setAge("Triassic");
+    interval6.setAges(Collections.singletonList("Triassic"));
 
     testUtils.insertInterval(cruiseName2, year2, sample3.getSample(), interval5);
     testUtils.insertInterval(cruiseName2, year2, sample3.getSample(), interval6);
@@ -620,16 +621,16 @@ class IntervalControllerIT {
     interval.put("platform", "Sea Biskit");
     interval.put("cruise", "CRUISE_1");
     interval.put("sample", "sample1");
+    interval.put("device", "trap, sediment");
     interval.put("interval", 1);
     interval.put("lith1", "terrigenous");
     interval.put("lith2", "evaporite");
-    interval.put("rock_lith", "sedimentary (pyroclastic)");
     interval.put("text1", "gravel");
     interval.put("text2", "sandy mud or ooze");
+    interval.put("rock_lith", "sedimentary (pyroclastic)");
     interval.put("rock_min", "xenoliths");
     interval.put("weath_meta", "weathering - light");
     interval.put("age", "Quaternary");
-    interval.put("device", "trap, sediment");
     interval.put("imlgs", imlgs);
 
 
@@ -706,7 +707,7 @@ class IntervalControllerIT {
     interval1.setText2("sandy mud or ooze");
     interval1.setRockMin("xenoliths");
     interval1.setWeathMeta("weathering - light");
-    interval1.setAge("Quaternary");
+    interval1.setAges(Collections.singletonList("Quaternary"));
     interval1.setDepthTop(4);
     interval1.setDepthBot(5);
     interval1.setComp1("calcareous, spines");
@@ -733,7 +734,7 @@ class IntervalControllerIT {
     interval2.setText1("lapilli");
     interval2.setRockMin("garnet");
     interval2.setWeathMeta("metamorphism - amphibolite");
-    interval2.setAge("Jurassic");
+    interval2.setAges(Collections.singletonList("Jurassic"));
 
     testUtils.insertInterval(cruiseName1, year1, sample1.getSample(), interval1);
     testUtils.insertInterval(cruiseName1, year1, sample1.getSample(), interval2);
@@ -745,12 +746,12 @@ class IntervalControllerIT {
     interval3.setText2("crusts");
     interval3.setRockMin("biotite");
     interval3.setWeathMeta("weathering - heavy, very");
-    interval3.setAge("Permian");
+    interval3.setAges(Collections.singletonList("Permian"));
 
     Interval interval4 = new Interval();
     interval4.setInterval(2);
     interval4.setRockLith("igneous (extrusive/volcanic), latite");
-    interval4.setAge("Cambrian");
+    interval4.setAges(Collections.singletonList("Cambrian"));
 
     testUtils.insertInterval(cruiseName1, year1, sample2.getSample(), interval3);
     testUtils.insertInterval(cruiseName1, year1, sample2.getSample(), interval4);
@@ -793,7 +794,7 @@ class IntervalControllerIT {
     interval6.setText1("ash");
     interval6.setRockMin("muscovite");
     interval6.setWeathMeta("metamorphism - serpentinized");
-    interval6.setAge("Triassic");
+    interval6.setAges(Collections.singletonList("Triassic"));
 
     testUtils.insertInterval(cruiseName2, year2, sample3.getSample(), interval5);
     testUtils.insertInterval(cruiseName2, year2, sample3.getSample(), interval6);
