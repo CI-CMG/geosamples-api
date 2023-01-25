@@ -10,6 +10,7 @@ geosamples:
   platform-table: ${geosamples.schema}.platform_master
   cruise-table: ${geosamples.schema}.curators_cruise
   leg-table: ${geosamples.schema}.curators_leg
+  age-interval-join-table: ${geosamples.schema}.age_interval
 
 
 server:
