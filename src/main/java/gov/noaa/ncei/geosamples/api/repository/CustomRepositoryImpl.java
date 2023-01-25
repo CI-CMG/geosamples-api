@@ -245,7 +245,7 @@ public class CustomRepositoryImpl<E, ID> extends SimpleJpaRepository<E, ID> impl
     }
     if (StringUtils.hasText(age)) {
       specs.add(SearchUtils.equalIgnoreCase(cb, age, joiner.joinInterval()
-          .join(CuratorsIntervalEntity_.AGE).get(CuratorsAgeEntity_.AGE)));
+          .join(CuratorsIntervalEntity_.AGES).get(CuratorsAgeEntity_.AGE)));
     }
     if (StringUtils.hasText(imlgs)) {
       specs.add(SearchUtils.equalIgnoreCase(cb, imlgs, joiner.joinSample().get(CuratorsSampleTsqpEntity_.IMLGS)));

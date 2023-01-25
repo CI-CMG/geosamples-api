@@ -19,9 +19,7 @@ class GeologicAgesAttributeService extends AttributeService<CuratorsAgeEntity> {
 
   @Override
   protected SpecExtender<CuratorsAgeEntity> getAdditionalSpecifications() {
-    return (specs, r, cb, j) -> {
-      specs.add(cb.isNotNull(j.joinInterval().get(CuratorsIntervalEntity_.AGE)));
-    };
+    return (specs, r, cb, j) -> specs.add(cb.isNotNull(j.joinInterval().join(CuratorsIntervalEntity_.AGES).get(CuratorsAgeEntity_.AGE)));
   }
 
 }
