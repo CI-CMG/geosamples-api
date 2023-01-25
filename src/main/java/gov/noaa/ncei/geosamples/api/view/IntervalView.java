@@ -2,7 +2,9 @@ package gov.noaa.ncei.geosamples.api.view;
 
 import gov.noaa.ncei.geosamples.api.service.csv.CsvColumn;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 public class IntervalView implements Comparable<IntervalView> {
 
@@ -47,8 +49,8 @@ public class IntervalView implements Comparable<IntervalView> {
   private String comp6;
   @CsvColumn(order = 18, column = "description")
   private String description;
-  @CsvColumn(order = 19, column = "age")
-  private String age;
+  @CsvColumn(order = 19, column = "ages")
+  private Set<String> ages = new HashSet<>(0);
   @CsvColumn(order = 20, column = "absolute_age_top")
   private String absoluteAgeTop;
   @CsvColumn(order = 21, column = "absolute_age_bot")
@@ -238,12 +240,12 @@ public class IntervalView implements Comparable<IntervalView> {
     this.description = description;
   }
 
-  public String getAge() {
-    return age;
+  public Set<String> getAges() {
+    return ages;
   }
 
-  public void setAge(String age) {
-    this.age = age;
+  public void setAges(Set<String> ages) {
+    this.ages = ages;
   }
 
   public String getAbsoluteAgeTop() {
@@ -376,7 +378,7 @@ public class IntervalView implements Comparable<IntervalView> {
         view.text1) && Objects.equals(text2, view.text2) && Objects.equals(comp1, view.comp1) && Objects.equals(comp2,
         view.comp2) && Objects.equals(comp3, view.comp3) && Objects.equals(comp4, view.comp4) && Objects.equals(comp5,
         view.comp5) && Objects.equals(comp6, view.comp6) && Objects.equals(description, view.description)
-        && Objects.equals(age, view.age) && Objects.equals(absoluteAgeTop, view.absoluteAgeTop) && Objects.equals(
+        && Objects.equals(ages, view.ages) && Objects.equals(absoluteAgeTop, view.absoluteAgeTop) && Objects.equals(
         absoluteAgeBot, view.absoluteAgeBot) && Objects.equals(weight, view.weight) && Objects.equals(rockLith, view.rockLith)
         && Objects.equals(rockMin, view.rockMin) && Objects.equals(weathMeta, view.weathMeta) && Objects.equals(remark,
         view.remark) && Objects.equals(munsellCode, view.munsellCode) && Objects.equals(exhaustCode, view.exhaustCode)
@@ -387,7 +389,7 @@ public class IntervalView implements Comparable<IntervalView> {
   @Override
   public int hashCode() {
     return Objects.hash(facilityCode, platform, cruise, sample, device, interval, depthTop, depthBot, lith1, lith2, text1, text2, comp1, comp2, comp3,
-        comp4, comp5, comp6, description, age, absoluteAgeTop, absoluteAgeBot, weight, rockLith, rockMin, weathMeta, remark, munsellCode, exhaustCode,
+        comp4, comp5, comp6, description, ages, absoluteAgeTop, absoluteAgeBot, weight, rockLith, rockMin, weathMeta, remark, munsellCode, exhaustCode,
         photoLink, lake, intComments, igsn, imlgs);
   }
 
@@ -421,7 +423,7 @@ public class IntervalView implements Comparable<IntervalView> {
         ", comp5='" + comp5 + '\'' +
         ", comp6='" + comp6 + '\'' +
         ", description='" + description + '\'' +
-        ", age='" + age + '\'' +
+        ", age='" + ages + '\'' +
         ", absoluteAgeTop='" + absoluteAgeTop + '\'' +
         ", absoluteAgeBot='" + absoluteAgeBot + '\'' +
         ", weight=" + weight +

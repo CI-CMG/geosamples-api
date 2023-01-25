@@ -14,6 +14,7 @@ import gov.noaa.ncei.geosamples.api.view.SampleDisplayView;
 import gov.noaa.ncei.geosamples.api.view.SampleDisplayViewImpl;
 import gov.noaa.ncei.geosamples.api.view.SampleLinkedDetailView;
 import gov.noaa.ncei.geosamples.api.view.SampleLinkedDetailViewImpl;
+import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsAgeEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsCruiseEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsCruiseFacilityEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsCruiseLinksEntity;
@@ -24,6 +25,7 @@ import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsLegEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsSampleLinksEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsSampleTsqpEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.PlatformMasterEntity;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 public final class ViewTransformers {
@@ -179,7 +181,7 @@ public final class ViewTransformers {
     view.setComp5(entity.getComp5() == null ? null : entity.getComp5().getLithology());
     view.setComp6(entity.getComp6() == null ? null : entity.getComp6().getLithology());
     view.setDescription(entity.getDescription());
-    view.setAge(entity.getAge() == null ? null : entity.getAge().getAge());
+    view.setAges(entity.getAges() == null ? Collections.emptySet() : entity.getAges().stream().map(CuratorsAgeEntity::getAge).collect(Collectors.toSet()));
     view.setAbsoluteAgeTop(entity.getAbsoluteAgeTop());
     view.setAbsoluteAgeBot(entity.getAbsoluteAgeBot());
     view.setWeight(entity.getWeight());

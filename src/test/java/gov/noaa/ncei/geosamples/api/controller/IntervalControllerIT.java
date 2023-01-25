@@ -9,7 +9,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import gov.noaa.ncei.geosamples.api.TestUtils;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -114,6 +116,9 @@ class IntervalControllerIT {
         "Y",
         leg1);
 
+    List<String> ages1 = new ArrayList<>();
+    ages1.add("Jurassic");
+    ages1.add("Quaternary");
     Interval interval1 = new Interval();
     interval1.setInterval(1);
     interval1.setLith1("terrigenous");
@@ -123,32 +128,41 @@ class IntervalControllerIT {
     interval1.setText2("sandy mud or ooze");
     interval1.setRockMin("xenoliths");
     interval1.setWeathMeta("weathering - light");
-    interval1.setAges(Collections.singletonList("Quaternary"));
+    interval1.setAges(ages1);
 
+    List<String> ages2 = new ArrayList<>();
+    ages2.add("Jurassic");
+    ages2.add("Permian");
     Interval interval2 = new Interval();
     interval2.setInterval(2);
     interval2.setLith1("volcanics");
     interval2.setText1("lapilli");
     interval2.setRockMin("garnet");
     interval2.setWeathMeta("metamorphism - amphibolite");
-    interval2.setAges(Collections.singletonList("Jurassic"));
+    interval2.setAges(ages2);
 
     testUtils.insertInterval(cruiseName1, year1, sample1.getSample(), interval1);
     testUtils.insertInterval(cruiseName1, year1, sample1.getSample(), interval2);
 
     testUtils.insertSample(cruiseName1, year1, leg2, facility1, platform1, sample2);
+
+    List<String> ages3 = new ArrayList<>();
+    ages3.add("Cambrian");
+    ages3.add("Permian");
     Interval interval3 = new Interval();
     interval3.setInterval(1);
     interval3.setLith2("dolomite");
     interval3.setText2("crusts");
     interval3.setRockMin("biotite");
     interval3.setWeathMeta("weathering - heavy, very");
-    interval3.setAges(Collections.singletonList("Permian"));
+    interval3.setAges(ages3);
 
+    List<String> ages4 = new ArrayList<>();
+    ages4.add("Cambrian");
     Interval interval4 = new Interval();
     interval4.setInterval(2);
     interval4.setRockLith("igneous (extrusive/volcanic), latite");
-    interval4.setAges(Collections.singletonList("Cambrian"));
+    interval4.setAges(ages4);
 
     testUtils.insertInterval(cruiseName1, year1, sample2.getSample(), interval3);
     testUtils.insertInterval(cruiseName1, year1, sample2.getSample(), interval4);
@@ -185,13 +199,15 @@ class IntervalControllerIT {
     Interval interval5 = new Interval();
     interval5.setInterval(1);
 
+    List<String> ages6 = new ArrayList<>();
+    ages6.add("Triassic");
     Interval interval6 = new Interval();
     interval6.setInterval(2);
     interval6.setLith1("phosphate");
     interval6.setText1("ash");
     interval6.setRockMin("muscovite");
     interval6.setWeathMeta("metamorphism - serpentinized");
-    interval6.setAges(Collections.singletonList("Triassic"));
+    interval6.setAges(ages6);
 
     testUtils.insertInterval(cruiseName2, year2, sample3.getSample(), interval5);
     testUtils.insertInterval(cruiseName2, year2, sample3.getSample(), interval6);
@@ -228,19 +244,24 @@ class IntervalControllerIT {
     interval.put("platform", "Sea Biskit");
     interval.put("cruise", "CRUISE_1");
     interval.put("sample", "sample1");
+    interval.put("device", "trap, sediment");
     interval.put("interval", 1);
     interval.put("lith1", "terrigenous");
     interval.put("lith2", "evaporite");
-    interval.put("rock_lith", "sedimentary (pyroclastic)");
     interval.put("text1", "gravel");
     interval.put("text2", "sandy mud or ooze");
+
+    ArrayNode ages = objectMapper.createArrayNode();
+    ages1.forEach(ages::add);
+    interval.put("ages", ages);
+    interval.put("rock_lith", "sedimentary (pyroclastic)");
     interval.put("rock_min", "xenoliths");
     interval.put("weath_meta", "weathering - light");
-    interval.put("age", "Quaternary");
-    interval.put("device", "trap, sediment");
     interval.put("imlgs", imlgs);
     items.add(interval);
 
+    ages = objectMapper.createArrayNode();
+    ages2.forEach(ages::add);
     interval = objectMapper.createObjectNode();
     interval.put("id", testUtils.getIntervalId(imlgs, 2));
     interval.put("facility_code", "AOML");
@@ -252,11 +273,13 @@ class IntervalControllerIT {
     interval.put("text1", "lapilli");
     interval.put("rock_min", "garnet");
     interval.put("weath_meta", "metamorphism - amphibolite");
-    interval.put("age", "Jurassic");
+    interval.put("ages", ages);
     interval.put("device", "trap, sediment");
     interval.put("imlgs", imlgs);
     items.add(interval);
 
+    ages = objectMapper.createArrayNode();
+    ages3.forEach(ages::add);
     interval = objectMapper.createObjectNode();
     interval.put("id", testUtils.getIntervalId(imlgs2, 1));
     interval.put("facility_code", "AOML");
@@ -268,11 +291,13 @@ class IntervalControllerIT {
     interval.put("text2", "crusts");
     interval.put("rock_min", "biotite");
     interval.put("weath_meta", "weathering - heavy, very");
-    interval.put("age", "Permian");
+    interval.put("ages", ages);
     interval.put("device", "core, dart");
     interval.put("imlgs", imlgs2);
     items.add(interval);
 
+    ages = objectMapper.createArrayNode();
+    ages4.forEach(ages::add);
     interval = objectMapper.createObjectNode();
     interval.put("id", testUtils.getIntervalId(imlgs2, 2));
     interval.put("facility_code", "AOML");
@@ -281,7 +306,7 @@ class IntervalControllerIT {
     interval.put("sample", "sample2");
     interval.put("interval", 2);
     interval.put("rock_lith", "igneous (extrusive/volcanic), latite");
-    interval.put("age", "Cambrian");
+    interval.put("ages", ages);
     interval.put("device", "core, dart");
     interval.put("imlgs", imlgs2);
     items.add(interval);
@@ -514,6 +539,9 @@ class IntervalControllerIT {
         "Y",
         leg1);
 
+    List<String> ages1 = new ArrayList<>();
+    ages1.add("Jurassic");
+    ages1.add("Quaternary");
     Interval interval1 = new Interval();
     interval1.setInterval(1);
     interval1.setLith1("terrigenous");
@@ -523,32 +551,41 @@ class IntervalControllerIT {
     interval1.setText2("sandy mud or ooze");
     interval1.setRockMin("xenoliths");
     interval1.setWeathMeta("weathering - light");
-    interval1.setAges(Collections.singletonList("Quaternary"));
+    interval1.setAges(ages1);
 
+    List<String> ages2 = new ArrayList<>();
+    ages2.add("Jurassic");
+    ages2.add("Permian");
     Interval interval2 = new Interval();
     interval2.setInterval(2);
     interval2.setLith1("volcanics");
     interval2.setText1("lapilli");
     interval2.setRockMin("garnet");
     interval2.setWeathMeta("metamorphism - amphibolite");
-    interval2.setAges(Collections.singletonList("Jurassic"));
+    interval2.setAges(ages2);
 
     testUtils.insertInterval(cruiseName1, year1, sample1.getSample(), interval1);
     testUtils.insertInterval(cruiseName1, year1, sample1.getSample(), interval2);
 
     testUtils.insertSample(cruiseName1, year1, leg2, facility1, platform1, sample2);
+
+    List<String> ages3 = new ArrayList<>();
+    ages3.add("Cambrian");
+    ages3.add("Permian");
     Interval interval3 = new Interval();
     interval3.setInterval(1);
     interval3.setLith2("dolomite");
     interval3.setText2("crusts");
     interval3.setRockMin("biotite");
     interval3.setWeathMeta("weathering - heavy, very");
-    interval3.setAges(Collections.singletonList("Permian"));
+    interval3.setAges(ages3);
 
+    List<String> ages4 = new ArrayList<>();
+    ages4.add("Cambrian");
     Interval interval4 = new Interval();
     interval4.setInterval(2);
     interval4.setRockLith("igneous (extrusive/volcanic), latite");
-    interval4.setAges(Collections.singletonList("Cambrian"));
+    interval4.setAges(ages4);
 
     testUtils.insertInterval(cruiseName1, year1, sample2.getSample(), interval3);
     testUtils.insertInterval(cruiseName1, year1, sample2.getSample(), interval4);
@@ -585,13 +622,15 @@ class IntervalControllerIT {
     Interval interval5 = new Interval();
     interval5.setInterval(1);
 
+    List<String> ages6 = new ArrayList<>();
+    ages6.add("Triassic");
     Interval interval6 = new Interval();
     interval6.setInterval(2);
     interval6.setLith1("phosphate");
     interval6.setText1("ash");
     interval6.setRockMin("muscovite");
     interval6.setWeathMeta("metamorphism - serpentinized");
-    interval6.setAges(Collections.singletonList("Triassic"));
+    interval6.setAges(ages6);
 
     testUtils.insertInterval(cruiseName2, year2, sample3.getSample(), interval5);
     testUtils.insertInterval(cruiseName2, year2, sample3.getSample(), interval6);
@@ -614,7 +653,8 @@ class IntervalControllerIT {
 
     JsonNode json = objectMapper.readTree(response.getBody());
 
-
+    ArrayNode ages = objectMapper.createArrayNode();
+    ages1.forEach(ages::add);
     ObjectNode interval = objectMapper.createObjectNode();
     interval.put("id", id);
     interval.put("facility_code", "AOML");
@@ -630,7 +670,7 @@ class IntervalControllerIT {
     interval.put("rock_lith", "sedimentary (pyroclastic)");
     interval.put("rock_min", "xenoliths");
     interval.put("weath_meta", "weathering - light");
-    interval.put("age", "Quaternary");
+    interval.put("ages", ages);
     interval.put("imlgs", imlgs);
 
 
@@ -698,6 +738,9 @@ class IntervalControllerIT {
         "Y",
         leg1);
 
+    List<String> ages1 = new ArrayList<>();
+    ages1.add("Jurassic");
+    ages1.add("Quaternary");
     Interval interval1 = new Interval();
     interval1.setInterval(1);
     interval1.setLith1("terrigenous");
@@ -707,7 +750,7 @@ class IntervalControllerIT {
     interval1.setText2("sandy mud or ooze");
     interval1.setRockMin("xenoliths");
     interval1.setWeathMeta("weathering - light");
-    interval1.setAges(Collections.singletonList("Quaternary"));
+    interval1.setAges(ages1);
     interval1.setDepthTop(4);
     interval1.setDepthBot(5);
     interval1.setComp1("calcareous, spines");
@@ -728,30 +771,39 @@ class IntervalControllerIT {
     interval1.setIntComments("bar");
     interval1.setIgsn("igsn1");
 
+    List<String> ages2 = new ArrayList<>();
+    ages2.add("Jurassic");
+    ages2.add("Permian");
     Interval interval2 = new Interval();
     interval2.setInterval(2);
     interval2.setLith1("volcanics");
     interval2.setText1("lapilli");
     interval2.setRockMin("garnet");
     interval2.setWeathMeta("metamorphism - amphibolite");
-    interval2.setAges(Collections.singletonList("Jurassic"));
+    interval2.setAges(ages2);
 
     testUtils.insertInterval(cruiseName1, year1, sample1.getSample(), interval1);
     testUtils.insertInterval(cruiseName1, year1, sample1.getSample(), interval2);
 
     testUtils.insertSample(cruiseName1, year1, leg2, facility1, platform1, sample2);
+
+    List<String> ages3 = new ArrayList<>();
+    ages3.add("Cambrian");
+    ages3.add("Permian");
     Interval interval3 = new Interval();
     interval3.setInterval(1);
     interval3.setLith2("dolomite");
     interval3.setText2("crusts");
     interval3.setRockMin("biotite");
     interval3.setWeathMeta("weathering - heavy, very");
-    interval3.setAges(Collections.singletonList("Permian"));
+    interval3.setAges(ages3);
 
+    List<String> ages4 = new ArrayList<>();
+    ages4.add("Cambrian");
     Interval interval4 = new Interval();
     interval4.setInterval(2);
     interval4.setRockLith("igneous (extrusive/volcanic), latite");
-    interval4.setAges(Collections.singletonList("Cambrian"));
+    interval4.setAges(ages4);
 
     testUtils.insertInterval(cruiseName1, year1, sample2.getSample(), interval3);
     testUtils.insertInterval(cruiseName1, year1, sample2.getSample(), interval4);
@@ -788,13 +840,15 @@ class IntervalControllerIT {
     Interval interval5 = new Interval();
     interval5.setInterval(1);
 
+    List<String> ages6 = new ArrayList<>();
+    ages4.add("Triassic");
     Interval interval6 = new Interval();
     interval6.setInterval(2);
     interval6.setLith1("phosphate");
     interval6.setText1("ash");
     interval6.setRockMin("muscovite");
     interval6.setWeathMeta("metamorphism - serpentinized");
-    interval6.setAges(Collections.singletonList("Triassic"));
+    interval6.setAges(ages6);
 
     testUtils.insertInterval(cruiseName2, year2, sample3.getSample(), interval5);
     testUtils.insertInterval(cruiseName2, year2, sample3.getSample(), interval6);

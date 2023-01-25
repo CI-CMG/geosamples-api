@@ -10,7 +10,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import gov.noaa.ncei.geosamples.api.TestUtils;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -705,6 +707,9 @@ class SampleControllerIT {
         "Y",
         leg1);
 
+    List<String> ages1 = new ArrayList<>();
+    ages1.add("Jurassic");
+    ages1.add("Triassic");
     Interval interval1 = new Interval();
     interval1.setInterval(1);
     interval1.setLith1("terrigenous");
@@ -714,15 +719,18 @@ class SampleControllerIT {
     interval1.setText2("sandy mud or ooze");
     interval1.setRockMin("xenoliths");
     interval1.setWeathMeta("weathering - light");
-    interval1.setAges(Collections.singletonList("Quaternary"));
+    interval1.setAges(ages1);
 
+    List<String> ages2 = new ArrayList<>();
+    ages2.add("Jurassic");
+    ages2.add("Precambrian");
     Interval interval2 = new Interval();
     interval2.setInterval(2);
     interval2.setLith1("volcanics");
     interval2.setText1("lapilli");
     interval2.setRockMin("garnet");
     interval2.setWeathMeta("metamorphism - amphibolite");
-    interval2.setAges(Collections.singletonList("Jurassic"));
+    interval2.setAges(ages2);
 
     testUtils.insertInterval(cruiseName1, year1, sample1.getSample(), interval1);
     testUtils.insertInterval(cruiseName1, year1, sample1.getSample(), interval2);
@@ -805,19 +813,19 @@ class SampleControllerIT {
     ObjectNode expectedJson = objectMapper.createObjectNode();
     expectedJson.put("imlgs", imlgs);
     expectedJson.put("facility_code", "AOML");
-    expectedJson.put("facility", "NOAA-Atlantic Oceanographic and Meteorol. Lab");
-    expectedJson.put("cruise", "CRUISE_1");
-    expectedJson.put("leg", "LEFT-1");
     expectedJson.put("platform", "Sea Biskit");
-    expectedJson.put("igsn", "igsn1");
+    expectedJson.put("cruise", "CRUISE_1");
     expectedJson.put("sample", "sample1");
+    expectedJson.put("device", "trap, sediment");
     expectedJson.put("lat", 55.5);
     expectedJson.put("lon", 66.6);
-    expectedJson.put("device", "trap, sediment");
-    expectedJson.put("publish", "Y");
-    expectedJson.put("lake", "blue");
+    expectedJson.put("igsn", "igsn1");
+    expectedJson.put("leg", "LEFT-1");
+    expectedJson.put("facility", "NOAA-Atlantic Oceanographic and Meteorol. Lab");
     expectedJson.put("province", "axial valley");
+    expectedJson.put("lake", "blue");
     expectedJson.put("last_update", testUtils.getLastUpdate(imlgs));
+    expectedJson.put("publish", "Y");
 
     ArrayNode sampleLinks = objectMapper.createArrayNode();
     ObjectNode sampleLink = objectMapper.createObjectNode();
@@ -836,16 +844,19 @@ class SampleControllerIT {
     interval.put("platform", "Sea Biskit");
     interval.put("cruise", "CRUISE_1");
     interval.put("sample", "sample1");
+    interval.put("device", "trap, sediment");
     interval.put("interval", 1);
     interval.put("lith1", "terrigenous");
     interval.put("lith2", "evaporite");
-    interval.put("rock_lith", "sedimentary (pyroclastic)");
     interval.put("text1", "gravel");
     interval.put("text2", "sandy mud or ooze");
+    ArrayNode ages = objectMapper.createArrayNode();
+    ages1.forEach(ages::add);
+    interval.put("ages", ages);
+    interval.put("rock_lith", "sedimentary (pyroclastic)");
     interval.put("rock_min", "xenoliths");
     interval.put("weath_meta", "weathering - light");
-    interval.put("age", "Quaternary");
-    interval.put("device", "trap, sediment");
+
     interval.put("imlgs", imlgs);
     intervals.add(interval);
 
@@ -855,13 +866,16 @@ class SampleControllerIT {
     interval.put("platform", "Sea Biskit");
     interval.put("cruise", "CRUISE_1");
     interval.put("sample", "sample1");
+    interval.put("device", "trap, sediment");
     interval.put("interval", 2);
     interval.put("lith1", "volcanics");
     interval.put("text1", "lapilli");
     interval.put("rock_min", "garnet");
     interval.put("weath_meta", "metamorphism - amphibolite");
-    interval.put("age", "Jurassic");
-    interval.put("device", "trap, sediment");
+
+    ages = objectMapper.createArrayNode();
+    ages2.forEach(ages::add);
+    interval.put("ages", ages);
     interval.put("imlgs", imlgs);
     intervals.add(interval);
 
