@@ -15,6 +15,7 @@ public class TestUtils {
 
   private static final List<String> TABLES = Arrays.asList(
       "CURATORS_SAMPLE_LINKS",
+      "AGE_INTERVAL",
       "CURATORS_INTERVAL",
       "CURATORS_SAMPLE_TSQP",
       "CURATORS_CRUISE_FACILITY",
@@ -226,7 +227,6 @@ public class TestUtils {
               + "COMP5, "
               + "COMP6, "
               + "DESCRIPTION, "
-              + "AGE, "
               + "ABSOLUTE_AGE_TOP, "
               + "ABSOLUTE_AGE_BOT, "
               + "WEIGHT, "
@@ -250,7 +250,6 @@ public class TestUtils {
               + "IGSN "
               + ") values "
               + "("
-              + "?, "
               + "?, "
               + "?, "
               + "?, "
@@ -324,7 +323,6 @@ public class TestUtils {
           interval.getComp5(),
           interval.getComp6(),
           interval.getDescription(),
-          interval.getAge(),
           interval.getAbsoluteAgeTop(),
           interval.getAbsoluteAgeBot(),
           interval.getWeight(),
@@ -347,6 +345,24 @@ public class TestUtils {
           interval.getPublish(),
           interval.getIgsn()
       );
+      List<String> ages = interval.getAges();
+      if (ages != null && !ages.isEmpty()) {
+        for (String age : ages) {
+          jdbcTemplate.update(
+              "insert into " + properties.getAgeIntervalJoinTable()
+              + "("
+                + "AGE, "
+                + "INTERVAL_ID "
+              + ") values "
+              + "("
+                  + "?, "
+                  + "? "
+              + ")",
+              age,
+              getIntervalId(imlgs, interval.getInterval())
+          );
+        }
+      }
     });
   }
 

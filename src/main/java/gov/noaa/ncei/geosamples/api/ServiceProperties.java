@@ -32,6 +32,8 @@ public class ServiceProperties {
   private String legTable;
   @NotBlank
   private String platformTable;
+  @NotBlank
+  private String ageIntervalJoinTable;
 
 
   public String getSchema() {
@@ -122,4 +124,11 @@ public class ServiceProperties {
     this.platformTable = platformTable;
   }
 
+  public String getAgeIntervalJoinTable() {
+    return ageIntervalJoinTable;
+  }
+
+  public void setAgeIntervalJoinTable(String ageIntervalJoinTable) {
+    this.ageIntervalJoinTable = ageIntervalJoinTable;
+  }
 }
