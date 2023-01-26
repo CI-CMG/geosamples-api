@@ -6,7 +6,7 @@ import gov.noaa.ncei.geosamples.api.model.GeosampleSearchParameterObject;
 import gov.noaa.ncei.geosamples.api.repository.CuratorsCruiseRepository;
 import gov.noaa.ncei.geosamples.api.service.ViewTransformers;
 import gov.noaa.ncei.geosamples.api.view.CountView;
-import gov.noaa.ncei.geosamples.api.view.CruiseLinkView;
+import gov.noaa.ncei.geosamples.api.view.CruiseLinkDetailView;
 import gov.noaa.ncei.geosamples.api.view.CruiseNameView;
 import gov.noaa.ncei.geosamples.api.view.CruiseView;
 import gov.noaa.ncei.geosamples.api.view.PagedItemsView;
@@ -35,8 +35,8 @@ public class CruiseService {
     this.specificationFactory = specificationFactory;
   }
 
-  public CruiseLinkView load(Long id) {
-    return ViewTransformers.toCruiseLinkView(
+  public CruiseLinkDetailView load(Long id) {
+    return ViewTransformers.toCruiseLinkDetailView(
         curatorsCruiseRepository.findById(id)
             .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, ApiError.builder().error(HttpStatus.NOT_FOUND.getReasonPhrase()).build())));
   }

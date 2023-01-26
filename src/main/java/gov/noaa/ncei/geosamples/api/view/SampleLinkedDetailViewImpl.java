@@ -7,9 +7,8 @@ public class SampleLinkedDetailViewImpl implements SampleLinkedDetailView {
 
 
   private String imlgs;
-  private String facilityCode;
   private String platform;
-  private String cruise;
+  private CruiseLinkView cruise;
   private String sample;
   private String device;
   private String beginDate;
@@ -20,7 +19,7 @@ public class SampleLinkedDetailViewImpl implements SampleLinkedDetailView {
   private Integer coredLength;
   private String igsn;
   private String leg;
-  private String facility;
+  private FacilityNameView facility;
   private String shipCode;
   private String endDate;
   private Double endLat;
@@ -40,7 +39,6 @@ public class SampleLinkedDetailViewImpl implements SampleLinkedDetailView {
   private String publish;
   private List<LinkView> links = new ArrayList<>(0);
   private List<IntervalView> intervals = new ArrayList<>(0);
-  private List<LinkView> cruiseLinks = new ArrayList<>(0);
 
   @Override
   public String getImlgs() {
@@ -50,16 +48,6 @@ public class SampleLinkedDetailViewImpl implements SampleLinkedDetailView {
   @Override
   public void setImlgs(String imlgs) {
     this.imlgs = imlgs;
-  }
-
-  @Override
-  public String getFacilityCode() {
-    return facilityCode;
-  }
-
-  @Override
-  public void setFacilityCode(String facilityCode) {
-    this.facilityCode = facilityCode;
   }
 
   @Override
@@ -73,12 +61,12 @@ public class SampleLinkedDetailViewImpl implements SampleLinkedDetailView {
   }
 
   @Override
-  public String getCruise() {
+  public CruiseLinkView getCruise() {
     return cruise;
   }
 
   @Override
-  public void setCruise(String cruise) {
+  public void setCruise(CruiseLinkView cruise) {
     this.cruise = cruise;
   }
 
@@ -182,12 +170,12 @@ public class SampleLinkedDetailViewImpl implements SampleLinkedDetailView {
   }
 
   @Override
-  public String getFacility() {
+  public FacilityNameView getFacility() {
     return facility;
   }
 
   @Override
-  public void setFacility(String facility) {
+  public void setFacility(FacilityNameView facility) {
     this.facility = facility;
   }
 
@@ -386,18 +374,5 @@ public class SampleLinkedDetailViewImpl implements SampleLinkedDetailView {
       intervals = new ArrayList<>(0);
     }
     this.intervals = intervals;
-  }
-
-  @Override
-  public List<LinkView> getCruiseLinks() {
-    return cruiseLinks;
-  }
-
-  @Override
-  public void setCruiseLinks(List<LinkView> cruiseLinks) {
-    if (cruiseLinks == null) {
-      cruiseLinks = new ArrayList<>(0);
-    }
-    this.cruiseLinks = cruiseLinks;
   }
 }

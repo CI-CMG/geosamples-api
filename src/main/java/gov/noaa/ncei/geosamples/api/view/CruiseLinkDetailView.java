@@ -3,27 +3,9 @@ package gov.noaa.ncei.geosamples.api.view;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CruiseLinkView implements ViewWithLinks {
+public class CruiseLinkDetailView extends CruiseView implements ViewWithLinks {
 
-  private Long id;
-  private String cruise;
   private List<LinkView> links = new ArrayList<>(0);
-
-  public Long getId() {
-    return id;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  public String getCruise() {
-    return cruise;
-  }
-
-  public void setCruise(String cruise) {
-    this.cruise = cruise;
-  }
 
   @Override
   public List<LinkView> getLinks() {

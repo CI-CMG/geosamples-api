@@ -1,5 +1,6 @@
 package gov.noaa.ncei.geosamples.api.service;
 
+import gov.noaa.ncei.geosamples.api.view.CruiseLinkDetailView;
 import gov.noaa.ncei.geosamples.api.view.CruiseLinkView;
 import gov.noaa.ncei.geosamples.api.view.CruiseNameView;
 import gov.noaa.ncei.geosamples.api.view.CruiseView;
@@ -8,9 +9,11 @@ import gov.noaa.ncei.geosamples.api.view.FacilityDisplayView;
 import gov.noaa.ncei.geosamples.api.view.FacilityNameView;
 import gov.noaa.ncei.geosamples.api.view.IntervalView;
 import gov.noaa.ncei.geosamples.api.view.LinkView;
+import gov.noaa.ncei.geosamples.api.view.SampleDetailDisplayView;
 import gov.noaa.ncei.geosamples.api.view.SampleDetailView;
 import gov.noaa.ncei.geosamples.api.view.SampleDetailViewImpl;
 import gov.noaa.ncei.geosamples.api.view.SampleDisplayView;
+import gov.noaa.ncei.geosamples.api.view.SampleDisplayViewBase;
 import gov.noaa.ncei.geosamples.api.view.SampleDisplayViewImpl;
 import gov.noaa.ncei.geosamples.api.view.SampleLinkedDetailView;
 import gov.noaa.ncei.geosamples.api.view.SampleLinkedDetailViewImpl;
@@ -42,10 +45,22 @@ public final class ViewTransformers {
     return view;
   }
 
-  public static CruiseLinkView toCruiseLinkView(CuratorsCruiseEntity entity) {
+  public static CruiseLinkDetailView toCruiseLinkDetailView(CuratorsCruiseEntity entity) {
+    CruiseLinkDetailView view = new CruiseLinkDetailView();
+    populateCruiseLinkDetailView(entity, view);
+    return view;
+  }
+
+  private static CruiseLinkView toCruiseLinkView(CuratorsCruisePlatformEntity entity) {
     CruiseLinkView view = new CruiseLinkView();
     populateCruiseLinkView(entity, view);
     return view;
+  }
+
+  private static void populateCruiseLinkView(CuratorsCruisePlatformEntity entity, CruiseLinkView view) {
+    view.setId(entity.getCruise().getId());
+    view.setCruise(entity.getCruise().getCruiseName());
+    view.setLinks(entity.getCruiseLinks().stream().map(ViewTransformers::toLinkView).sorted().collect(Collectors.toList()));
   }
 
   private static void populateCruiseNameView(CuratorsCruiseEntity entity, CruiseNameView view) {
@@ -68,7 +83,7 @@ public final class ViewTransformers {
     );
   }
 
-  private static void populateCruiseLinkView(CuratorsCruiseEntity entity, CruiseLinkView view) {
+  private static void populateCruiseLinkDetailView(CuratorsCruiseEntity entity, CruiseLinkDetailView view) {
     populateCruiseView(entity, view);
     view.setLinks(entity.getPlatformMappings().stream()
         .flatMap(pm -> pm.getCruiseLinks().stream())
@@ -123,9 +138,9 @@ public final class ViewTransformers {
     view.setFacilityCode(entity.getFacilityCode());
   }
 
-  public static SampleDetailView toSampleDetailView(CuratorsSampleTsqpEntity entity) {
-    SampleDetailView view = new SampleDetailViewImpl();
-    populateSampleDetailView(entity, view);
+  public static SampleDetailDisplayView toSampleDetailView(CuratorsSampleTsqpEntity entity) {
+    SampleDetailDisplayView view = new SampleDetailViewImpl();
+    populateSampleDetailDisplayView(entity, view);
     return view;
   }
 
@@ -159,12 +174,12 @@ public final class ViewTransformers {
     return view;
   }
 
-  public static IntervalView toIntervalView(CuratorsIntervalEntity entity, SampleDisplayView sample) {
+  public static IntervalView toIntervalView(CuratorsIntervalEntity entity, SampleDisplayViewBase sample) {
     IntervalView view = new IntervalView();
     view.setId(entity.getId());
-    view.setFacilityCode(sample.getFacilityCode());
+    view.setCruise(entity.getSample().getCruise().getCruiseName());
+    view.setFacilityCode(entity.getSample().getCruiseFacility().getFacility().getFacilityCode());
     view.setPlatform(sample.getPlatform());
-    view.setCruise(sample.getCruise());
     view.setSample(sample.getSample());
     view.setDevice(sample.getDevice());
     view.setInterval(entity.getInterval());
@@ -201,18 +216,23 @@ public final class ViewTransformers {
 
   // TODO child interval population should be moved to a dedicated query rather than filtering results which will be slightly more efficient
   private static void populateSampleLinkedDetailView(CuratorsSampleTsqpEntity entity, SampleLinkedDetailView view) {
+    populateSampleDisplayViewBase(entity, view);
     populateSampleDetailView(entity, view);
-    view.setFacility(entity.getCruiseFacility().getFacility().getFacility());
+    view.setFacility(entity.getCruiseFacility() == null ? null : toFacilityNameView(entity.getCruiseFacility().getFacility()));
     view.setLinks(entity.getLinks().stream().map(ViewTransformers::toLinkView).sorted().collect(Collectors.toList()));
     view.setIntervals(entity.getIntervals().stream().filter(CuratorsIntervalEntity::isPublish).map(i -> toIntervalView(i, view)).sorted().collect(Collectors.toList()));
-    view.setCruiseLinks(entity.getCruisePlatform().getCruiseLinks().stream().map(ViewTransformers::toLinkView).sorted().collect(Collectors.toList()));
+    view.setCruise(entity.getCruisePlatform() == null ? null : toCruiseLinkView(entity.getCruisePlatform()));
   }
 
   private static void populateSampleDisplayView(CuratorsSampleTsqpEntity entity, SampleDisplayView view) {
-    view.setImlgs(entity.getImlgs());
+    populateSampleDisplayViewBase(entity, view);
     view.setFacilityCode(entity.getCruiseFacility().getFacility().getFacilityCode());
-    view.setPlatform(entity.getCruisePlatform().getPlatform().getPlatform());
     view.setCruise(entity.getCruise().getCruiseName());
+  }
+
+  private static void populateSampleDisplayViewBase(CuratorsSampleTsqpEntity entity, SampleDisplayViewBase view) {
+    view.setImlgs(entity.getImlgs());
+    view.setPlatform(entity.getCruisePlatform().getPlatform().getPlatform());
     view.setSample(entity.getSample());
     view.setDevice(entity.getDevice().getDevice());
     view.setBeginDate(entity.getBeginDate());
@@ -225,8 +245,12 @@ public final class ViewTransformers {
     view.setLeg(entity.getLeg() == null ? null : entity.getLeg().getLegName());
   }
 
-  private static void populateSampleDetailView(CuratorsSampleTsqpEntity entity, SampleDetailView view) {
+  private static void populateSampleDetailDisplayView(CuratorsSampleTsqpEntity entity, SampleDetailDisplayView view) {
     populateSampleDisplayView(entity, view);
+    populateSampleDetailView(entity, view);
+  }
+
+  private static void populateSampleDetailView(CuratorsSampleTsqpEntity entity, SampleDetailView view) {
     view.setShipCode(entity.getCruisePlatform().getPlatform().getIcesCode());
     view.setEndDate(entity.getEndDate());
     view.setEndLat(entity.getEndLat());

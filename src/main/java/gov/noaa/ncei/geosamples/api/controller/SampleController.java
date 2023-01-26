@@ -4,7 +4,7 @@ import gov.noaa.ncei.geosamples.api.model.GeosampleSearchParameterObject;
 import gov.noaa.ncei.geosamples.api.service.sample.SampleService;
 import gov.noaa.ncei.geosamples.api.view.CountView;
 import gov.noaa.ncei.geosamples.api.view.PagedItemsView;
-import gov.noaa.ncei.geosamples.api.view.SampleDetailView;
+import gov.noaa.ncei.geosamples.api.view.SampleDetailDisplayView;
 import gov.noaa.ncei.geosamples.api.view.SampleDisplayView;
 import gov.noaa.ncei.geosamples.api.view.SampleLinkedDetailView;
 import java.io.IOException;
@@ -49,7 +49,7 @@ public class SampleController {
 
   
   @GetMapping(path = "/detail", produces = MediaType.APPLICATION_JSON_VALUE)
-  public PagedItemsView<SampleDetailView> getSamplesDetail(@ParameterObject @Valid GeosampleSearchParameterObject searchParams) {
+  public PagedItemsView<SampleDetailDisplayView> getSamplesDetail(@ParameterObject @Valid GeosampleSearchParameterObject searchParams) {
     return sampleService.searchDetail(searchParams);
   }
 
