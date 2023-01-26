@@ -6,7 +6,7 @@ import gov.noaa.ncei.geosamples.api.service.csv.CsvExportHandler;
 import gov.noaa.ncei.geosamples.api.view.CountView;
 import gov.noaa.ncei.geosamples.api.view.MinMaxView;
 import gov.noaa.ncei.geosamples.api.view.PagedItemsView;
-import gov.noaa.ncei.geosamples.api.view.SampleDetailView;
+import gov.noaa.ncei.geosamples.api.view.SampleDetailDisplayView;
 import gov.noaa.ncei.geosamples.api.view.SampleDetailViewImpl;
 import gov.noaa.ncei.geosamples.api.view.SampleDisplayView;
 import gov.noaa.ncei.geosamples.api.view.SampleLinkedDetailView;
@@ -23,7 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class SampleService {
 
   private final SampleDetailService sampleDetailService;
-  private final CsvExportHandler<SampleDetailView> csvExportHandler;
+  private final CsvExportHandler<SampleDetailDisplayView> csvExportHandler;
   private final CuratorsSampleTsqpRepository sampleRepository;
   private final SampleDisplayService sampleDisplayService;
   private final SampleLinkedDetailService sampleLinkedDetailService;
@@ -52,7 +52,7 @@ public class SampleService {
     this.provinceAttributeService = provinceAttributeService;
     this.storageMethService = storageMethService;
     this.platformAttributeService = platformAttributeService;
-    this.csvExportHandler = new CsvExportHandler<>(SampleDetailView.class, SampleDetailViewImpl.class);
+    this.csvExportHandler = new CsvExportHandler<>(SampleDetailDisplayView.class, SampleDetailViewImpl.class);
     this.sampleRepository = sampleRepository;
   }
 
@@ -82,7 +82,7 @@ public class SampleService {
     return sampleLinkedDetailService.load(id);
   }
 
-  public PagedItemsView<SampleDetailView> searchDetail(GeosampleSearchParameterObject searchParameters) {
+  public PagedItemsView<SampleDetailDisplayView> searchDetail(GeosampleSearchParameterObject searchParameters) {
     return sampleDetailService.search(searchParameters);
   }
 

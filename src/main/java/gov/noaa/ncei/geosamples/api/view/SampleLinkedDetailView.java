@@ -4,21 +4,17 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import java.util.List;
 
 @JsonDeserialize(as = SampleLinkedDetailViewImpl.class)
-public interface SampleLinkedDetailView extends SampleDetailView {
+public interface SampleLinkedDetailView extends SampleDisplayViewBase, SampleDetailView, ViewWithLinks {
 
-  String getFacility();
+  FacilityNameView getFacility();
 
-  void setFacility(String facility);
-
-  List<LinkView> getLinks();
-
-  void setLinks(List<LinkView> links);
+  void setFacility(FacilityNameView facility);
 
   List<IntervalView> getIntervals();
 
   void setIntervals(List<IntervalView> intervals);
 
-  List<LinkView> getCruiseLinks();
+  CruiseLinkView getCruise();
 
-  void setCruiseLinks(List<LinkView> cruiseLinks);
+  void setCruise(CruiseLinkView cruise);
 }

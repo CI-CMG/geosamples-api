@@ -9,7 +9,7 @@ import gov.noaa.ncei.geosamples.api.service.SpecificationFactoryTestUtils;
 import gov.noaa.ncei.geosamples.api.view.CruiseNameView;
 import gov.noaa.ncei.geosamples.api.view.IntervalView;
 import gov.noaa.ncei.geosamples.api.view.PagedItemsView;
-import gov.noaa.ncei.geosamples.api.view.SampleDetailView;
+import gov.noaa.ncei.geosamples.api.view.SampleDetailDisplayView;
 import gov.noaa.ncei.geosamples.api.view.SampleDisplayView;
 import gov.noaa.ncei.geosamples.api.view.SampleLinkedDetailView;
 import java.util.Arrays;
@@ -34,7 +34,7 @@ class SampleServiceIT {
 
   private static final TypeReference<PagedItemsView<SampleDisplayView>> DISPLAY_PAGE = new TypeReference<PagedItemsView<SampleDisplayView>>() {
   };
-  private static final TypeReference<PagedItemsView<SampleDetailView>> DETAIL_PAGE = new TypeReference<PagedItemsView<SampleDetailView>>() {
+  private static final TypeReference<PagedItemsView<SampleDetailDisplayView>> DETAIL_PAGE = new TypeReference<PagedItemsView<SampleDetailDisplayView>>() {
   };
 
   private static final TypeReference<PagedItemsView<CruiseNameView>> CRUISE_NAME = new TypeReference<PagedItemsView<CruiseNameView>>() {
@@ -79,7 +79,7 @@ class SampleServiceIT {
     );
     assertEquals(200, httpResponse.getStatusCode().value());
 
-    PagedItemsView<SampleDetailView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
+    PagedItemsView<SampleDetailDisplayView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
 
     assertEquals(2, response.getItems().size());
 
@@ -95,7 +95,7 @@ class SampleServiceIT {
     assertEquals(200, httpResponse.getStatusCode().value());
 
     SampleLinkedDetailView detailView = objectMapper.readValue(httpResponse.getBody(), SampleLinkedDetailView.class);
-    assertEquals("CRUISE_2", detailView.getCruise());
+    assertEquals("CRUISE_2", detailView.getCruise().getCruise());
     assertEquals("CRUISE_2_S2", detailView.getSample());
 
     System.out.println(detailView.getIntervals());
@@ -115,7 +115,7 @@ class SampleServiceIT {
     );
     assertEquals(200, httpResponse.getStatusCode().value());
 
-    PagedItemsView<SampleDetailView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
+    PagedItemsView<SampleDetailDisplayView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
 
     List<String> expectedSamples = Arrays.asList(
         "CRUISE_1_S1",
@@ -128,7 +128,7 @@ class SampleServiceIT {
 //        "CRUISE_5_S1" //parent cruise not published
     );
 
-    assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailView::getSample).collect(Collectors.toList()));
+    assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailDisplayView::getSample).collect(Collectors.toList()));
 
   }
 
@@ -143,7 +143,7 @@ class SampleServiceIT {
     );
     assertEquals(200, httpResponse.getStatusCode().value());
 
-    PagedItemsView<SampleDetailView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
+    PagedItemsView<SampleDetailDisplayView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
 
     List<String> expectedSamples = Arrays.asList(
         "CRUISE_1_S1",
@@ -152,7 +152,7 @@ class SampleServiceIT {
 //        "CRUISE_5_S1" //parent cruise not published
     );
 
-    assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailView::getSample).collect(Collectors.toList()));
+    assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailDisplayView::getSample).collect(Collectors.toList()));
   }
 
   @Test
@@ -166,7 +166,7 @@ class SampleServiceIT {
     );
     assertEquals(200, httpResponse.getStatusCode().value());
 
-    PagedItemsView<SampleDetailView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
+    PagedItemsView<SampleDetailDisplayView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
 
     List<String> expectedSamples = Arrays.asList(
         "CRUISE_3_S1"
@@ -174,7 +174,7 @@ class SampleServiceIT {
 //        "CRUISE_5_S1" //parent cruise not published
     );
 
-    assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailView::getSample).collect(Collectors.toList()));
+    assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailDisplayView::getSample).collect(Collectors.toList()));
   }
 
   @Test
@@ -188,7 +188,7 @@ class SampleServiceIT {
     );
     assertEquals(200, httpResponse.getStatusCode().value());
 
-    PagedItemsView<SampleDetailView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
+    PagedItemsView<SampleDetailDisplayView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
 
     List<String> expectedSamples = Arrays.asList(
         "CRUISE_1_S1",
@@ -199,7 +199,7 @@ class SampleServiceIT {
 //        "CRUISE_5_S1" //parent cruise not published
     );
 
-    assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailView::getSample).collect(Collectors.toList()));
+    assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailDisplayView::getSample).collect(Collectors.toList()));
   }
 
   @Test
@@ -213,7 +213,7 @@ class SampleServiceIT {
     );
     assertEquals(200, httpResponse.getStatusCode().value());
 
-    PagedItemsView<SampleDetailView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
+    PagedItemsView<SampleDetailDisplayView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
 
     List<String> expectedSamples = Arrays.asList(
         "CRUISE_2_S2"
@@ -221,7 +221,7 @@ class SampleServiceIT {
 //        "CRUISE_5_S1" //parent cruise not published
     );
 
-    assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailView::getSample).collect(Collectors.toList()));
+    assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailDisplayView::getSample).collect(Collectors.toList()));
   }
 
   @Test
@@ -235,7 +235,7 @@ class SampleServiceIT {
     );
     assertEquals(200, httpResponse.getStatusCode().value());
 
-    PagedItemsView<SampleDetailView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
+    PagedItemsView<SampleDetailDisplayView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
 
     List<String> expectedSamples = Arrays.asList(
         "CRUISE_3_S1"
@@ -243,7 +243,7 @@ class SampleServiceIT {
 //        "CRUISE_5_S1" //parent cruise not published
     );
 
-    assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailView::getSample).collect(Collectors.toList()));
+    assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailDisplayView::getSample).collect(Collectors.toList()));
   }
 
   @Test
@@ -257,7 +257,7 @@ class SampleServiceIT {
     );
     assertEquals(200, httpResponse.getStatusCode().value());
 
-    PagedItemsView<SampleDetailView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
+    PagedItemsView<SampleDetailDisplayView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
 
     List<String> expectedSamples = Arrays.asList(
         "CRUISE_1_S2"
@@ -265,7 +265,7 @@ class SampleServiceIT {
 //        "CRUISE_5_S1" //parent cruise not published
     );
 
-    assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailView::getSample).collect(Collectors.toList()));
+    assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailDisplayView::getSample).collect(Collectors.toList()));
   }
 
   @Test
@@ -279,7 +279,7 @@ class SampleServiceIT {
     );
     assertEquals(200, httpResponse.getStatusCode().value());
 
-    PagedItemsView<SampleDetailView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
+    PagedItemsView<SampleDetailDisplayView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
 
     List<String> expectedSamples = Arrays.asList(
         "CRUISE_3_S1"
@@ -287,7 +287,7 @@ class SampleServiceIT {
 //        "CRUISE_5_S1" //parent cruise not published
     );
 
-    assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailView::getSample).collect(Collectors.toList()));
+    assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailDisplayView::getSample).collect(Collectors.toList()));
   }
 
   @Test
@@ -301,7 +301,7 @@ class SampleServiceIT {
     );
     assertEquals(200, httpResponse.getStatusCode().value());
 
-    PagedItemsView<SampleDetailView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
+    PagedItemsView<SampleDetailDisplayView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
 
     List<String> expectedSamples = Arrays.asList(
         "CRUISE_1_S1",
@@ -314,7 +314,7 @@ class SampleServiceIT {
 //        "CRUISE_5_S1" //parent cruise not published
     );
 
-    assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailView::getSample).collect(Collectors.toList()));
+    assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailDisplayView::getSample).collect(Collectors.toList()));
   }
 
   @Test
@@ -328,13 +328,13 @@ class SampleServiceIT {
     );
     assertEquals(200, httpResponse.getStatusCode().value());
 
-    PagedItemsView<SampleDetailView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
+    PagedItemsView<SampleDetailDisplayView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
 
     List<String> expectedSamples = Arrays.asList(
         "CRUISE_2_S1"
     );
 
-    assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailView::getSample).collect(Collectors.toList()));
+    assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailDisplayView::getSample).collect(Collectors.toList()));
   }
 
   @Test
@@ -348,7 +348,7 @@ class SampleServiceIT {
     );
     assertEquals(200, httpResponse.getStatusCode().value());
 
-    PagedItemsView<SampleDetailView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
+    PagedItemsView<SampleDetailDisplayView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
 
     assertEquals(0, response.getItems().size());
   }
@@ -364,7 +364,7 @@ class SampleServiceIT {
     );
     assertEquals(200, httpResponse.getStatusCode().value());
 
-    PagedItemsView<SampleDetailView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
+    PagedItemsView<SampleDetailDisplayView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
 
 
     assertEquals(0, response.getItems().size());
@@ -381,7 +381,7 @@ class SampleServiceIT {
     );
     assertEquals(200, httpResponse.getStatusCode().value());
 
-    PagedItemsView<SampleDetailView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
+    PagedItemsView<SampleDetailDisplayView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
 
     List<String> expectedSamples = Arrays.asList(
         "CRUISE_1_S1",
@@ -391,7 +391,7 @@ class SampleServiceIT {
 //        "CRUISE_5_S1" //parent cruise not published
     );
 
-    assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailView::getSample).collect(Collectors.toList()));
+    assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailDisplayView::getSample).collect(Collectors.toList()));
   }
 
   @Test
@@ -405,7 +405,7 @@ class SampleServiceIT {
     );
     assertEquals(200, httpResponse.getStatusCode().value());
 
-    PagedItemsView<SampleDetailView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
+    PagedItemsView<SampleDetailDisplayView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
 
     List<String> expectedSamples = Arrays.asList(
         "CRUISE_1_S2",
@@ -415,7 +415,7 @@ class SampleServiceIT {
 //        "CRUISE_5_S1" //parent cruise not published
     );
 
-    assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailView::getSample).collect(Collectors.toList()));
+    assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailDisplayView::getSample).collect(Collectors.toList()));
   }
 
   @Test
@@ -429,7 +429,7 @@ class SampleServiceIT {
     );
     assertEquals(200, httpResponse.getStatusCode().value());
 
-    PagedItemsView<SampleDetailView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
+    PagedItemsView<SampleDetailDisplayView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
 
     List<String> expectedSamples = Arrays.asList(
         "CRUISE_2_S1",
@@ -439,7 +439,7 @@ class SampleServiceIT {
 //        "CRUISE_5_S1" //parent cruise not published
     );
 
-    assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailView::getSample).collect(Collectors.toList()));
+    assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailDisplayView::getSample).collect(Collectors.toList()));
   }
 
   @Test
@@ -453,7 +453,7 @@ class SampleServiceIT {
     );
     assertEquals(200, httpResponse.getStatusCode().value());
 
-    PagedItemsView<SampleDetailView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
+    PagedItemsView<SampleDetailDisplayView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
 
     List<String> expectedSamples = Arrays.asList(
         "CRUISE_1_S1"
@@ -462,7 +462,7 @@ class SampleServiceIT {
 //        "CRUISE_5_S1" //parent cruise not published
     );
 
-    assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailView::getSample).collect(Collectors.toList()));
+    assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailDisplayView::getSample).collect(Collectors.toList()));
   }
 
   @Test
@@ -476,7 +476,7 @@ class SampleServiceIT {
     );
     assertEquals(200, httpResponse.getStatusCode().value());
 
-    PagedItemsView<SampleDetailView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
+    PagedItemsView<SampleDetailDisplayView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
 
     List<String> expectedSamples = Arrays.asList(
         "CRUISE_2_S1"
@@ -485,7 +485,7 @@ class SampleServiceIT {
 //        "CRUISE_5_S1" //parent cruise not published
     );
 
-    assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailView::getSample).collect(Collectors.toList()));
+    assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailDisplayView::getSample).collect(Collectors.toList()));
   }
 
   @Test
@@ -499,7 +499,7 @@ class SampleServiceIT {
     );
     assertEquals(200, httpResponse.getStatusCode().value());
 
-    PagedItemsView<SampleDetailView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
+    PagedItemsView<SampleDetailDisplayView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
 
     List<String> expectedSamples = Arrays.asList(
         "CRUISE_3_S1"
@@ -507,7 +507,7 @@ class SampleServiceIT {
 //        "CRUISE_5_S1" //parent cruise not published
     );
 
-    assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailView::getSample).collect(Collectors.toList()));
+    assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailDisplayView::getSample).collect(Collectors.toList()));
   }
 
   @Test
@@ -521,7 +521,7 @@ class SampleServiceIT {
     );
     assertEquals(200, httpResponse.getStatusCode().value());
 
-    PagedItemsView<SampleDetailView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
+    PagedItemsView<SampleDetailDisplayView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
 
     List<String> expectedSamples = Arrays.asList(
         "CRUISE_1_S2"
@@ -529,7 +529,7 @@ class SampleServiceIT {
 //        "CRUISE_5_S1" //parent cruise not published
     );
 
-    assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailView::getSample).collect(Collectors.toList()));
+    assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailDisplayView::getSample).collect(Collectors.toList()));
   }
 
   @Test
@@ -543,7 +543,7 @@ class SampleServiceIT {
     );
     assertEquals(200, httpResponse.getStatusCode().value());
 
-    PagedItemsView<SampleDetailView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
+    PagedItemsView<SampleDetailDisplayView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
 
     List<String> expectedSamples = Arrays.asList(
         "CRUISE_1_S1"
@@ -551,7 +551,7 @@ class SampleServiceIT {
 //        "CRUISE_5_S1" //parent cruise not published
     );
 
-    assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailView::getSample).collect(Collectors.toList()));
+    assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailDisplayView::getSample).collect(Collectors.toList()));
   }
 
   @Test
@@ -565,7 +565,7 @@ class SampleServiceIT {
     );
     assertEquals(200, httpResponse.getStatusCode().value());
 
-    PagedItemsView<SampleDetailView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
+    PagedItemsView<SampleDetailDisplayView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
 
     assertEquals(2, response.getItems().size());
 
@@ -587,7 +587,7 @@ class SampleServiceIT {
         "CRUISE_2_S2"
     );
 
-    assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailView::getSample).collect(Collectors.toList()));
+    assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailDisplayView::getSample).collect(Collectors.toList()));
   }
 
   @Test
@@ -616,14 +616,14 @@ class SampleServiceIT {
     );
     assertEquals(200, httpResponse.getStatusCode().value());
 
-    PagedItemsView<SampleDetailView> response2 = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
+    PagedItemsView<SampleDetailDisplayView> response2 = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
 
     List<String> expectedSamples = Arrays.asList(
         "CRUISE_2_S1",
         "CRUISE_2_S2"
     );
 
-    assertEquals(expectedSamples, response2.getItems().stream().map(SampleDetailView::getSample).collect(Collectors.toList()));
+    assertEquals(expectedSamples, response2.getItems().stream().map(SampleDetailDisplayView::getSample).collect(Collectors.toList()));
   }
 
   @Test
@@ -637,7 +637,7 @@ class SampleServiceIT {
     );
     assertEquals(200, httpResponse.getStatusCode().value());
 
-    PagedItemsView<SampleDetailView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
+    PagedItemsView<SampleDetailDisplayView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
 
     List<String> expectedSamples = Arrays.asList(
         "CRUISE_1_S1",
@@ -647,7 +647,7 @@ class SampleServiceIT {
         "CRUISE_2_S2"
     );
 
-    assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailView::getSample).collect(Collectors.toList()));
+    assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailDisplayView::getSample).collect(Collectors.toList()));
   }
 
   @Test
@@ -661,7 +661,7 @@ class SampleServiceIT {
     );
     assertEquals(200, httpResponse.getStatusCode().value());
 
-    PagedItemsView<SampleDetailView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
+    PagedItemsView<SampleDetailDisplayView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
 
     List<String> expectedSamples = Arrays.asList(
         "CRUISE_1_S1",
@@ -670,7 +670,7 @@ class SampleServiceIT {
         "CRUISE_2_S1"
     );
 
-    assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailView::getSample).collect(Collectors.toList()));
+    assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailDisplayView::getSample).collect(Collectors.toList()));
   }
 
   @Test
@@ -684,7 +684,7 @@ class SampleServiceIT {
     );
     assertEquals(200, httpResponse.getStatusCode().value());
 
-    PagedItemsView<SampleDetailView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
+    PagedItemsView<SampleDetailDisplayView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
 
     List<String> expectedSamples = Arrays.asList(
         "CRUISE_1_S1",
@@ -692,7 +692,7 @@ class SampleServiceIT {
         "CRUISE_1_S3"
     );
 
-    assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailView::getSample).collect(Collectors.toList()));
+    assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailDisplayView::getSample).collect(Collectors.toList()));
   }
 
   @Test
@@ -721,13 +721,13 @@ class SampleServiceIT {
     );
     assertEquals(200, httpResponse.getStatusCode().value());
 
-    PagedItemsView<SampleDetailView> response2 = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
+    PagedItemsView<SampleDetailDisplayView> response2 = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
 
     List<String> expectedSamples = Arrays.asList(
         "CRUISE_2_S1"
     );
 
-    assertEquals(expectedSamples, response2.getItems().stream().map(SampleDetailView::getSample).collect(Collectors.toList()));
+    assertEquals(expectedSamples, response2.getItems().stream().map(SampleDetailDisplayView::getSample).collect(Collectors.toList()));
   }
 
   @Test
@@ -741,14 +741,14 @@ class SampleServiceIT {
     );
     assertEquals(200, httpResponse.getStatusCode().value());
 
-    PagedItemsView<SampleDetailView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
+    PagedItemsView<SampleDetailDisplayView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
 
     List<String> expectedSamples = Arrays.asList(
         "CRUISE_1_S2",
         "CRUISE_1_S3"
     );
 
-    assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailView::getSample).collect(Collectors.toList()));
+    assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailDisplayView::getSample).collect(Collectors.toList()));
   }
 
   @Test
@@ -763,7 +763,7 @@ class SampleServiceIT {
     );
     assertEquals(200, httpResponse.getStatusCode().value());
 
-    PagedItemsView<SampleDetailView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
+    PagedItemsView<SampleDetailDisplayView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
 
     List<String> expectedSamples = Arrays.asList(
         "CRUISE_1_S1",
@@ -780,7 +780,7 @@ class SampleServiceIT {
     assertEquals(1, response.getPage());
     assertEquals(2, response.getTotalPages());
 
-    assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailView::getSample).collect(Collectors.toList()));
+    assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailDisplayView::getSample).collect(Collectors.toList()));
 
     httpResponse = restClient.exchange(
         UriComponentsBuilder.fromPath("/api/samples/detail")
@@ -804,7 +804,7 @@ class SampleServiceIT {
     assertEquals(2, response.getPage());
     assertEquals(2, response.getTotalPages());
 
-    assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailView::getSample).collect(Collectors.toList()));
+    assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailDisplayView::getSample).collect(Collectors.toList()));
   }
 
 }

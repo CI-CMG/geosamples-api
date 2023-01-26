@@ -3,7 +3,7 @@ package gov.noaa.ncei.geosamples.api.controller;
 import gov.noaa.ncei.geosamples.api.model.GeosampleSearchParameterObject;
 import gov.noaa.ncei.geosamples.api.service.cruise.CruiseService;
 import gov.noaa.ncei.geosamples.api.view.CountView;
-import gov.noaa.ncei.geosamples.api.view.CruiseLinkView;
+import gov.noaa.ncei.geosamples.api.view.CruiseLinkDetailView;
 import gov.noaa.ncei.geosamples.api.view.CruiseNameView;
 import gov.noaa.ncei.geosamples.api.view.CruiseView;
 import gov.noaa.ncei.geosamples.api.view.PagedItemsView;
@@ -48,7 +48,7 @@ public class CruiseController {
 
   
   @GetMapping(path = "/detail/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-  public CruiseLinkView getSamplesDetail(@PathVariable("id") Long id) {
+  public CruiseLinkDetailView getSamplesDetail(@PathVariable("id") Long id) {
     return cruiseService.load(id);
   }
 

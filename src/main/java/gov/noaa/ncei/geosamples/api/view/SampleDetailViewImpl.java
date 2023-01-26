@@ -3,7 +3,7 @@ package gov.noaa.ncei.geosamples.api.view;
 import gov.noaa.ncei.geosamples.api.service.csv.CsvColumn;
 import java.util.Objects;
 
-public class SampleDetailViewImpl implements SampleDetailView {
+public class SampleDetailViewImpl implements SampleDetailDisplayView {
 
 
   @CsvColumn(order = 28, column = "imlgs")
