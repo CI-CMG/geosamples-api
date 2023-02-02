@@ -4,11 +4,13 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import org.springframework.beans.BeanUtils;
 
 public class ExportContext<V> {
@@ -99,7 +101,16 @@ public class ExportContext<V> {
         throw new IllegalStateException("Getter and setter could not be found for: " + field);
       }
       try {
-        result[i] = descriptor.getReadMethod().invoke(bean);
+        Object obj = descriptor.getReadMethod().invoke(bean);
+        Object recordValue;
+        if (obj instanceof Collection) {
+          Collection<?> collection = (Collection<?>) obj;
+          List<String> values = collection.stream().map(Object::toString).collect(Collectors.toList());
+          recordValue = String.join(",", values);
+        } else {
+          recordValue = obj;
+        }
+        result[i] = recordValue;
       } catch (IllegalAccessException | InvocationTargetException e) {
         throw new IllegalStateException("Unable to parse CSV", e);
       }
