@@ -12,11 +12,10 @@ create table ${schema_name}.AGE_INTERVAL
 
 create sequence ${schema_name}.AGE_INTERVAL_ID_SEQ;
 
-CREATE OR REPLACE TRIGGER ${schema_name}.AGE_INTERVAL_ON_INSERT
-    BEFORE INSERT ON ${schema_name}.AGE_INTERVAL
-    FOR EACH ROW
-BEGIN
-    SELECT ${schema_name}.AGE_INTERVAL_ID_SEQ.nextval
-    INTO :new.ID
-    FROM dual;
-END;
+create or replace trigger ${schema_name}.AGE_INTERVAL_ON_INSERT
+    before insert on ${schema_name}.AGE_INTERVAL for each row
+begin
+    if :new.ID is null then
+        :new.ID := ${schema_name}.AGE_INTERVAL_ID_SEQ.nextval;
+    end if;
+end;
