@@ -1,10 +1,10 @@
 package gov.noaa.ncei.geosamples.api.view;
 
 import gov.noaa.ncei.geosamples.api.service.csv.CsvColumn;
+import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 public class IntervalView implements Comparable<IntervalView> {
 
@@ -50,7 +50,7 @@ public class IntervalView implements Comparable<IntervalView> {
   @CsvColumn(order = 18, column = "description")
   private String description;
   @CsvColumn(order = 19, column = "ages")
-  private Set<String> ages = new HashSet<>(0);
+  private List<String> ages = new ArrayList<>(0);
   @CsvColumn(order = 20, column = "absolute_age_top")
   private String absoluteAgeTop;
   @CsvColumn(order = 21, column = "absolute_age_bot")
@@ -240,11 +240,14 @@ public class IntervalView implements Comparable<IntervalView> {
     this.description = description;
   }
 
-  public Set<String> getAges() {
+  public List<String> getAges() {
     return ages;
   }
 
-  public void setAges(Set<String> ages) {
+  public void setAges(List<String> ages) {
+    if (ages == null) {
+      ages = new ArrayList<>(0);
+    }
     this.ages = ages;
   }
 
@@ -423,7 +426,7 @@ public class IntervalView implements Comparable<IntervalView> {
         ", comp5='" + comp5 + '\'' +
         ", comp6='" + comp6 + '\'' +
         ", description='" + description + '\'' +
-        ", age='" + ages + '\'' +
+        ", ages='" + ages + '\'' +
         ", absoluteAgeTop='" + absoluteAgeTop + '\'' +
         ", absoluteAgeBot='" + absoluteAgeBot + '\'' +
         ", weight=" + weight +
