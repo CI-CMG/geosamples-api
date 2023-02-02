@@ -181,7 +181,7 @@ public final class ViewTransformers {
     view.setComp5(entity.getComp5() == null ? null : entity.getComp5().getLithology());
     view.setComp6(entity.getComp6() == null ? null : entity.getComp6().getLithology());
     view.setDescription(entity.getDescription());
-    view.setAges(entity.getAges() == null ? Collections.emptySet() : entity.getAges().stream().map(CuratorsAgeEntity::getAge).collect(Collectors.toSet()));
+    view.setAges(entity.getAges() == null ? Collections.emptyList() : entity.getAges().stream().map(CuratorsAgeEntity::getAge).sorted().collect(Collectors.toList()));
     view.setAbsoluteAgeTop(entity.getAbsoluteAgeTop());
     view.setAbsoluteAgeBot(entity.getAbsoluteAgeBot());
     view.setWeight(entity.getWeight());
