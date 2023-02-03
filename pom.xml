@@ -20,7 +20,7 @@
     <connection>scm:git:git@github.com:CI-CMG/geosamples-api.git</connection>
     <developerConnection>scm:git:git@github.com:CI-CMG/geosamples-api.git</developerConnection>
     <url>https://github.com/CI-CMG/geosamples-api</url>
-    <tag>HEAD</tag>
+    <tag>2.2</tag>
   </scm>
 
   <properties>
