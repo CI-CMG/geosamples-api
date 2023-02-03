@@ -719,7 +719,7 @@ class IntervalControllerIT {
     interval1.setAbsoluteAgeTop("ageTop");
     interval1.setAbsoluteAgeBot("ageBot");
     interval1.setWeight(44.4);
-    interval1.setRemark("no glass");
+    interval1.setRemark(1L);
     interval1.setMunsellCode("10R 6/4");
     interval1.setExhaustCode("X");
     interval1.setPhotoLink("photo");

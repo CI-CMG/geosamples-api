@@ -34,7 +34,7 @@ public class Interval {
   private String rockLith;
   private String rockMin;
   private String weathMeta;
-  private String remark;
+  private Long remark;
   private String munsellCode;
   private String munsell;
   private String exhaustCode;
@@ -298,11 +298,11 @@ public class Interval {
     this.weathMeta = weathMeta;
   }
 
-  public String getRemark() {
+  public Long getRemark() {
     return remark;
   }
 
-  public void setRemark(String remark) {
+  public void setRemark(Long remark) {
     this.remark = remark;
   }
 
