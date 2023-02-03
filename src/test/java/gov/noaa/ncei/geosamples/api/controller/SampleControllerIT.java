@@ -812,16 +812,13 @@ class SampleControllerIT {
 
     ObjectNode expectedJson = objectMapper.createObjectNode();
     expectedJson.put("imlgs", imlgs);
-    expectedJson.put("facility_code", "AOML");
     expectedJson.put("platform", "Sea Biskit");
-    expectedJson.put("cruise", "CRUISE_1");
     expectedJson.put("sample", "sample1");
     expectedJson.put("device", "trap, sediment");
     expectedJson.put("lat", 55.5);
     expectedJson.put("lon", 66.6);
     expectedJson.put("igsn", "igsn1");
     expectedJson.put("leg", "LEFT-1");
-    expectedJson.put("facility", "NOAA-Atlantic Oceanographic and Meteorol. Lab");
     expectedJson.put("province", "axial valley");
     expectedJson.put("lake", "blue");
     expectedJson.put("last_update", testUtils.getLastUpdate(imlgs));
@@ -881,6 +878,10 @@ class SampleControllerIT {
 
     expectedJson.replace("intervals", intervals);
 
+    ObjectNode cruise = objectMapper.createObjectNode();
+    cruise.put("id", testUtils.getCruiseId("CRUISE_1", 2020));
+    cruise.put("cruise", "CRUISE_1");
+
     ArrayNode cruiseLinks = objectMapper.createArrayNode();
     ObjectNode cruiseLink = objectMapper.createObjectNode();
     cruiseLink.put("link", "data link 2");
@@ -889,7 +890,14 @@ class SampleControllerIT {
     cruiseLink.put("type", "link type 2");
     cruiseLinks.add(cruiseLink);
 
-    expectedJson.replace("cruise_links", cruiseLinks);
+    cruise.replace("links", cruiseLinks);
+    expectedJson.replace("cruise", cruise);
+
+    ObjectNode facility = objectMapper.createObjectNode();
+    facility.put("id", testUtils.getFacilityId("AOML"));
+    facility.put("facility_code", "AOML");
+    facility.put("facility", "NOAA-Atlantic Oceanographic and Meteorol. Lab");
+    expectedJson.replace("facility", facility);
 
     //need to reserialize before comparing due to int to long node differences
     assertEquals(objectMapper.readTree(expectedJson.toString()), objectMapper.readTree(response.getBody()));
