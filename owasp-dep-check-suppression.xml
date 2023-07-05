@@ -36,4 +36,20 @@
     <packageUrl regex="true">^pkg:maven/org\.yaml/snakeyaml@.*$</packageUrl>
     <vulnerabilityName>CVE-2022-1471</vulnerabilityName>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: jackson-databind-2.13.5.jar
+   reason: not deserializing untrusted data
+   ]]></notes>
+    <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson\-databind@.*$</packageUrl>
+    <cve>CVE-2023-35116</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: jackson-core-2.13.5.jar
+   reason: not using hutool-json
+   ]]></notes>
+    <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson\-core@.*$</packageUrl>
+    <cve>CVE-2022-45688</cve>
+  </suppress>
 </suppressions>
