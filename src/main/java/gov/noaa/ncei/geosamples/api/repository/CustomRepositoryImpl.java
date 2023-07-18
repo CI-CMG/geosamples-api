@@ -1,6 +1,7 @@
 package gov.noaa.ncei.geosamples.api.repository;
 
 import gov.noaa.ncei.geosamples.api.model.GeosampleSearchParameterObject;
+import gov.noaa.ncei.geosamples.api.service.IntersectsPredicate;
 import gov.noaa.ncei.geosamples.api.service.SearchUtils;
 import gov.noaa.ncei.geosamples.api.service.SpecificationFactory;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsAgeEntity_;
@@ -36,8 +37,10 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
+import org.locationtech.jts.geom.Geometry;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.data.support.PageableExecutionUtils;
@@ -151,6 +154,7 @@ public class CustomRepositoryImpl<E, ID> extends SimpleJpaRepository<E, ID> impl
     Long facilityId = searchParameters.getFacilityId();
     Long intervalId = searchParameters.getIntervalId();
     String leg = searchParameters.getLeg();
+    Geometry wkt = searchParameters.getWkt();
 
     if (cruiseId != null) {
       specs.add(cb.equal(joiner.joinCruise().get(CuratorsCruiseEntity_.ID), cruiseId));
@@ -203,7 +207,10 @@ public class CustomRepositoryImpl<E, ID> extends SimpleJpaRepository<E, ID> impl
       specs.add(cb.lessThanOrEqualTo(joiner.joinSample().get(CuratorsSampleTsqpEntity_.WATER_DEPTH), maxDepth));
     }
     if (StringUtils.hasText(igsn)) {
-      specs.add(SearchUtils.equalIgnoreCase(cb, igsn, joiner.joinSample().get(CuratorsSampleTsqpEntity_.IGSN)));
+      specs.add(cb.or(
+          SearchUtils.equalIgnoreCase(cb, igsn, joiner.joinSample().get(CuratorsSampleTsqpEntity_.IGSN)),
+          SearchUtils.equalIgnoreCase(cb, igsn, joiner.joinInterval().get(CuratorsIntervalEntity_.IGSN))
+      ));
     }
     if (StringUtils.hasText(lithology)) {
       specs.add(cb.or(
@@ -249,6 +256,10 @@ public class CustomRepositoryImpl<E, ID> extends SimpleJpaRepository<E, ID> impl
     }
     if (StringUtils.hasText(imlgs)) {
       specs.add(SearchUtils.equalIgnoreCase(cb, imlgs, joiner.joinSample().get(CuratorsSampleTsqpEntity_.IMLGS)));
+    }
+
+    if (wkt != null) {
+      specs.add(new IntersectsPredicate(cb, joiner.joinSample().get(CuratorsSampleTsqpEntity_.SHAPE), wkt));
     }
 
     if (specExtender != null) {

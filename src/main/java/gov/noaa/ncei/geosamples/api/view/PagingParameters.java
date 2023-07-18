@@ -1,5 +1,7 @@
 package gov.noaa.ncei.geosamples.api.view;
 
+import java.util.List;
+
 public interface PagingParameters {
 
 
@@ -10,5 +12,9 @@ public interface PagingParameters {
   int getItemsPerPage();
 
   void setItemsPerPage(int itemsPerPage);
+
+  List<String> getOrder();
+
+  void setOrder(List<String> sort);
 
 }

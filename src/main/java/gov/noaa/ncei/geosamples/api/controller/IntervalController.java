@@ -51,7 +51,7 @@ public class IntervalController {
     return intervalService.load(id);
   }
 
-  
+
   @GetMapping(path = "/csv", produces = TEXT_CSV_VALUE)
   public void getSamplesCsv(@ParameterObject @Valid GeosampleSearchParameterObject searchParams, HttpServletResponse response) {
     response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=geosamples_export.csv");

@@ -114,6 +114,7 @@ public class IntervalService {
   }
 
   public void exportCsv(OutputStream outputStream, GeosampleSearchParameterObject searchParameters) {
+    //TODO stream directly from DB to client
     csvExportHandler.export(outputStream, search(searchParameters).getItems());
   }
 
