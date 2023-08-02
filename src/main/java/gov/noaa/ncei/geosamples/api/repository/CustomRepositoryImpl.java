@@ -7,6 +7,7 @@ import gov.noaa.ncei.geosamples.api.service.SpecificationFactory;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsAgeEntity_;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsCruiseEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsCruiseEntity_;
+import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsDeviceEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsDeviceEntity_;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsFacilityEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsFacilityEntity_;
@@ -15,11 +16,13 @@ import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsIntervalEntity_;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsLegEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsLegEntity_;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsLithologyEntity_;
+import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsProvinceEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsProvinceEntity_;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsRockLithEntity_;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsRockMinEntity_;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsSampleTsqpEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsSampleTsqpEntity_;
+import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsStorageMethEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsStorageMethEntity_;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsTextureEntity_;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsWeathMetaEntity_;
@@ -40,7 +43,6 @@ import javax.persistence.criteria.Selection;
 import org.locationtech.jts.geom.Geometry;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.data.support.PageableExecutionUtils;
@@ -154,7 +156,12 @@ public class CustomRepositoryImpl<E, ID> extends SimpleJpaRepository<E, ID> impl
     Long facilityId = searchParameters.getFacilityId();
     Long intervalId = searchParameters.getIntervalId();
     String leg = searchParameters.getLeg();
-    Geometry wkt = searchParameters.getWkt();
+    Geometry wkt = searchParameters.getAreaOfInterest();
+    String startBeginsWith = searchParameters.getStartDateBeginsWith();
+
+    if (StringUtils.hasText(startBeginsWith)) {
+      specs.add(SearchUtils.startsWithIgnoreCase(cb, startBeginsWith.trim(), joiner.joinSample().get(CuratorsSampleTsqpEntity_.BEGIN_DATE)));
+    }
 
     if (cruiseId != null) {
       specs.add(cb.equal(joiner.joinCruise().get(CuratorsCruiseEntity_.ID), cruiseId));
@@ -207,11 +214,14 @@ public class CustomRepositoryImpl<E, ID> extends SimpleJpaRepository<E, ID> impl
       specs.add(cb.lessThanOrEqualTo(joiner.joinSample().get(CuratorsSampleTsqpEntity_.WATER_DEPTH), maxDepth));
     }
     if (StringUtils.hasText(igsn)) {
-      specs.add(cb.or(
-          SearchUtils.equalIgnoreCase(cb, igsn, joiner.joinSample().get(CuratorsSampleTsqpEntity_.IGSN)),
-          SearchUtils.equalIgnoreCase(cb, igsn, joiner.joinInterval().get(CuratorsIntervalEntity_.IGSN))
-      ));
+      specs.add(SearchUtils.equalIgnoreCase(cb, igsn, joiner.joinSample().get(CuratorsSampleTsqpEntity_.IGSN)));
     }
+//    if (StringUtils.hasText(igsn)) {
+//      specs.add(cb.or(
+//          SearchUtils.equalIgnoreCase(cb, igsn, joiner.joinSample().get(CuratorsSampleTsqpEntity_.IGSN)),
+//          SearchUtils.equalIgnoreCase(cb, igsn, joiner.joinInterval().get(CuratorsIntervalEntity_.IGSN))
+//      ));
+//    }
     if (StringUtils.hasText(lithology)) {
       specs.add(cb.or(
           SearchUtils.equalIgnoreCase(cb, lithology,
@@ -306,6 +316,8 @@ public class CustomRepositoryImpl<E, ID> extends SimpleJpaRepository<E, ID> impl
 
     From<E, CuratorsCruiseEntity> joinCruise();
 
+    From<E, CuratorsDeviceEntity> joinDevice();
+
     From<E, CuratorsLegEntity> joinLeg();
 
     From<E, PlatformMasterEntity> joinPlatform();
@@ -318,6 +330,9 @@ public class CustomRepositoryImpl<E, ID> extends SimpleJpaRepository<E, ID> impl
 
     boolean isJoinedCruise();
 
+    From<E, CuratorsStorageMethEntity> joinStorageMethod();
+
+    From<E, CuratorsProvinceEntity> joinProvince();
   }
 
   private static class Bbox {

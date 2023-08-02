@@ -5,14 +5,17 @@ import gov.noaa.ncei.geosamples.api.service.SpecificationFactory;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsCruiseEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsCruiseFacilityEntity_;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsCruisePlatformEntity_;
+import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsDeviceEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsFacilityEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsIntervalEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsIntervalEntity_;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsLegEntity;
+import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsProvinceEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsRockMinEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsRockMinEntity_;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsSampleTsqpEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsSampleTsqpEntity_;
+import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsStorageMethEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.PlatformMasterEntity;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.JoinType;
@@ -32,6 +35,9 @@ class RockMinSpecificationFactory implements SpecificationFactory<CuratorsRockMi
       private From<CuratorsRockMinEntity, CuratorsLegEntity> leg = null;
       private From<CuratorsRockMinEntity, PlatformMasterEntity> platform = null;
       private From<CuratorsRockMinEntity, CuratorsFacilityEntity> facility = null;
+      private From<CuratorsRockMinEntity, CuratorsDeviceEntity> device = null;
+      private From<CuratorsRockMinEntity, CuratorsStorageMethEntity> storageMethod = null;
+      private From<CuratorsRockMinEntity, CuratorsProvinceEntity> province = null;
 
       @Override
       public From<CuratorsRockMinEntity, CuratorsSampleTsqpEntity> joinSample() {
@@ -55,6 +61,14 @@ class RockMinSpecificationFactory implements SpecificationFactory<CuratorsRockMi
           cruise = joinSample().join(CuratorsSampleTsqpEntity_.CRUISE);
         }
         return cruise;
+      }
+
+      @Override
+      public From<CuratorsRockMinEntity, CuratorsDeviceEntity> joinDevice() {
+        if (device == null) {
+          device = joinSample().join(CuratorsSampleTsqpEntity_.DEVICE, JoinType.LEFT);
+        }
+        return device;
       }
 
       @Override
@@ -94,6 +108,22 @@ class RockMinSpecificationFactory implements SpecificationFactory<CuratorsRockMi
       @Override
       public boolean isJoinedCruise() {
         return cruise != null;
+      }
+
+      @Override
+      public From<CuratorsRockMinEntity, CuratorsStorageMethEntity> joinStorageMethod() {
+        if (storageMethod == null) {
+          storageMethod = joinSample().join(CuratorsSampleTsqpEntity_.STORAGE_METH, JoinType.LEFT);
+        }
+        return storageMethod;
+      }
+
+      @Override
+      public From<CuratorsRockMinEntity, CuratorsProvinceEntity> joinProvince() {
+        if (province == null) {
+          province = joinSample().join(CuratorsSampleTsqpEntity_.PROVINCE, JoinType.LEFT);
+        }
+        return province;
       }
     };
   }

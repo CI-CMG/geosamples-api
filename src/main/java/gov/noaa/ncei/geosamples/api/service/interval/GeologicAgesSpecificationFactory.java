@@ -7,12 +7,15 @@ import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsAgeEntity_;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsCruiseEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsCruiseFacilityEntity_;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsCruisePlatformEntity_;
+import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsDeviceEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsFacilityEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsIntervalEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsIntervalEntity_;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsLegEntity;
+import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsProvinceEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsSampleTsqpEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsSampleTsqpEntity_;
+import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsStorageMethEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.PlatformMasterEntity;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.JoinType;
@@ -34,6 +37,9 @@ class GeologicAgesSpecificationFactory implements SpecificationFactory<CuratorsA
       private From<CuratorsAgeEntity, CuratorsLegEntity> age2Leg = null;
       private From<CuratorsAgeEntity, PlatformMasterEntity> age2Platform = null;
       private From<CuratorsAgeEntity, CuratorsFacilityEntity> age2Facility = null;
+      private From<CuratorsAgeEntity, CuratorsDeviceEntity> age2Device = null;
+      private From<CuratorsAgeEntity, CuratorsStorageMethEntity> age2StorageMethod = null;
+      private From<CuratorsAgeEntity, CuratorsProvinceEntity> age2Province = null;
 
       @Override
       public From<CuratorsAgeEntity, CuratorsSampleTsqpEntity> joinSample() {
@@ -57,6 +63,14 @@ class GeologicAgesSpecificationFactory implements SpecificationFactory<CuratorsA
           age2Cruise = joinSample().join(CuratorsSampleTsqpEntity_.CRUISE);
         }
         return age2Cruise;
+      }
+
+      @Override
+      public From<CuratorsAgeEntity, CuratorsDeviceEntity> joinDevice() {
+        if (age2Device == null) {
+          age2Device = joinSample().join(CuratorsSampleTsqpEntity_.DEVICE, JoinType.LEFT);
+        }
+        return age2Device;
       }
 
       @Override
@@ -96,6 +110,22 @@ class GeologicAgesSpecificationFactory implements SpecificationFactory<CuratorsA
       @Override
       public boolean isJoinedCruise() {
         return age2Cruise != null;
+      }
+
+      @Override
+      public From<CuratorsAgeEntity, CuratorsStorageMethEntity> joinStorageMethod() {
+        if (age2StorageMethod == null) {
+          age2StorageMethod = joinSample().join(CuratorsSampleTsqpEntity_.STORAGE_METH, JoinType.LEFT);
+        }
+        return age2StorageMethod;
+      }
+
+      @Override
+      public From<CuratorsAgeEntity, CuratorsProvinceEntity> joinProvince() {
+        if (age2Province == null) {
+          age2Province = joinSample().join(CuratorsSampleTsqpEntity_.PROVINCE, JoinType.LEFT);
+        }
+        return age2Province;
       }
     };
   }

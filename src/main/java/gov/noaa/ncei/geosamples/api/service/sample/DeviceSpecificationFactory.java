@@ -10,8 +10,10 @@ import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsDeviceEntity_;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsFacilityEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsIntervalEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsLegEntity;
+import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsProvinceEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsSampleTsqpEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsSampleTsqpEntity_;
+import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsStorageMethEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.PlatformMasterEntity;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.JoinType;
@@ -31,6 +33,8 @@ class DeviceSpecificationFactory implements SpecificationFactory<CuratorsDeviceE
       private From<CuratorsDeviceEntity, CuratorsLegEntity> leg = null;
       private From<CuratorsDeviceEntity, PlatformMasterEntity> platform = null;
       private From<CuratorsDeviceEntity, CuratorsFacilityEntity> facility = null;
+      private From<CuratorsDeviceEntity, CuratorsStorageMethEntity> storageMethod = null;
+      private From<CuratorsDeviceEntity, CuratorsProvinceEntity> province = null;
 
       @Override
       public From<CuratorsDeviceEntity, CuratorsSampleTsqpEntity> joinSample() {
@@ -54,6 +58,11 @@ class DeviceSpecificationFactory implements SpecificationFactory<CuratorsDeviceE
           cruise = joinSample().join(CuratorsSampleTsqpEntity_.CRUISE);
         }
         return cruise;
+      }
+
+      @Override
+      public From<CuratorsDeviceEntity, CuratorsDeviceEntity> joinDevice() {
+        return r;
       }
 
       @Override
@@ -93,6 +102,22 @@ class DeviceSpecificationFactory implements SpecificationFactory<CuratorsDeviceE
       @Override
       public boolean isJoinedCruise() {
         return cruise != null;
+      }
+
+      @Override
+      public From<CuratorsDeviceEntity, CuratorsStorageMethEntity> joinStorageMethod() {
+        if (storageMethod == null) {
+          storageMethod = joinSample().join(CuratorsSampleTsqpEntity_.STORAGE_METH, JoinType.LEFT);
+        }
+        return storageMethod;
+      }
+
+      @Override
+      public From<CuratorsDeviceEntity, CuratorsProvinceEntity> joinProvince() {
+        if (province == null) {
+          province = joinSample().join(CuratorsSampleTsqpEntity_.PROVINCE, JoinType.LEFT);
+        }
+        return province;
       }
     };
   }

@@ -13,11 +13,15 @@ import gov.noaa.ncei.geosamples.api.view.SampleDetailDisplayView;
 import gov.noaa.ncei.geosamples.api.view.SampleDisplayView;
 import gov.noaa.ncei.geosamples.api.view.SampleLinkedDetailView;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -124,13 +128,72 @@ class SampleServiceIT {
         "CRUISE_2_S1",
         "CRUISE_2_S2",
         "CRUISE_3_S1",
-        "CRUISE_3_S1"
+        "CRUISE_4_S1"
 //        "CRUISE_5_S1" //parent cruise not published
     );
 
     assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailDisplayView::getSample).collect(Collectors.toList()));
 
   }
+
+  @ParameterizedTest
+  @CsvSource({
+      "imlgs:asc,CRUISE_1_S1:CRUISE_1_S2:CRUISE_1_S3:CRUISE_2_S1:CRUISE_2_S2:CRUISE_3_S1:CRUISE_4_S1",
+      "imlgs:desc,CRUISE_4_S1:CRUISE_3_S1:CRUISE_2_S2:CRUISE_2_S1:CRUISE_1_S3:CRUISE_1_S2:CRUISE_1_S1",
+      "platform:asc,CRUISE_1_S1:CRUISE_1_S2:CRUISE_1_S3:CRUISE_2_S1:CRUISE_2_S2:CRUISE_3_S1:CRUISE_4_S1",
+      "platform:desc,CRUISE_4_S1:CRUISE_3_S1:CRUISE_2_S2:CRUISE_1_S1:CRUISE_1_S2:CRUISE_1_S3:CRUISE_2_S1",
+      "cruise:asc,CRUISE_1_S1:CRUISE_1_S2:CRUISE_1_S3:CRUISE_2_S1:CRUISE_2_S2:CRUISE_3_S1:CRUISE_4_S1",
+      "cruise:desc,CRUISE_4_S1:CRUISE_3_S1:CRUISE_2_S1:CRUISE_2_S2:CRUISE_1_S1:CRUISE_1_S2:CRUISE_1_S3",
+      "sample:asc,CRUISE_1_S1:CRUISE_1_S2:CRUISE_1_S3:CRUISE_2_S1:CRUISE_2_S2:CRUISE_3_S1:CRUISE_4_S1",
+      "sample:desc,CRUISE_4_S1:CRUISE_3_S1:CRUISE_2_S2:CRUISE_2_S1:CRUISE_1_S3:CRUISE_1_S2:CRUISE_1_S1",
+      "device:asc,CRUISE_1_S1:CRUISE_1_S2:CRUISE_1_S3:CRUISE_2_S1:CRUISE_2_S2:CRUISE_4_S1:CRUISE_3_S1",
+      "device:desc,CRUISE_3_S1:CRUISE_2_S1:CRUISE_2_S2:CRUISE_4_S1:CRUISE_1_S1:CRUISE_1_S2:CRUISE_1_S3",
+      "beginDate:asc,CRUISE_1_S1:CRUISE_1_S3:CRUISE_2_S1:CRUISE_2_S2:CRUISE_4_S1:CRUISE_1_S2:CRUISE_3_S1",
+      "beginDate:desc,CRUISE_3_S1:CRUISE_1_S2:CRUISE_4_S1:CRUISE_2_S1:CRUISE_2_S2:CRUISE_1_S3:CRUISE_1_S1",
+      "lat:asc,CRUISE_2_S2:CRUISE_2_S1:CRUISE_3_S1:CRUISE_1_S1:CRUISE_1_S3:CRUISE_4_S1:CRUISE_1_S2",
+      "lat:desc,CRUISE_1_S2:CRUISE_4_S1:CRUISE_1_S1:CRUISE_1_S3:CRUISE_3_S1:CRUISE_2_S1:CRUISE_2_S2",
+      "lon:asc,CRUISE_2_S1:CRUISE_4_S1:CRUISE_1_S2:CRUISE_2_S2:CRUISE_1_S1:CRUISE_1_S3:CRUISE_3_S1",
+      "lon:desc,CRUISE_3_S1:CRUISE_1_S1:CRUISE_1_S3:CRUISE_2_S2:CRUISE_1_S2:CRUISE_4_S1:CRUISE_2_S1",
+      "water_depth:asc,CRUISE_4_S1:CRUISE_2_S1:CRUISE_2_S2:CRUISE_1_S3:CRUISE_1_S1:CRUISE_1_S2:CRUISE_3_S1",
+      "water_depth:desc,CRUISE_3_S1:CRUISE_1_S2:CRUISE_1_S1:CRUISE_1_S3:CRUISE_2_S2:CRUISE_2_S1:CRUISE_4_S1",
+      "storage_meth:asc,CRUISE_1_S1:CRUISE_1_S2:CRUISE_1_S3:CRUISE_2_S1:CRUISE_4_S1:CRUISE_3_S1:CRUISE_2_S2",
+      "storage_meth:desc,CRUISE_3_S1:CRUISE_4_S1:CRUISE_2_S1:CRUISE_1_S1:CRUISE_1_S2:CRUISE_1_S3:CRUISE_2_S2",
+      "igsn:asc,CRUISE_1_S1:CRUISE_1_S2:CRUISE_1_S3:CRUISE_2_S1:CRUISE_2_S2:CRUISE_3_S1:CRUISE_4_S1",
+      "igsn:desc,CRUISE_4_S1:CRUISE_3_S1:CRUISE_2_S2:CRUISE_2_S1:CRUISE_1_S3:CRUISE_1_S2:CRUISE_1_S1",
+      "leg:asc,CRUISE_1_S1:CRUISE_1_S2:CRUISE_1_S3:CRUISE_2_S1:CRUISE_2_S2:CRUISE_3_S1:CRUISE_4_S1",
+      "leg:desc,CRUISE_2_S1:CRUISE_2_S2:CRUISE_1_S2:CRUISE_1_S3:CRUISE_1_S1:CRUISE_3_S1:CRUISE_4_S1",
+      "facility_code:asc,CRUISE_4_S1:CRUISE_2_S1:CRUISE_3_S1:CRUISE_1_S1:CRUISE_1_S2:CRUISE_1_S3:CRUISE_2_S2",
+      "facility_code:desc,CRUISE_2_S2:CRUISE_1_S1:CRUISE_1_S2:CRUISE_1_S3:CRUISE_2_S1:CRUISE_3_S1:CRUISE_4_S1",
+      "ship_code:asc,CRUISE_2_S2:CRUISE_1_S1:CRUISE_1_S2:CRUISE_1_S3:CRUISE_2_S1:CRUISE_3_S1:CRUISE_4_S1",
+      "ship_code:desc,CRUISE_2_S2:CRUISE_1_S1:CRUISE_1_S2:CRUISE_1_S3:CRUISE_2_S1:CRUISE_3_S1:CRUISE_4_S1",
+      "province:asc,CRUISE_2_S2:CRUISE_4_S1:CRUISE_1_S2:CRUISE_1_S1:CRUISE_1_S3:CRUISE_3_S1:CRUISE_2_S1",
+      "province:desc,CRUISE_3_S1:CRUISE_1_S1:CRUISE_1_S3:CRUISE_1_S2:CRUISE_4_S1:CRUISE_2_S2:CRUISE_2_S1",
+      "lake:asc,CRUISE_3_S1:CRUISE_4_S1:CRUISE_1_S1:CRUISE_1_S2:CRUISE_2_S2:CRUISE_1_S3:CRUISE_2_S1",
+      "lake:desc,CRUISE_1_S3:CRUISE_2_S2:CRUISE_1_S1:CRUISE_1_S2:CRUISE_4_S1:CRUISE_3_S1:CRUISE_2_S1",
+  })
+  public void testSort(String order, String expectedOrder) throws Exception {
+
+
+      List<String> expectedSamples = Arrays.asList(expectedOrder.split(":"));
+      ResponseEntity<String> httpResponse = restClient.exchange(
+          UriComponentsBuilder.fromPath("/api/samples/detail").queryParam("order", order).build().toString(),
+          HttpMethod.GET,
+          new HttpEntity<>(null),
+          String.class
+      );
+      assertEquals(200, httpResponse.getStatusCode().value());
+
+      PagedItemsView<SampleDetailDisplayView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
+
+      System.out.println(order);
+      System.out.println(response.getItems());
+
+      List<String> samples = response.getItems().stream().map(SampleDetailDisplayView::getSample).collect(Collectors.toList());
+
+      assertEquals(expectedSamples, samples);
+
+  }
+
 
   @Test
   public void findByRepository() throws Exception {
@@ -169,7 +232,7 @@ class SampleServiceIT {
     PagedItemsView<SampleDetailDisplayView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
 
     List<String> expectedSamples = Arrays.asList(
-        "CRUISE_3_S1"
+        "CRUISE_4_S1"
 //        "CRUISE_2_S3" //not published
 //        "CRUISE_5_S1" //parent cruise not published
     );
@@ -269,6 +332,28 @@ class SampleServiceIT {
   }
 
   @Test
+  public void findByStartDateBeginsWith() throws Exception {
+
+    ResponseEntity<String> httpResponse = restClient.exchange(
+        UriComponentsBuilder.fromPath("/api/samples/detail").queryParam("start_date_begins_with", "2022").build().toString(),
+        HttpMethod.GET,
+        new HttpEntity<>(null),
+        String.class
+    );
+    assertEquals(200, httpResponse.getStatusCode().value());
+
+    PagedItemsView<SampleDetailDisplayView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
+
+    List<String> expectedSamples = Arrays.asList(
+        "CRUISE_1_S2",
+        "CRUISE_3_S1"
+    );
+
+    assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailDisplayView::getSample).collect(Collectors.toList()));
+  }
+
+
+  @Test
   public void findByMinDepth() throws Exception {
 
     ResponseEntity<String> httpResponse = restClient.exchange(
@@ -309,7 +394,7 @@ class SampleServiceIT {
         "CRUISE_1_S3",
         "CRUISE_2_S1",
         "CRUISE_2_S2",
-        "CRUISE_3_S1"
+        "CRUISE_4_S1"
 //        "CRUISE_2_S3" //not published
 //        "CRUISE_5_S1" //parent cruise not published
     );
@@ -365,7 +450,6 @@ class SampleServiceIT {
     assertEquals(200, httpResponse.getStatusCode().value());
 
     PagedItemsView<SampleDetailDisplayView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
-
 
     assertEquals(0, response.getItems().size());
   }
@@ -502,7 +586,7 @@ class SampleServiceIT {
     PagedItemsView<SampleDetailDisplayView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
 
     List<String> expectedSamples = Arrays.asList(
-        "CRUISE_3_S1"
+        "CRUISE_4_S1"
 //        "CRUISE_2_S3" //not published
 //        "CRUISE_5_S1" //parent cruise not published
     );
@@ -572,7 +656,6 @@ class SampleServiceIT {
     String imlgs = response.getItems().stream().filter(s -> s.getSample().equals("CRUISE_2_S2")).findFirst().map(SampleDisplayView::getImlgs)
         .orElse(null);
 
-
     httpResponse = restClient.exchange(
         UriComponentsBuilder.fromPath("/api/samples/detail").queryParam("imlgs", imlgs).build().toString(),
         HttpMethod.GET,
@@ -606,7 +689,6 @@ class SampleServiceIT {
     assertEquals(1, response1.getItems().size());
 
     Long cruiseId = response1.getItems().stream().findFirst().map(CruiseNameView::getId).orElse(null);
-
 
     httpResponse = restClient.exchange(
         UriComponentsBuilder.fromPath("/api/samples/detail").queryParam("cruise_id", cruiseId).build().toString(),
@@ -712,7 +794,6 @@ class SampleServiceIT {
 
     Long intervalId = response1.getItems().stream().findFirst().map(IntervalView::getId).orElse(null);
 
-
     httpResponse = restClient.exchange(
         UriComponentsBuilder.fromPath("/api/samples/detail").queryParam("interval_id", intervalId).build().toString(),
         HttpMethod.GET,
@@ -796,7 +877,7 @@ class SampleServiceIT {
     expectedSamples = Arrays.asList(
         "CRUISE_2_S2",
         "CRUISE_3_S1",
-        "CRUISE_3_S1"
+        "CRUISE_4_S1"
     );
 
     assertEquals(4, response.getItemsPerPage());

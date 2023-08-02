@@ -5,11 +5,14 @@ import gov.noaa.ncei.geosamples.api.service.SpecificationFactory;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsCruiseEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsCruiseFacilityEntity_;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsCruisePlatformEntity_;
+import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsDeviceEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsFacilityEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsIntervalEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsLegEntity;
+import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsProvinceEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsSampleTsqpEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsSampleTsqpEntity_;
+import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsStorageMethEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.PlatformMasterEntity;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.JoinType;
@@ -29,6 +32,9 @@ class SampleSpecificationFactory implements SpecificationFactory<CuratorsSampleT
       private From<CuratorsSampleTsqpEntity, PlatformMasterEntity> sample2Platform = null;
       private From<CuratorsSampleTsqpEntity, CuratorsFacilityEntity> sample2Facility = null;
       private From<CuratorsSampleTsqpEntity, CuratorsLegEntity> sample2Leg = null;
+      private From<CuratorsSampleTsqpEntity, CuratorsDeviceEntity> sample2Device = null;
+      private From<CuratorsSampleTsqpEntity, CuratorsStorageMethEntity> sample2StorageMethod = null;
+      private From<CuratorsSampleTsqpEntity, CuratorsProvinceEntity> sample2Province = null;
 
 
 
@@ -51,6 +57,14 @@ class SampleSpecificationFactory implements SpecificationFactory<CuratorsSampleT
           sample2cruise = sample.join(CuratorsSampleTsqpEntity_.CRUISE);
         }
         return sample2cruise;
+      }
+
+      @Override
+      public From<CuratorsSampleTsqpEntity, CuratorsDeviceEntity> joinDevice() {
+        if (sample2Device == null) {
+          sample2Device = sample.join(CuratorsSampleTsqpEntity_.DEVICE, JoinType.LEFT);
+        }
+        return sample2Device;
       }
 
       @Override
@@ -90,6 +104,22 @@ class SampleSpecificationFactory implements SpecificationFactory<CuratorsSampleT
       @Override
       public boolean isJoinedCruise() {
         return sample2cruise != null;
+      }
+
+      @Override
+      public From<CuratorsSampleTsqpEntity, CuratorsStorageMethEntity> joinStorageMethod() {
+        if (sample2StorageMethod == null) {
+          sample2StorageMethod = sample.join(CuratorsSampleTsqpEntity_.STORAGE_METH, JoinType.LEFT);
+        }
+        return sample2StorageMethod;
+      }
+
+      @Override
+      public From<CuratorsSampleTsqpEntity, CuratorsProvinceEntity> joinProvince() {
+        if (sample2Province == null) {
+          sample2Province = sample.join(CuratorsSampleTsqpEntity_.PROVINCE, JoinType.LEFT);
+        }
+        return sample2Province;
       }
     };
   }

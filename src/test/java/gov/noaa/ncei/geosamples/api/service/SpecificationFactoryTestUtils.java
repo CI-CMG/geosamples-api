@@ -390,14 +390,14 @@ public class SpecificationFactoryTestUtils {
 //      Start CRUISE_4
     {
       CuratorsCruiseEntity cruise4 = cruiseRepository.save(buildCruise(
-          "CRUISE_3",
+          "CRUISE_4",
           (short) 2021,
           true,
           () -> Collections.singletonList(buildPlatformMapping(loonPlatform, true)),
           () -> Collections.singletonList(buildFacilityMapping(awiFacility, true)),
           null));
 
-      CuratorsSampleTsqpEntity cruise4Sample1 = sampleRepository.save(buildSample(true, "CRUISE_3_S1", drillDevice, 25.4, 5.7,
+      CuratorsSampleTsqpEntity cruise4Sample1 = sampleRepository.save(buildSample(true, "CRUISE_4_S1", drillDevice, 25.4, 5.7,
           cruise4.getPlatformMappings().get(0),
           cruise4.getFacilityMappings().get(0),
           new SampleSearchableFields()

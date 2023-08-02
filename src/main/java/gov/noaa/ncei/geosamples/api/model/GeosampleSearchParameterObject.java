@@ -3,14 +3,25 @@ package gov.noaa.ncei.geosamples.api.model;
 import gov.noaa.ncei.geosamples.api.view.PagingParameters;
 import io.swagger.v3.oas.annotations.Parameter;
 import java.beans.ConstructorProperties;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 import org.locationtech.jts.geom.Geometry;
 
-// This has to be a Java class, not Groovy, for the Swagger documentation to work
 public class GeosampleSearchParameterObject implements PagingParameters {
+
+  private static final List<String> DEFAULT_SORT = Arrays.asList(
+      "sample:asc",
+      "platform:asc",
+      "facility_code:asc",
+      "cruise:asc",
+      "leg:asc"
+  );
+
 
   private String repository;
   @ValidBbox
@@ -22,9 +33,9 @@ public class GeosampleSearchParameterObject implements PagingParameters {
   @Parameter(name = "start_date")
   @Size(min = 4, max = 8)
   private String startDate;
-  @Parameter(name = "date_starts_with")
+  @Parameter(name = "start_date_begins_with")
   @Size(min = 4, max = 8)
-  private String dateStartsWith;
+  private String startDateBeginsWith;
 
   //    Date startDate
   @Parameter(name = "min_depth")
@@ -57,7 +68,7 @@ public class GeosampleSearchParameterObject implements PagingParameters {
   private Long intervalId;
   private String leg;
 
-  private Geometry wkt;
+  private Geometry areaOfInterest;
 
 
   @Min(1)
@@ -66,16 +77,71 @@ public class GeosampleSearchParameterObject implements PagingParameters {
   @Max(2000)
   @Parameter(name = "items_per_page")
   private int itemsPerPage;
+  private List<String> order = DEFAULT_SORT;
 
-  @ConstructorProperties({"repository", "bbox", "platform", "lake", "cruise", "device",
-      "start_date", "min_depth", "max_depth", "igsn", "lithology", "texture", "mineralogy",
-      "weathering", "metamorphism", "storage_method", "province", "age", "imlgs", "cruise_id",
-      "cruise_year", "platform_id", "facility_id", "interval_id", "leg", "page", "items_per_page", "date_starts_with"})
-  public GeosampleSearchParameterObject(String repository, String bbox, String platform, String lake, String cruise, String device,
-      String startDate, Integer minDepth, Integer maxDepth, String igsn, String lithology, String texture, String mineralogy,
-      String weathering, String metamorphism, String storageMethod, String province, String age, String imlgs, Long cruiseId,
-      Integer cruiseYear, Long platformId, Long facilityId, Long intervalId, String leg, Integer page, Integer itemsPerPage, String dateStartsWith,
-      Geometry wkt) {
+  @ConstructorProperties({
+      "repository",
+      "bbox",
+      "platform",
+      "lake",
+      "cruise",
+      "device",
+      "start_date",
+      "min_depth",
+      "max_depth",
+      "igsn",
+      "lithology",
+      "texture",
+      "mineralogy",
+      "weathering",
+      "metamorphism",
+      "storage_method",
+      "province",
+      "age",
+      "imlgs",
+      "cruise_id",
+      "cruise_year",
+      "platform_id",
+      "facility_id",
+      "interval_id",
+      "leg",
+      "page",
+      "items_per_page",
+      "start_date_begins_with",
+      "order",
+      "area_of_interest"
+  })
+  public GeosampleSearchParameterObject(
+      String repository,
+      String bbox,
+      String platform,
+      String lake,
+      String cruise,
+      String device,
+      String startDate,
+      Integer minDepth,
+      Integer maxDepth,
+      String igsn,
+      String lithology,
+      String texture,
+      String mineralogy,
+      String weathering,
+      String metamorphism,
+      String storageMethod,
+      String province,
+      String age,
+      String imlgs,
+      Long cruiseId,
+      Integer cruiseYear,
+      Long platformId,
+      Long facilityId,
+      Long intervalId,
+      String leg,
+      Integer page,
+      Integer itemsPerPage,
+      String startDateBeginsWith,
+      List<String> order,
+      Geometry areaOfInterest) {
     this.repository = repository;
     this.bbox = bbox;
     this.platform = platform;
@@ -103,8 +169,9 @@ public class GeosampleSearchParameterObject implements PagingParameters {
     this.leg = leg;
     this.page = page == null ? 1 : page;
     this.itemsPerPage = itemsPerPage == null ? 500 : itemsPerPage;
-    this.dateStartsWith = dateStartsWith;
-    this.wkt = wkt;
+    this.startDateBeginsWith = startDateBeginsWith;
+    this.order = order == null || order.isEmpty() ? DEFAULT_SORT : new ArrayList<>(order);
+    this.areaOfInterest = areaOfInterest;
   }
 
   private static String trim(String s) {
@@ -311,20 +378,20 @@ public class GeosampleSearchParameterObject implements PagingParameters {
     this.bbox = bbox;
   }
 
-  public String getDateStartsWith() {
-    return dateStartsWith;
+  public String getStartDateBeginsWith() {
+    return startDateBeginsWith;
   }
 
-  public void setDateStartsWith(String dateStartsWith) {
-    this.dateStartsWith = dateStartsWith;
+  public void setStartDateBeginsWith(String startDateBeginsWith) {
+    this.startDateBeginsWith = startDateBeginsWith;
   }
 
-  public Geometry getWkt() {
-    return wkt;
+  public Geometry getAreaOfInterest() {
+    return areaOfInterest;
   }
 
-  public void setWkt(Geometry wkt) {
-    this.wkt = wkt;
+  public void setAreaOfInterest(Geometry areaOfInterest) {
+    this.areaOfInterest = areaOfInterest;
   }
 
   @Override
@@ -348,6 +415,19 @@ public class GeosampleSearchParameterObject implements PagingParameters {
   }
 
   @Override
+  public List<String> getOrder() {
+    return order;
+  }
+
+  @Override
+  public void setOrder(List<String> order) {
+    if (order == null || order.isEmpty()) {
+      order = DEFAULT_SORT;
+    }
+    this.order = new ArrayList<>(order);
+  }
+
+  @Override
   public boolean equals(Object o) {
     if (this == o) {
       return true;
@@ -359,21 +439,23 @@ public class GeosampleSearchParameterObject implements PagingParameters {
     return page == that.page && itemsPerPage == that.itemsPerPage && Objects.equals(repository, that.repository) && Objects.equals(
         bbox, that.bbox) && Objects.equals(platform, that.platform) && Objects.equals(lake, that.lake) && Objects.equals(
         cruise, that.cruise) && Objects.equals(device, that.device) && Objects.equals(startDate, that.startDate)
-        && Objects.equals(dateStartsWith, that.dateStartsWith) && Objects.equals(minDepth, that.minDepth)
+        && Objects.equals(startDateBeginsWith, that.startDateBeginsWith) && Objects.equals(minDepth, that.minDepth)
         && Objects.equals(maxDepth, that.maxDepth) && Objects.equals(igsn, that.igsn) && Objects.equals(lithology,
         that.lithology) && Objects.equals(texture, that.texture) && Objects.equals(mineralogy, that.mineralogy)
         && Objects.equals(weathering, that.weathering) && Objects.equals(metamorphism, that.metamorphism)
         && Objects.equals(storageMethod, that.storageMethod) && Objects.equals(province, that.province) && Objects.equals(
         age, that.age) && Objects.equals(imlgs, that.imlgs) && Objects.equals(cruiseId, that.cruiseId) && Objects.equals(
         cruiseYear, that.cruiseYear) && Objects.equals(platformId, that.platformId) && Objects.equals(facilityId, that.facilityId)
-        && Objects.equals(intervalId, that.intervalId) && Objects.equals(leg, that.leg) && Objects.equals(wkt, that.wkt);
+        && Objects.equals(intervalId, that.intervalId) && Objects.equals(leg, that.leg) && Objects.equals(areaOfInterest,
+        that.areaOfInterest) && Objects.equals(order, that.order);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(repository, bbox, platform, lake, cruise, device, startDate, dateStartsWith, minDepth, maxDepth, igsn, lithology, texture,
-        mineralogy, weathering, metamorphism, storageMethod, province, age, imlgs, cruiseId, cruiseYear, platformId, facilityId, intervalId, leg, wkt,
-        page, itemsPerPage);
+    return Objects.hash(repository, bbox, platform, lake, cruise, device, startDate, startDateBeginsWith, minDepth, maxDepth, igsn, lithology,
+        texture,
+        mineralogy, weathering, metamorphism, storageMethod, province, age, imlgs, cruiseId, cruiseYear, platformId, facilityId, intervalId, leg,
+        areaOfInterest, page, itemsPerPage, order);
   }
 
   @Override
@@ -386,7 +468,7 @@ public class GeosampleSearchParameterObject implements PagingParameters {
         ", cruise='" + cruise + '\'' +
         ", device='" + device + '\'' +
         ", startDate='" + startDate + '\'' +
-        ", dateStartsWith='" + dateStartsWith + '\'' +
+        ", startDateBeginsWith='" + startDateBeginsWith + '\'' +
         ", minDepth=" + minDepth +
         ", maxDepth=" + maxDepth +
         ", igsn='" + igsn + '\'' +
@@ -405,9 +487,10 @@ public class GeosampleSearchParameterObject implements PagingParameters {
         ", facilityId=" + facilityId +
         ", intervalId=" + intervalId +
         ", leg='" + leg + '\'' +
-        ", wkt=" + wkt +
+        ", areaOfInterest=" + areaOfInterest +
         ", page=" + page +
         ", itemsPerPage=" + itemsPerPage +
+        ", order=" + order +
         '}';
   }
 }

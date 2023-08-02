@@ -5,12 +5,16 @@ import gov.noaa.ncei.geosamples.api.service.SpecificationFactory;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsCruiseEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsCruiseFacilityEntity_;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsCruisePlatformEntity_;
+import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsDeviceEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsFacilityEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsIntervalEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsIntervalEntity_;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsLegEntity;
+import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsProvinceEntity;
+import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsRockLithEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsSampleTsqpEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsSampleTsqpEntity_;
+import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsStorageMethEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.PlatformMasterEntity;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.JoinType;
@@ -30,6 +34,9 @@ public class IntervalSpecificationFactory implements SpecificationFactory<Curato
       private From<CuratorsIntervalEntity, CuratorsLegEntity> interval2Leg = null;
       private From<CuratorsIntervalEntity, PlatformMasterEntity> interval2Platform = null;
       private From<CuratorsIntervalEntity, CuratorsFacilityEntity> interval2Facility = null;
+      private From<CuratorsIntervalEntity, CuratorsDeviceEntity> interval2Device = null;
+      private From<CuratorsIntervalEntity, CuratorsStorageMethEntity> interval2StorageMethod = null;
+      private From<CuratorsIntervalEntity, CuratorsProvinceEntity> interval2Province = null;
 
       @Override
       public From<CuratorsIntervalEntity, CuratorsSampleTsqpEntity> joinSample() {
@@ -50,6 +57,14 @@ public class IntervalSpecificationFactory implements SpecificationFactory<Curato
           interval2Cruise = joinSample().join(CuratorsSampleTsqpEntity_.CRUISE);
         }
         return interval2Cruise;
+      }
+
+      @Override
+      public From<CuratorsIntervalEntity, CuratorsDeviceEntity> joinDevice() {
+        if (interval2Device == null) {
+          interval2Device = joinSample().join(CuratorsSampleTsqpEntity_.DEVICE, JoinType.LEFT);
+        }
+        return interval2Device;
       }
 
       @Override
@@ -89,6 +104,22 @@ public class IntervalSpecificationFactory implements SpecificationFactory<Curato
       @Override
       public boolean isJoinedCruise() {
         return interval2Cruise != null;
+      }
+
+      @Override
+      public From<CuratorsIntervalEntity, CuratorsStorageMethEntity> joinStorageMethod() {
+        if (interval2StorageMethod == null) {
+          interval2StorageMethod = joinSample().join(CuratorsSampleTsqpEntity_.STORAGE_METH, JoinType.LEFT);
+        }
+        return interval2StorageMethod;
+      }
+
+      @Override
+      public From<CuratorsIntervalEntity, CuratorsProvinceEntity> joinProvince() {
+        if (interval2Province == null) {
+          interval2Province = joinSample().join(CuratorsSampleTsqpEntity_.PROVINCE, JoinType.LEFT);
+        }
+        return interval2Province;
       }
     };
   }

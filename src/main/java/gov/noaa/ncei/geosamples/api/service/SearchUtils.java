@@ -2,11 +2,14 @@ package gov.noaa.ncei.geosamples.api.service;
 
 
 import java.util.Locale;
+import java.util.Map;
 import java.util.function.Function;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.Nullable;
 
@@ -130,6 +133,19 @@ public class SearchUtils {
 
   public static <E, C> Specification<E> equal(C value, String columnAlias) {
     return equal(value, e -> e.get(columnAlias));
+  }
+
+  public static Sort.Order paramsToOrder(Map<String, String> viewToEntitySortMapping, String definedSort) {
+    String[] parts = definedSort.split(":");
+    String viewSort = parts[0];
+    SortDirection direction = SortDirection.valueOf(parts[1].toLowerCase(Locale.ENGLISH));
+    String dbSort = viewToEntitySortMapping.get(viewSort);
+    if (dbSort == null) {
+      throw new IllegalStateException("Sorting is not defined for " + definedSort);
+    }
+    return new Sort.Order(direction == SortDirection.asc ? Sort.Direction.ASC : Sort.Direction.DESC, dbSort)
+            .nullsLast()
+            .ignoreCase();
   }
 
 }

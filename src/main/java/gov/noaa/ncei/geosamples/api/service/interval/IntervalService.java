@@ -17,14 +17,17 @@ import gov.noaa.ncei.geosamples.api.view.SampleDisplayView;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsCruiseEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsCruiseFacilityEntity_;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsCruisePlatformEntity_;
+import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsDeviceEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsFacilityEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsIntervalEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsIntervalEntity_;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsLegEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsLithologyEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsLithologyEntity_;
+import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsProvinceEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsSampleTsqpEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsSampleTsqpEntity_;
+import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsStorageMethEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsTextureEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsTextureEntity_;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.PlatformMasterEntity;
@@ -146,6 +149,9 @@ public class IntervalService {
         private From<CuratorsTextureEntity, CuratorsLegEntity> leg = null;
         private From<CuratorsTextureEntity, PlatformMasterEntity> platform = null;
         private From<CuratorsTextureEntity, CuratorsFacilityEntity> facility = null;
+        private From<CuratorsTextureEntity, CuratorsDeviceEntity> device = null;
+        private From<CuratorsTextureEntity, CuratorsStorageMethEntity> storageMethod = null;
+        private From<CuratorsTextureEntity, CuratorsProvinceEntity> province = null;
 
         @Override
         public From<CuratorsTextureEntity, CuratorsSampleTsqpEntity> joinSample() {
@@ -172,6 +178,14 @@ public class IntervalService {
         }
 
         @Override
+        public From<CuratorsTextureEntity, CuratorsDeviceEntity> joinDevice() {
+          if (device == null) {
+            device = joinSample().join(CuratorsSampleTsqpEntity_.DEVICE, JoinType.LEFT);
+          }
+          return device;
+        }
+
+        @Override
         public From<CuratorsTextureEntity, CuratorsLegEntity> joinLeg() {
           if (leg == null) {
             leg = joinSample().join(CuratorsSampleTsqpEntity_.LEG, JoinType.LEFT);
@@ -209,6 +223,22 @@ public class IntervalService {
         public boolean isJoinedCruise() {
           return cruise != null;
         }
+
+        @Override
+        public From<CuratorsTextureEntity, CuratorsStorageMethEntity> joinStorageMethod() {
+          if (storageMethod == null) {
+            storageMethod = joinSample().join(CuratorsSampleTsqpEntity_.STORAGE_METH, JoinType.LEFT);
+          }
+          return storageMethod;
+        }
+
+        @Override
+        public From<CuratorsTextureEntity, CuratorsProvinceEntity> joinProvince() {
+          if (province == null) {
+            province = joinSample().join(CuratorsSampleTsqpEntity_.PROVINCE, JoinType.LEFT);
+          }
+          return province;
+        }
       };
     }
   };
@@ -225,6 +255,9 @@ public class IntervalService {
         private From<CuratorsTextureEntity, CuratorsLegEntity> leg = null;
         private From<CuratorsTextureEntity, PlatformMasterEntity> platform = null;
         private From<CuratorsTextureEntity, CuratorsFacilityEntity> facility = null;
+        private From<CuratorsTextureEntity, CuratorsDeviceEntity> device = null;
+        private From<CuratorsTextureEntity, CuratorsStorageMethEntity> storageMethod = null;
+        private From<CuratorsTextureEntity, CuratorsProvinceEntity> province = null;
 
         @Override
         public From<CuratorsTextureEntity, CuratorsSampleTsqpEntity> joinSample() {
@@ -251,6 +284,14 @@ public class IntervalService {
         }
 
         @Override
+        public From<CuratorsTextureEntity, CuratorsDeviceEntity> joinDevice() {
+          if (device == null) {
+            device = joinSample().join(CuratorsSampleTsqpEntity_.DEVICE, JoinType.LEFT);
+          }
+          return device;
+        }
+
+        @Override
         public From<CuratorsTextureEntity, CuratorsLegEntity> joinLeg() {
           if (leg == null) {
             leg = joinSample().join(CuratorsSampleTsqpEntity_.LEG, JoinType.LEFT);
@@ -287,6 +328,22 @@ public class IntervalService {
         @Override
         public boolean isJoinedCruise() {
           return cruise != null;
+        }
+
+        @Override
+        public From<CuratorsTextureEntity, CuratorsStorageMethEntity> joinStorageMethod() {
+          if (storageMethod == null) {
+            storageMethod = joinSample().join(CuratorsSampleTsqpEntity_.STORAGE_METH, JoinType.LEFT);
+          }
+          return storageMethod;
+        }
+
+        @Override
+        public From<CuratorsTextureEntity, CuratorsProvinceEntity> joinProvince() {
+          if (province == null) {
+            province = joinSample().join(CuratorsSampleTsqpEntity_.PROVINCE, JoinType.LEFT);
+          }
+          return province;
         }
       };
     }
@@ -341,6 +398,9 @@ public class IntervalService {
         private From<CuratorsLithologyEntity, CuratorsLegEntity> leg = null;
         private From<CuratorsLithologyEntity, PlatformMasterEntity> platform = null;
         private From<CuratorsLithologyEntity, CuratorsFacilityEntity> facility = null;
+        private From<CuratorsLithologyEntity, CuratorsDeviceEntity> device = null;
+        private From<CuratorsLithologyEntity, CuratorsStorageMethEntity> storageMethod = null;
+        private From<CuratorsLithologyEntity, CuratorsProvinceEntity> province = null;
 
         @Override
         public From<CuratorsLithologyEntity, CuratorsSampleTsqpEntity> joinSample() {
@@ -367,6 +427,14 @@ public class IntervalService {
         }
 
         @Override
+        public From<CuratorsLithologyEntity, CuratorsDeviceEntity> joinDevice() {
+          if (device == null) {
+            device = joinSample().join(CuratorsSampleTsqpEntity_.DEVICE, JoinType.LEFT);
+          }
+          return device;
+        }
+
+        @Override
         public From<CuratorsLithologyEntity, CuratorsLegEntity> joinLeg() {
           if (leg == null) {
             leg = joinSample().join(CuratorsSampleTsqpEntity_.LEG, JoinType.LEFT);
@@ -404,6 +472,22 @@ public class IntervalService {
         public boolean isJoinedCruise() {
           return cruise != null;
         }
+
+        @Override
+        public From<CuratorsLithologyEntity, CuratorsStorageMethEntity> joinStorageMethod() {
+          if (storageMethod == null) {
+            storageMethod = joinSample().join(CuratorsSampleTsqpEntity_.STORAGE_METH, JoinType.LEFT);
+          }
+          return storageMethod;
+        }
+
+        @Override
+        public From<CuratorsLithologyEntity, CuratorsProvinceEntity> joinProvince() {
+          if (province == null) {
+            province = joinSample().join(CuratorsSampleTsqpEntity_.PROVINCE, JoinType.LEFT);
+          }
+          return province;
+        }
       };
     }
   };
@@ -420,6 +504,9 @@ public class IntervalService {
         private From<CuratorsLithologyEntity, CuratorsLegEntity> leg = null;
         private From<CuratorsLithologyEntity, PlatformMasterEntity> platform = null;
         private From<CuratorsLithologyEntity, CuratorsFacilityEntity> facility = null;
+        private From<CuratorsLithologyEntity, CuratorsDeviceEntity> device = null;
+        private From<CuratorsLithologyEntity, CuratorsStorageMethEntity> storageMethod = null;
+        private From<CuratorsLithologyEntity, CuratorsProvinceEntity> province = null;
 
         @Override
         public From<CuratorsLithologyEntity, CuratorsSampleTsqpEntity> joinSample() {
@@ -446,6 +533,14 @@ public class IntervalService {
         }
 
         @Override
+        public From<CuratorsLithologyEntity, CuratorsDeviceEntity> joinDevice() {
+          if (device == null) {
+            device = joinSample().join(CuratorsSampleTsqpEntity_.DEVICE, JoinType.LEFT);
+          }
+          return device;
+        }
+
+        @Override
         public From<CuratorsLithologyEntity, CuratorsLegEntity> joinLeg() {
           if (leg == null) {
             leg = joinSample().join(CuratorsSampleTsqpEntity_.LEG, JoinType.LEFT);
@@ -482,6 +577,22 @@ public class IntervalService {
         @Override
         public boolean isJoinedCruise() {
           return cruise != null;
+        }
+
+        @Override
+        public From<CuratorsLithologyEntity, CuratorsStorageMethEntity> joinStorageMethod() {
+          if (storageMethod == null) {
+            storageMethod = joinSample().join(CuratorsSampleTsqpEntity_.STORAGE_METH, JoinType.LEFT);
+          }
+          return storageMethod;
+        }
+
+        @Override
+        public From<CuratorsLithologyEntity, CuratorsProvinceEntity> joinProvince() {
+          if (province == null) {
+            province = joinSample().join(CuratorsSampleTsqpEntity_.PROVINCE, JoinType.LEFT);
+          }
+          return province;
         }
       };
     }
