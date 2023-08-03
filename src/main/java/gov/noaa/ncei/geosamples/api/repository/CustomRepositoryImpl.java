@@ -175,7 +175,7 @@ public class CustomRepositoryImpl<E, ID> extends SimpleJpaRepository<E, ID> impl
     if (intervalId != null) {
       specs.add(cb.equal(joiner.joinInterval().get(CuratorsIntervalEntity_.ID), intervalId));
     }
-    if (StringUtils.hasText(bbox)) {
+    if (StringUtils.hasText(bbox) && wkt == null) {
       Bbox box = Bbox.parse(bbox);
       specs.add(cb.greaterThanOrEqualTo(joiner.joinSample().get(CuratorsSampleTsqpEntity_.LON), box.getXMin()));
       specs.add(cb.greaterThanOrEqualTo(joiner.joinSample().get(CuratorsSampleTsqpEntity_.LAT), box.getYMin()));
