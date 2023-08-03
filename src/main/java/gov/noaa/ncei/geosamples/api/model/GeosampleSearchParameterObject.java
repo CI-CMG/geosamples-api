@@ -68,7 +68,7 @@ public class GeosampleSearchParameterObject implements PagingParameters {
   private Long intervalId;
   private String leg;
 
-  private Geometry areaOfInterest;
+  private Geometry aoi;
 
 
   @Min(1)
@@ -109,7 +109,7 @@ public class GeosampleSearchParameterObject implements PagingParameters {
       "items_per_page",
       "start_date_begins_with",
       "order",
-      "area_of_interest"
+      "aoi"
   })
   public GeosampleSearchParameterObject(
       String repository,
@@ -171,7 +171,7 @@ public class GeosampleSearchParameterObject implements PagingParameters {
     this.itemsPerPage = itemsPerPage == null ? 500 : itemsPerPage;
     this.startDateBeginsWith = startDateBeginsWith;
     this.order = order == null || order.isEmpty() ? DEFAULT_SORT : new ArrayList<>(order);
-    this.areaOfInterest = areaOfInterest;
+    this.aoi = areaOfInterest;
   }
 
   private static String trim(String s) {
@@ -386,12 +386,12 @@ public class GeosampleSearchParameterObject implements PagingParameters {
     this.startDateBeginsWith = startDateBeginsWith;
   }
 
-  public Geometry getAreaOfInterest() {
-    return areaOfInterest;
+  public Geometry getAoi() {
+    return aoi;
   }
 
-  public void setAreaOfInterest(Geometry areaOfInterest) {
-    this.areaOfInterest = areaOfInterest;
+  public void setAoi(Geometry aoi) {
+    this.aoi = aoi;
   }
 
   @Override
@@ -446,8 +446,8 @@ public class GeosampleSearchParameterObject implements PagingParameters {
         && Objects.equals(storageMethod, that.storageMethod) && Objects.equals(province, that.province) && Objects.equals(
         age, that.age) && Objects.equals(imlgs, that.imlgs) && Objects.equals(cruiseId, that.cruiseId) && Objects.equals(
         cruiseYear, that.cruiseYear) && Objects.equals(platformId, that.platformId) && Objects.equals(facilityId, that.facilityId)
-        && Objects.equals(intervalId, that.intervalId) && Objects.equals(leg, that.leg) && Objects.equals(areaOfInterest,
-        that.areaOfInterest) && Objects.equals(order, that.order);
+        && Objects.equals(intervalId, that.intervalId) && Objects.equals(leg, that.leg) && Objects.equals(aoi,
+        that.aoi) && Objects.equals(order, that.order);
   }
 
   @Override
@@ -455,7 +455,7 @@ public class GeosampleSearchParameterObject implements PagingParameters {
     return Objects.hash(repository, bbox, platform, lake, cruise, device, startDate, startDateBeginsWith, minDepth, maxDepth, igsn, lithology,
         texture,
         mineralogy, weathering, metamorphism, storageMethod, province, age, imlgs, cruiseId, cruiseYear, platformId, facilityId, intervalId, leg,
-        areaOfInterest, page, itemsPerPage, order);
+        aoi, page, itemsPerPage, order);
   }
 
   @Override
@@ -487,7 +487,7 @@ public class GeosampleSearchParameterObject implements PagingParameters {
         ", facilityId=" + facilityId +
         ", intervalId=" + intervalId +
         ", leg='" + leg + '\'' +
-        ", areaOfInterest=" + areaOfInterest +
+        ", aoi=" + aoi +
         ", page=" + page +
         ", itemsPerPage=" + itemsPerPage +
         ", order=" + order +

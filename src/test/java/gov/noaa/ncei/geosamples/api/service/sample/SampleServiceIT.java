@@ -240,6 +240,27 @@ class SampleServiceIT {
     assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailDisplayView::getSample).collect(Collectors.toList()));
   }
 
+
+  @Test
+  public void findByAoi() throws Exception {
+
+    ResponseEntity<String> httpResponse = restClient.exchange(
+        UriComponentsBuilder.fromPath("/api/samples/detail").queryParam("aoi", "POLYGON ((0.5 19, 6 19, 6 26, 0.5 26, 0.5 19))").build().toString(),
+        HttpMethod.GET,
+        new HttpEntity<>(null),
+        String.class
+    );
+    assertEquals(200, httpResponse.getStatusCode().value());
+
+    PagedItemsView<SampleDetailDisplayView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
+
+    List<String> expectedSamples = Arrays.asList(
+        "CRUISE_4_S1"
+    );
+
+    assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailDisplayView::getSample).collect(Collectors.toList()));
+  }
+
   @Test
   public void findByPlatform() throws Exception {
 

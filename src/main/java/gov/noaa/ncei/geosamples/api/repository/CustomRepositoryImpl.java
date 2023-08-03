@@ -156,7 +156,7 @@ public class CustomRepositoryImpl<E, ID> extends SimpleJpaRepository<E, ID> impl
     Long facilityId = searchParameters.getFacilityId();
     Long intervalId = searchParameters.getIntervalId();
     String leg = searchParameters.getLeg();
-    Geometry wkt = searchParameters.getAreaOfInterest();
+    Geometry wkt = searchParameters.getAoi();
     String startBeginsWith = searchParameters.getStartDateBeginsWith();
 
     if (StringUtils.hasText(startBeginsWith)) {
