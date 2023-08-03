@@ -109,9 +109,9 @@ abstract class SampleBaseService<V, D> {
             break;
           case platform:
             if (direction == SortDirection.asc) {
-              orders.add(hcb.asc(hcb.lower(j.joinPlatform().get(PlatformMasterEntity_.PLATFORM_NORMALIZED)), false));
+              orders.add(hcb.asc(hcb.lower(j.joinPlatform().get(PlatformMasterEntity_.PLATFORM)), false));
             } else {
-              orders.add(hcb.desc(hcb.lower(j.joinPlatform().get(PlatformMasterEntity_.PLATFORM_NORMALIZED)), false));
+              orders.add(hcb.desc(hcb.lower(j.joinPlatform().get(PlatformMasterEntity_.PLATFORM)), false));
             }
             break;
           case cruise:

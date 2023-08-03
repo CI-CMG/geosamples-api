@@ -82,7 +82,7 @@ class SampleDisplayService extends SampleBaseService<SampleDisplayView, SampleDi
       return new Selection<?>[]{
           r.get(CuratorsSampleTsqpEntity_.IMLGS),
           j.joinFacility().get(CuratorsFacilityEntity_.FACILITY_CODE),
-          j.joinPlatform().get(PlatformMasterEntity_.PLATFORM_NORMALIZED),
+          j.joinPlatform().get(PlatformMasterEntity_.PLATFORM),
           j.joinCruise().get(CuratorsCruiseEntity_.CRUISE_NAME),
           r.get(CuratorsSampleTsqpEntity_.SAMPLE),
           j.joinDevice().get(CuratorsDeviceEntity_.DEVICE),

@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
@@ -183,6 +184,7 @@ class SampleControllerIT {
 
     ResponseEntity<String> response = restClient.exchange(
         UriComponentsBuilder.fromPath("/api/samples/summary")
+            .queryParam("order", "imlgs:asc")
             .build().toString(),
         HttpMethod.GET,
         new HttpEntity<>(null),
@@ -399,6 +401,7 @@ class SampleControllerIT {
 
     ResponseEntity<String> response = restClient.exchange(
         UriComponentsBuilder.fromPath("/api/samples/count")
+            .queryParam("order", "imlgs:asc")
             .build().toString(),
         HttpMethod.GET,
         new HttpEntity<>(null),
@@ -540,6 +543,7 @@ class SampleControllerIT {
 
     ResponseEntity<String> response = restClient.exchange(
         UriComponentsBuilder.fromPath("/api/samples/detail")
+            .queryParam("order", "imlgs:asc")
             .build().toString(),
         HttpMethod.GET,
         new HttpEntity<>(null),
@@ -549,12 +553,8 @@ class SampleControllerIT {
 
     JsonNode json = objectMapper.readTree(response.getBody());
     ObjectNode expectedJson = objectMapper.createObjectNode();
-    ArrayNode items = objectMapper.createArrayNode();
-    expectedJson.replace("items", items);
-    expectedJson.put("page", 1);
-    expectedJson.put("total_pages", 1);
-    expectedJson.put("total_items", 5);
-    expectedJson.put("items_per_page", 500);
+    List<JsonNode> items = new ArrayList<>();
+
 
     ObjectNode sample = objectMapper.createObjectNode();
     sample.put("imlgs", testUtils.getImlgs(cruiseName1, year1, sample1.getSample()));
@@ -641,6 +641,16 @@ class SampleControllerIT {
     sample.put("last_update", testUtils.getLastUpdate(sample.get("imlgs").asText()));
 
     items.add(sample);
+
+    Collections.sort(items, (Comparator.comparing(o -> o.get("imlgs").asText())));
+
+    ArrayNode itemsJson = objectMapper.createArrayNode();
+    itemsJson.addAll(items);
+    expectedJson.replace("items", itemsJson);
+    expectedJson.put("page", 1);
+    expectedJson.put("total_pages", 1);
+    expectedJson.put("total_items", 5);
+    expectedJson.put("items_per_page", 500);
 
 
     assertEquals(expectedJson, json);
@@ -803,6 +813,7 @@ class SampleControllerIT {
     ResponseEntity<String> response = restClient.exchange(
         UriComponentsBuilder.fromPath("/api/samples/detail")
             .pathSegment(imlgs)
+            .queryParam("order", "imlgs:asc")
             .build().toString(),
         HttpMethod.GET,
         new HttpEntity<>(null),
@@ -1047,6 +1058,7 @@ class SampleControllerIT {
 
     ResponseEntity<String> response = restClient.exchange(
         UriComponentsBuilder.fromPath("/api/samples/csv")
+            .queryParam("order", "imlgs:asc")
             .build().toString(),
         HttpMethod.GET,
         new HttpEntity<>(null),
