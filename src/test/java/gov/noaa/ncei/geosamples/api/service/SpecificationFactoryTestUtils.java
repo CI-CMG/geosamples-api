@@ -190,7 +190,8 @@ public class SpecificationFactoryTestUtils {
               .setText1(nodulesTexture)
               .setText2(ashTexture)
               .setRockMin(garnetMineral)
-              .setWeathMeta(greenschistMetamorphism)
+              .setWeathMeta(greenschistMetamorphism),
+          "igsn_1"
       ));
 
       intervalRepository.save(buildInterval(true, cruise1Sample1, 2,
@@ -228,7 +229,8 @@ public class SpecificationFactoryTestUtils {
               .setLith1(zeolitesLith)
               .setRockLith(igneousRockLith)
               .setWeathMeta(moderateWeathering)
-              .setRockMin(muscoviteMineral)
+              .setRockMin(muscoviteMineral),
+          "igsn_1"
       ));
 
       CuratorsSampleTsqpEntity cruise1Sample3 = sampleRepository.save(buildSample(true, "CRUISE_1_S3", coreDevice, 23.2, 67.1,
@@ -246,7 +248,8 @@ public class SpecificationFactoryTestUtils {
 
       intervalRepository.save(buildInterval(true, cruise1Sample3, 1,
           new IntervalSearchableFields()
-              .setLith2(zeolitesLith)
+              .setLith2(zeolitesLith),
+          "igsn_2"
       ));
 
       intervalRepository.save(buildInterval(true, cruise1Sample3, 2,
@@ -653,6 +656,11 @@ public class SpecificationFactoryTestUtils {
 
   private static CuratorsIntervalEntity buildInterval(boolean publish, CuratorsSampleTsqpEntity sample, int intervalNum,
       IntervalSearchableFields fields) {
+    return buildInterval(publish, sample, intervalNum, fields, null);
+  }
+
+  private static CuratorsIntervalEntity buildInterval(boolean publish, CuratorsSampleTsqpEntity sample, int intervalNum,
+      IntervalSearchableFields fields, String igsn) {
     CuratorsIntervalEntity interval = new CuratorsIntervalEntity();
     interval.setSample(sample);
     interval.setInterval(intervalNum);
@@ -665,6 +673,7 @@ public class SpecificationFactoryTestUtils {
     interval.setWeathMeta(fields.getWeathMeta());
     interval.setAges(Collections.singletonList(fields.getAge()));
     interval.setPublish(publish);
+    interval.setIgsn(igsn);
     return interval;
   }
 

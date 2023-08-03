@@ -214,14 +214,11 @@ public class CustomRepositoryImpl<E, ID> extends SimpleJpaRepository<E, ID> impl
       specs.add(cb.lessThanOrEqualTo(joiner.joinSample().get(CuratorsSampleTsqpEntity_.WATER_DEPTH), maxDepth));
     }
     if (StringUtils.hasText(igsn)) {
-      specs.add(SearchUtils.equalIgnoreCase(cb, igsn, joiner.joinSample().get(CuratorsSampleTsqpEntity_.IGSN)));
+      specs.add(cb.or(
+          SearchUtils.equalIgnoreCase(cb, igsn, joiner.joinSample().get(CuratorsSampleTsqpEntity_.IGSN)),
+          SearchUtils.equalIgnoreCase(cb, igsn, joiner.joinInterval().get(CuratorsIntervalEntity_.IGSN))
+      ));
     }
-//    if (StringUtils.hasText(igsn)) {
-//      specs.add(cb.or(
-//          SearchUtils.equalIgnoreCase(cb, igsn, joiner.joinSample().get(CuratorsSampleTsqpEntity_.IGSN)),
-//          SearchUtils.equalIgnoreCase(cb, igsn, joiner.joinInterval().get(CuratorsIntervalEntity_.IGSN))
-//      ));
-//    }
     if (StringUtils.hasText(lithology)) {
       specs.add(cb.or(
           SearchUtils.equalIgnoreCase(cb, lithology,

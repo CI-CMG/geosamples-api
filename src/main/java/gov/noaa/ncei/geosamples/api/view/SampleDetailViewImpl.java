@@ -4,8 +4,7 @@ import gov.noaa.ncei.geosamples.api.service.csv.CsvColumn;
 import java.util.Objects;
 
 public class SampleDetailViewImpl implements SampleDetailDisplayView {
-
-  // TODO rename CSV headers
+  
   @CsvColumn(order = 28, column = "imlgs")
   private String imlgs;
   @CsvColumn(order = 0, column = "facility_code")

@@ -423,6 +423,26 @@ class SampleServiceIT {
   }
 
   @Test
+  public void findByIntervalIgsn() throws Exception {
+
+    ResponseEntity<String> httpResponse = restClient.exchange(
+        UriComponentsBuilder.fromPath("/api/samples/detail").queryParam("igsn", "igsn_1").build().toString(),
+        HttpMethod.GET,
+        new HttpEntity<>(null),
+        String.class
+    );
+    assertEquals(200, httpResponse.getStatusCode().value());
+
+    PagedItemsView<SampleDetailDisplayView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
+
+    List<String> expectedSamples = Arrays.asList(
+        "CRUISE_1_S1"
+    );
+
+    assertEquals(expectedSamples, response.getItems().stream().map(SampleDetailDisplayView::getSample).collect(Collectors.toList()));
+  }
+
+  @Test
   public void findByIgsnNotPublic() throws Exception {
 
     ResponseEntity<String> httpResponse = restClient.exchange(
