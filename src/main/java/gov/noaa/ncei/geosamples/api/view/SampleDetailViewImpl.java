@@ -5,17 +5,17 @@ import java.util.Objects;
 
 public class SampleDetailViewImpl implements SampleDetailDisplayView {
   
-  @CsvColumn(order = 28, column = "imlgs")
+  @CsvColumn(order = 28, column = "IMLGS Number")
   private String imlgs;
-  @CsvColumn(order = 0, column = "facility_code")
+  @CsvColumn(order = 0, column = "Repository")
   private String facilityCode;
-  @CsvColumn(order = 1, column = "platform")
+  @CsvColumn(order = 1, column = "Ship/Platform")
   private String platform;
-  @CsvColumn(order = 2, column = "cruise")
+  @CsvColumn(order = 2, column = "Cruise ID")
   private String cruise;
-  @CsvColumn(order = 3, column = "sample")
+  @CsvColumn(order = 3, column = "Sample ID")
   private String sample;
-  @CsvColumn(order = 4, column = "device")
+  @CsvColumn(order = 4, column = "Sampling Device")
   private String device;
   @CsvColumn(order = 5, column = "begin_date")
   private String beginDate;

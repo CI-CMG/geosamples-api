@@ -102,8 +102,6 @@ class SampleServiceIT {
     assertEquals("CRUISE_2", detailView.getCruise().getCruise());
     assertEquals("CRUISE_2_S2", detailView.getSample());
 
-    System.out.println(detailView.getIntervals());
-
     assertEquals(1, detailView.getIntervals().size());
     assertEquals(1, detailView.getIntervals().get(0).getInterval());
   }
@@ -185,8 +183,6 @@ class SampleServiceIT {
 
       PagedItemsView<SampleDetailDisplayView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
 
-      System.out.println(order);
-      System.out.println(response.getItems());
 
       List<String> samples = response.getItems().stream().map(SampleDetailDisplayView::getSample).collect(Collectors.toList());
 

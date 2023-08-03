@@ -9,75 +9,74 @@ import java.util.Objects;
 public class IntervalView implements Comparable<IntervalView> {
 
 
-  @CsvColumn(order = 34, column = "id")
   private Long id;
-  @CsvColumn(order = 0, column = "facility_code")
+  @CsvColumn(order = 0, column = "Repository")
   private String facilityCode;
-  @CsvColumn(order = 1, column = "platform")
+  @CsvColumn(order = 1, column = "Ship/Platform")
   private String platform;
-  @CsvColumn(order = 2, column = "cruise")
+  @CsvColumn(order = 2, column = "Cruise ID")
   private String cruise;
-  @CsvColumn(order = 3, column = "sample")
+  @CsvColumn(order = 3, column = "Sample ID")
   private String sample;
-  @CsvColumn(order = 4, column = "device")
+  @CsvColumn(order = 4, column = "Sampling Device")
   private String device;
-  @CsvColumn(order = 5, column = "interval")
+  @CsvColumn(order = 5, column = "Interval/Subsample")
   private Integer interval;
-  @CsvColumn(order = 6, column = "depth_top")
+  @CsvColumn(order = 6, column = "Depth to Top")
   private Integer depthTop;
-  @CsvColumn(order = 7, column = "depth_bot")
+  @CsvColumn(order = 7, column = "Depth to Bottom")
   private Integer depthBot;
-  @CsvColumn(order = 8, column = "lith1")
+  @CsvColumn(order = 8, column = "Primary Lithologic Composition")
   private String lith1;
-  @CsvColumn(order = 10, column = "lith2")
+  @CsvColumn(order = 10, column = "Secondary Lithologic Composition")
   private String lith2;
-  @CsvColumn(order = 9, column = "text1")
+  @CsvColumn(order = 9, column = "Primary Texture")
   private String text1;
-  @CsvColumn(order = 11, column = "text2")
+  @CsvColumn(order = 11, column = "Secondary Texture")
   private String text2;
-  @CsvColumn(order = 12, column = "comp1")
+  @CsvColumn(order = 12, column = "Other Component 1")
   private String comp1;
-  @CsvColumn(order = 13, column = "comp2")
+  @CsvColumn(order = 13, column = "Other Component 2")
   private String comp2;
-  @CsvColumn(order = 14, column = "comp3")
+  @CsvColumn(order = 14, column = "Other Component 3")
   private String comp3;
-  @CsvColumn(order = 15, column = "comp4")
+  @CsvColumn(order = 15, column = "Other Component 4")
   private String comp4;
-  @CsvColumn(order = 16, column = "comp5")
+  @CsvColumn(order = 16, column = "Other Component 5")
   private String comp5;
-  @CsvColumn(order = 17, column = "comp6")
+  @CsvColumn(order = 17, column = "Other Component 6")
   private String comp6;
-  @CsvColumn(order = 18, column = "description")
+  @CsvColumn(order = 18, column = "Description")
   private String description;
-  @CsvColumn(order = 19, column = "ages")
+  @CsvColumn(order = 19, column = "Geologic Age")
   private List<String> ages = new ArrayList<>(0);
-  @CsvColumn(order = 20, column = "absolute_age_top")
+  @CsvColumn(order = 20, column = "Absolute Age, Top")
   private String absoluteAgeTop;
-  @CsvColumn(order = 21, column = "absolute_age_bot")
+  @CsvColumn(order = 21, column = "Absolute Age, Bottom")
   private String absoluteAgeBot;
-  @CsvColumn(order = 22, column = "weight")
+  @CsvColumn(order = 22, column = "Bulk Weight (kg)")
   private Double weight;
-  @CsvColumn(order = 23, column = "rock_lith")
+  @CsvColumn(order = 23, column = "Rock Lithology")
   private String rockLith;
-  @CsvColumn(order = 24, column = "rock_min")
+  @CsvColumn(order = 24, column = "Rock Mineralogy")
   private String rockMin;
-  @CsvColumn(order = 25, column = "weath_meta")
+  @CsvColumn(order = 25, column = "Rock Weathering and Metamorphism")
   private String weathMeta;
-  @CsvColumn(order = 26, column = "remark")
+  @CsvColumn(order = 26, column = "Rock Glass Remarks and MN/Fe Oxide Coating")
   private String remark;
-  @CsvColumn(order = 27, column = "munsell_code")
+  @CsvColumn(order = 27, column = "Color (Munsell Code)")
   private String munsellCode;
-  @CsvColumn(order = 28, column = "exhaust_code")
+  @CsvColumn(order = 28, column = "Exhausted")
   private String exhaustCode;
-  @CsvColumn(order = 29, column = "photo_link")
+
   private String photoLink;
-  @CsvColumn(order = 30, column = "lake")
+  @CsvColumn(order = 29, column = "Lake")
   private String lake;
-  @CsvColumn(order = 31, column = "int_comments")
+  @CsvColumn(order = 30, column = "Comments")
   private String intComments;
-  @CsvColumn(order = 32, column = "igsn")
+  @CsvColumn(order = 31, column = "Interval/Subsample IGSN")
   private String igsn;
-  @CsvColumn(order = 33, column = "imlgs")
+  @CsvColumn(order = 32, column = "IMLGS Number")
   private String imlgs;
 
   public Long getId() {

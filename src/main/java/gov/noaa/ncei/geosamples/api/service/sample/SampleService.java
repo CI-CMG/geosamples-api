@@ -2,6 +2,7 @@ package gov.noaa.ncei.geosamples.api.service.sample;
 
 import gov.noaa.ncei.geosamples.api.model.GeosampleSearchParameterObject;
 import gov.noaa.ncei.geosamples.api.repository.CuratorsSampleTsqpRepository;
+import gov.noaa.ncei.geosamples.api.service.PagingIterator;
 import gov.noaa.ncei.geosamples.api.service.csv.CsvExportHandler;
 import gov.noaa.ncei.geosamples.api.view.CountView;
 import gov.noaa.ncei.geosamples.api.view.MinMaxView;
@@ -57,7 +58,8 @@ public class SampleService {
   }
 
   public void exportCsv(OutputStream outputStream, GeosampleSearchParameterObject searchParameters) {
-    csvExportHandler.export(outputStream, searchDetail(searchParameters).getItems());
+    searchParameters.setItemsPerPage(1000);
+    csvExportHandler.export(outputStream, new PagingIterator<>(searchParameters, this::searchDetail));
   }
 
   public MinMaxView getDepthRange(GeosampleSearchParameterObject searchParameters) {

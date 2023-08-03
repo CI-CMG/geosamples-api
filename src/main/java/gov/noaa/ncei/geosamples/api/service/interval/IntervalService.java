@@ -7,6 +7,7 @@ import gov.noaa.ncei.geosamples.api.repository.CuratorsIntervalRepository;
 import gov.noaa.ncei.geosamples.api.repository.CuratorsLithologyRepository;
 import gov.noaa.ncei.geosamples.api.repository.CuratorsTextureRepository;
 import gov.noaa.ncei.geosamples.api.repository.CustomRepositoryImpl.Joiner;
+import gov.noaa.ncei.geosamples.api.service.PagingIterator;
 import gov.noaa.ncei.geosamples.api.service.SpecificationFactory;
 import gov.noaa.ncei.geosamples.api.service.ViewTransformers;
 import gov.noaa.ncei.geosamples.api.service.csv.CsvExportHandler;
@@ -117,8 +118,8 @@ public class IntervalService {
   }
 
   public void exportCsv(OutputStream outputStream, GeosampleSearchParameterObject searchParameters) {
-    //TODO stream directly from DB to client
-    csvExportHandler.export(outputStream, search(searchParameters).getItems());
+    searchParameters.setItemsPerPage(1000);
+    csvExportHandler.export(outputStream, new PagingIterator<>(searchParameters, this::search));
   }
 
   public PagedItemsView<String> searchAges(GeosampleSearchParameterObject searchParameters) {

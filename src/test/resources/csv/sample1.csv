@@ -1,4 +1,4 @@
-facility_code,platform,cruise,sample,device,begin_date,end_date,lat,end_lat,lon,end_lon,latlon_orig,water_depth,end_water_depth,storage_meth,cored_length,cored_length_mm,cored_diam,cored_diam_mm,pi,province,lake,other_link,last_update,igsn,leg,sample_comments,show_sampl,imlgs,publish
+Repository,Ship/Platform,Cruise ID,Sample ID,Sampling Device,begin_date,end_date,lat,end_lat,lon,end_lon,latlon_orig,water_depth,end_water_depth,storage_meth,cored_length,cored_length_mm,cored_diam,cored_diam_mm,pi,province,lake,other_link,last_update,igsn,leg,sample_comments,show_sampl,IMLGS Number,publish
 AOML,Sea Biskit,CRUISE_1,sample1,"trap, sediment",20200401,20200501,55.5,56.5,66.6,67.6,N,40,50,frozen,23,11,12,5,bob,axial valley,blue,other,@last_update1@,igsn1,LEFT-1,test1,show,@imlgs1@,Y
 AOML,Sea Biskit,CRUISE_1,sample2,"core, dart",,,55.5,,66.6,,,,,,,,,,,delta or cone,red,,@last_update2@,igsn2,RIGHT-1,,,@imlgs2@,Y
 USGSMP,Susie Q,CRUISE_2,sample1,core,,,55.5,,66.6,,,,,,,,,,,fjord,wet,,@last_update3@,igsn3,LEFT-2,,,@imlgs3@,Y
