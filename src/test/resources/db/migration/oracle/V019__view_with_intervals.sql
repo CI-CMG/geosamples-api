@@ -45,11 +45,11 @@ select
     (SELECT '|' || LISTAGG(V, '|') || '|'  from (SELECT DISTINCT CI.AGE as V FROM ${schema_name}.CURATORS_INTERVAL CI WHERE CI.IMLGS = CS.IMLGS AND CI.PUBLISH = 'Y')) AS AGE,
     (SELECT '|' || LISTAGG(V, '|') || '|'  from (SELECT DISTINCT CI.IGSN as V FROM ${schema_name}.CURATORS_INTERVAL CI WHERE CI.IMLGS = CS.IMLGS AND CI.PUBLISH = 'Y')) AS INTERVAL_IGSN
 from ${schema_name}.CURATORS_SAMPLE_TSQP CS
-         inner join CURATORS_CRUISE_FACILITY CCF on CCF.ID = CS.CRUISE_FACILITY_ID
-         inner join CURATORS_FACILITY CF on CF.ID = CCF.FACILITY_ID
-         inner join CURATORS_CRUISE_PLATFORM CCP on CCP.ID = CS.CRUISE_PLATFORM_ID
-         inner join PLATFORM_MASTER PM on CCP.PLATFORM_ID = PM.ID
-         inner join CURATORS_CRUISE CC on CS.CRUISE_ID = CC.ID
-         left outer join CURATORS_LEG CL on CS.LEG_ID = CL.ID
+         inner join ${schema_name}.CURATORS_CRUISE_FACILITY CCF on CCF.ID = CS.CRUISE_FACILITY_ID
+         inner join ${schema_name}.CURATORS_FACILITY CF on CF.ID = CCF.FACILITY_ID
+         inner join ${schema_name}.CURATORS_CRUISE_PLATFORM CCP on CCP.ID = CS.CRUISE_PLATFORM_ID
+         inner join ${schema_name}.PLATFORM_MASTER PM on CCP.PLATFORM_ID = PM.ID
+         inner join ${schema_name}.CURATORS_CRUISE CC on CS.CRUISE_ID = CC.ID
+         left outer join ${schema_name}.CURATORS_LEG CL on CS.LEG_ID = CL.ID
 where CS.PUBLISH = 'Y'
 /
