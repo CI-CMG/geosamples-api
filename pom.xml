@@ -443,6 +443,7 @@
                       <name>cirescmg/crowbar-db:20210416</name>
                       <alias>geosamples-ingest-test</alias>
                       <run>
+                        <privileged>true</privileged>
                         <ports>
                           <port>15215:1521</port>
                         </ports>
