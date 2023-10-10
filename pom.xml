@@ -447,7 +447,7 @@
                         </ports>
                         <wait>
                           <log>Completed: ALTER DATABASE OPEN</log>
-                          <time>120000</time>
+                          <time>240000</time>
                         </wait>
                       </run>
                     </image>
