@@ -224,9 +224,20 @@ public final class ViewTransformers {
     view.setCruise(entity.getCruisePlatform() == null ? null : toCruiseLinkView(entity.getCruisePlatform()));
   }
 
+  private static FacilityNameView toFacilityNameView(CuratorsSampleTsqpEntity entity) {
+    if (entity.getCruiseFacility() != null && entity.getCruiseFacility().getFacility() != null) {
+      return new FacilityNameView(
+          entity.getCruiseFacility().getFacility().getId(),
+          entity.getCruiseFacility().getFacility().getFacility(),
+          entity.getCruiseFacility().getFacility().getFacilityCode()
+      );
+    }
+    return null;
+  }
+
   private static void populateSampleDisplayView(CuratorsSampleTsqpEntity entity, SampleDisplayView view) {
     populateSampleDisplayViewBase(entity, view);
-    view.setFacilityCode(entity.getCruiseFacility().getFacility().getFacilityCode());
+    view.setFacility(toFacilityNameView(entity));
     view.setCruise(entity.getCruise().getCruiseName());
   }
 

@@ -1,10 +1,20 @@
 package gov.noaa.ncei.geosamples.api.view;
 
-public class FacilityNameView {
+public class FacilityNameView implements CsvColumnObject {
 
   private Long id;
   private String facility;
   private String facilityCode;
+
+  public FacilityNameView() {
+
+  }
+
+  public FacilityNameView(Long id, String facility, String facilityCode) {
+    this.id = id;
+    this.facility = facility;
+    this.facilityCode = facilityCode;
+  }
 
   public Long getId() {
     return id;
@@ -28,5 +38,10 @@ public class FacilityNameView {
 
   public void setFacilityCode(String facilityCode) {
     this.facilityCode = facilityCode;
+  }
+
+  @Override
+  public Object asCsvColumn() {
+    return facilityCode;
   }
 }

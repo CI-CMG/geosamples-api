@@ -5,9 +5,9 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 @JsonDeserialize(as = SampleDisplayViewImpl.class)
 public interface SampleDisplayView extends SampleDisplayViewBase {
 
-  String getFacilityCode();
+  FacilityNameView getFacility();
 
-  void setFacilityCode(String facilityCode);
+  void setFacility(FacilityNameView facilityNameView);
 
   String getCruise();
 

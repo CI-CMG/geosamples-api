@@ -202,9 +202,14 @@ class SampleControllerIT {
     expectedJson.put("total_items", 5);
     expectedJson.put("items_per_page", 500);
 
+    ObjectNode facility = objectMapper.createObjectNode();
+    facility.put("id", 3);
+    facility.put("facility", "NOAA-Atlantic Oceanographic and Meteorol. Lab");
+    facility.put("facility_code", "AOML");
+
     ObjectNode sample = objectMapper.createObjectNode();
     sample.put("imlgs", testUtils.getImlgs(cruiseName1, year1, sample1.getSample()));
-    sample.put("facility_code", "AOML");
+    sample.replace("facility", facility);
     sample.put("cruise", "CRUISE_1");
     sample.put("leg", "LEFT-1");
     sample.put("platform", "Sea Biskit");
@@ -218,7 +223,7 @@ class SampleControllerIT {
 
     sample = objectMapper.createObjectNode();
     sample.put("imlgs", testUtils.getImlgs(cruiseName1, year1, sample2.getSample()));
-    sample.put("facility_code", "AOML");
+    sample.replace("facility", facility);
     sample.put("cruise", "CRUISE_1");
     sample.put("leg", "RIGHT-1");
     sample.put("platform", "Sea Biskit");
@@ -230,9 +235,14 @@ class SampleControllerIT {
 
     items.add(sample);
 
+    facility = objectMapper.createObjectNode();
+    facility.put("id", 22);
+    facility.put("facility", "USGS Pacific Coastal and Marine Science Center");
+    facility.put("facility_code", "USGSMP");
+
     sample = objectMapper.createObjectNode();
     sample.put("imlgs", testUtils.getImlgs(cruiseName2, year2, sample3.getSample()));
-    sample.put("facility_code", "USGSMP");
+    sample.replace("facility", facility);
     sample.put("cruise", "CRUISE_2");
     sample.put("leg", "LEFT-2");
     sample.put("platform", "Susie Q");
@@ -246,7 +256,7 @@ class SampleControllerIT {
 
     sample = objectMapper.createObjectNode();
     sample.put("imlgs", testUtils.getImlgs(cruiseName2, year2, sample4.getSample()));
-    sample.put("facility_code", "USGSMP");
+    sample.replace("facility", facility);
     sample.put("cruise", "CRUISE_2");
     sample.put("platform", "Susie Q");
     sample.put("igsn", "igsn4");
@@ -257,9 +267,10 @@ class SampleControllerIT {
 
     items.add(sample);
 
+
     sample = objectMapper.createObjectNode();
     sample.put("imlgs", testUtils.getImlgs(cruiseName2, year2, sample5.getSample()));
-    sample.put("facility_code", "USGSMP");
+    sample.replace("facility", facility);
     sample.put("cruise", "CRUISE_2");
     sample.put("leg", "LEFT-2");
     sample.put("platform", "Susie Q");
@@ -556,9 +567,15 @@ class SampleControllerIT {
     List<JsonNode> items = new ArrayList<>();
 
 
+    ObjectNode facility = objectMapper.createObjectNode();
+    facility.put("id", 3);
+    facility.put("facility", "NOAA-Atlantic Oceanographic and Meteorol. Lab");
+    facility.put("facility_code", "AOML");
+
+
     ObjectNode sample = objectMapper.createObjectNode();
     sample.put("imlgs", testUtils.getImlgs(cruiseName1, year1, sample1.getSample()));
-    sample.put("facility_code", "AOML");
+    sample.replace("facility", facility);
     sample.put("cruise", "CRUISE_1");
     sample.put("leg", "LEFT-1");
     sample.put("platform", "Sea Biskit");
@@ -576,7 +593,7 @@ class SampleControllerIT {
 
     sample = objectMapper.createObjectNode();
     sample.put("imlgs", testUtils.getImlgs(cruiseName1, year1, sample2.getSample()));
-    sample.put("facility_code", "AOML");
+    sample.replace("facility", facility);
     sample.put("cruise", "CRUISE_1");
     sample.put("leg", "RIGHT-1");
     sample.put("platform", "Sea Biskit");
@@ -592,9 +609,14 @@ class SampleControllerIT {
 
     items.add(sample);
 
+    facility = objectMapper.createObjectNode();
+    facility.put("id", 22);
+    facility.put("facility", "USGS Pacific Coastal and Marine Science Center");
+    facility.put("facility_code", "USGSMP");
+
     sample = objectMapper.createObjectNode();
     sample.put("imlgs", testUtils.getImlgs(cruiseName2, year2, sample3.getSample()));
-    sample.put("facility_code", "USGSMP");
+    sample.replace("facility", facility);
     sample.put("cruise", "CRUISE_2");
     sample.put("leg", "LEFT-2");
     sample.put("platform", "Susie Q");
@@ -612,7 +634,7 @@ class SampleControllerIT {
 
     sample = objectMapper.createObjectNode();
     sample.put("imlgs", testUtils.getImlgs(cruiseName2, year2, sample4.getSample()));
-    sample.put("facility_code", "USGSMP");
+    sample.replace("facility", facility);
     sample.put("cruise", "CRUISE_2");
     sample.put("platform", "Susie Q");
     sample.put("igsn", "igsn4");
@@ -629,7 +651,7 @@ class SampleControllerIT {
 
     sample = objectMapper.createObjectNode();
     sample.put("imlgs", testUtils.getImlgs(cruiseName2, year2, sample5.getSample()));
-    sample.put("facility_code", "USGSMP");
+    sample.replace("facility", facility);
     sample.put("cruise", "CRUISE_2");
     sample.put("leg", "LEFT-2");
     sample.put("platform", "Susie Q");

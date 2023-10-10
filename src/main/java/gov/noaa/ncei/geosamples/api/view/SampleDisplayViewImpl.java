@@ -5,7 +5,7 @@ public class SampleDisplayViewImpl implements SampleDisplayView {
 
 
   private String imlgs;
-  private String facilityCode;
+  private FacilityNameView facility;
   private String platform;
   private String cruise;
   private String sample;
@@ -30,13 +30,13 @@ public class SampleDisplayViewImpl implements SampleDisplayView {
   }
 
   @Override
-  public String getFacilityCode() {
-    return facilityCode;
+  public FacilityNameView getFacility() {
+    return facility;
   }
 
   @Override
-  public void setFacilityCode(String facilityCode) {
-    this.facilityCode = facilityCode;
+  public void setFacility(FacilityNameView facility) {
+    this.facility = facility;
   }
 
   @Override

@@ -5,10 +5,10 @@ import gov.noaa.ncei.geosamples.api.repository.CustomRepositoryImpl.Joiner;
 import gov.noaa.ncei.geosamples.api.service.ViewTransformers;
 import gov.noaa.ncei.geosamples.api.service.sample.SampleDetailService.SampleDetailDto;
 import gov.noaa.ncei.geosamples.api.service.sample.SampleDisplayService.SampleDisplayDto;
+import gov.noaa.ncei.geosamples.api.view.FacilityNameView;
 import gov.noaa.ncei.geosamples.api.view.SampleDetailDisplayView;
 import gov.noaa.ncei.geosamples.api.view.SampleDetailViewImpl;
 import gov.noaa.ncei.geosamples.api.view.SampleDisplayView;
-import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsProvinceEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsProvinceEntity_;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsSampleTsqpEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsSampleTsqpEntity_;
@@ -156,6 +156,8 @@ class SampleDetailService extends SampleBaseService<SampleDetailDisplayView, Sam
 
     public SampleDetailDto(
         String imlgs,
+        Long facilityId,
+        String facility,
         String facilityCode,
         String platform,
         String cruise,
@@ -187,7 +189,7 @@ class SampleDetailService extends SampleBaseService<SampleDetailDisplayView, Sam
         String showSampl,
         String publish
     ) {
-      super(imlgs, facilityCode, platform, cruise, sample, device, beginDate, lat, lon, waterDepth, storageMeth, coredLength, igsn, leg);
+      super(imlgs, facilityId, facility, facilityCode, platform, cruise, sample, device, beginDate, lat, lon, waterDepth, storageMeth, coredLength, igsn, leg);
       this.shipCode = shipCode;
       this.endDate = endDate;
       this.endLat = endLat;
@@ -263,7 +265,7 @@ class SampleDetailService extends SampleBaseService<SampleDetailDisplayView, Sam
       SampleDisplayView displayView = super.toView();
       SampleDetailViewImpl view = new SampleDetailViewImpl();
       view.setImlgs(displayView.getImlgs());
-      view.setFacilityCode(displayView.getFacilityCode());
+      view.setFacility(displayView.getFacility());
       view.setPlatform(displayView.getPlatform());
       view.setCruise(displayView.getCruise());
       view.setSample(displayView.getSample());

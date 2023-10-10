@@ -8,7 +8,7 @@ public class SampleDetailViewImpl implements SampleDetailDisplayView {
   @CsvColumn(order = 28, column = "IMLGS Number")
   private String imlgs;
   @CsvColumn(order = 0, column = "Repository")
-  private String facilityCode;
+  private FacilityNameView facility;
   @CsvColumn(order = 1, column = "Ship/Platform")
   private String platform;
   @CsvColumn(order = 2, column = "Cruise ID")
@@ -78,13 +78,13 @@ public class SampleDetailViewImpl implements SampleDetailDisplayView {
   }
 
   @Override
-  public String getFacilityCode() {
-    return facilityCode;
+  public FacilityNameView getFacility() {
+    return facility;
   }
 
   @Override
-  public void setFacilityCode(String facilityCode) {
-    this.facilityCode = facilityCode;
+  public void setFacility(FacilityNameView facility) {
+    this.facility = facility;
   }
 
   @Override
@@ -384,24 +384,24 @@ public class SampleDetailViewImpl implements SampleDetailDisplayView {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    SampleDetailViewImpl that = (SampleDetailViewImpl) o;
-    return Objects.equals(imlgs, that.imlgs) && Objects.equals(facilityCode, that.facilityCode) && Objects.equals(
-        platform, that.platform) && Objects.equals(cruise, that.cruise) && Objects.equals(sample, that.sample)
-        && Objects.equals(device, that.device) && Objects.equals(beginDate, that.beginDate) && Objects.equals(lat,
-        that.lat) && Objects.equals(lon, that.lon) && Objects.equals(waterDepth, that.waterDepth) && Objects.equals(
-        storageMeth, that.storageMeth) && Objects.equals(coredLength, that.coredLength) && Objects.equals(igsn, that.igsn)
-        && Objects.equals(leg, that.leg) && Objects.equals(shipCode, that.shipCode) && Objects.equals(endDate,
-        that.endDate) && Objects.equals(endLat, that.endLat) && Objects.equals(endLon, that.endLon) && Objects.equals(
-        latlonOrig, that.latlonOrig) && Objects.equals(endWaterDepth, that.endWaterDepth) && Objects.equals(coredLengthMm,
-        that.coredLengthMm) && Objects.equals(coredDiam, that.coredDiam) && Objects.equals(coredDiamMm, that.coredDiamMm)
-        && Objects.equals(pi, that.pi) && Objects.equals(province, that.province) && Objects.equals(lake, that.lake)
-        && Objects.equals(otherLink, that.otherLink) && Objects.equals(lastUpdate, that.lastUpdate) && Objects.equals(
-        sampleComments, that.sampleComments) && Objects.equals(showSampl, that.showSampl) && Objects.equals(publish, that.publish);
+    SampleDetailViewImpl view = (SampleDetailViewImpl) o;
+    return Objects.equals(imlgs, view.imlgs) && Objects.equals(facility, view.facility) && Objects.equals(platform,
+        view.platform) && Objects.equals(cruise, view.cruise) && Objects.equals(sample, view.sample) && Objects.equals(
+        device, view.device) && Objects.equals(beginDate, view.beginDate) && Objects.equals(lat, view.lat)
+        && Objects.equals(lon, view.lon) && Objects.equals(waterDepth, view.waterDepth) && Objects.equals(storageMeth,
+        view.storageMeth) && Objects.equals(coredLength, view.coredLength) && Objects.equals(igsn, view.igsn)
+        && Objects.equals(leg, view.leg) && Objects.equals(shipCode, view.shipCode) && Objects.equals(endDate,
+        view.endDate) && Objects.equals(endLat, view.endLat) && Objects.equals(endLon, view.endLon) && Objects.equals(
+        latlonOrig, view.latlonOrig) && Objects.equals(endWaterDepth, view.endWaterDepth) && Objects.equals(coredLengthMm,
+        view.coredLengthMm) && Objects.equals(coredDiam, view.coredDiam) && Objects.equals(coredDiamMm, view.coredDiamMm)
+        && Objects.equals(pi, view.pi) && Objects.equals(province, view.province) && Objects.equals(lake, view.lake)
+        && Objects.equals(otherLink, view.otherLink) && Objects.equals(lastUpdate, view.lastUpdate) && Objects.equals(
+        sampleComments, view.sampleComments) && Objects.equals(showSampl, view.showSampl) && Objects.equals(publish, view.publish);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(imlgs, facilityCode, platform, cruise, sample, device, beginDate, lat, lon, waterDepth, storageMeth, coredLength, igsn, leg,
+    return Objects.hash(imlgs, facility, platform, cruise, sample, device, beginDate, lat, lon, waterDepth, storageMeth, coredLength, igsn, leg,
         shipCode, endDate, endLat, endLon, latlonOrig, endWaterDepth, coredLengthMm, coredDiam, coredDiamMm, pi, province, lake, otherLink,
         lastUpdate,
         sampleComments, showSampl, publish);
@@ -411,7 +411,7 @@ public class SampleDetailViewImpl implements SampleDetailDisplayView {
   public String toString() {
     return "SampleDetailViewImpl{" +
         "imlgs='" + imlgs + '\'' +
-        ", facilityCode='" + facilityCode + '\'' +
+        ", facility=" + facility +
         ", platform='" + platform + '\'' +
         ", cruise='" + cruise + '\'' +
         ", sample='" + sample + '\'' +

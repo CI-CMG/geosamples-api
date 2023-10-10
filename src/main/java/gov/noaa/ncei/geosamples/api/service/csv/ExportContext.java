@@ -1,5 +1,6 @@
 package gov.noaa.ncei.geosamples.api.service.csv;
 
+import gov.noaa.ncei.geosamples.api.view.CsvColumnObject;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -107,6 +108,8 @@ public class ExportContext<V> {
           Collection<?> collection = (Collection<?>) obj;
           List<String> values = collection.stream().map(Object::toString).collect(Collectors.toList());
           recordValue = String.join(",", values);
+        }else if (obj instanceof CsvColumnObject) {
+          recordValue = ((CsvColumnObject) obj).asCsvColumn();
         } else {
           recordValue = obj;
         }

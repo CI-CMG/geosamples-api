@@ -4,6 +4,7 @@ import gov.noaa.ncei.geosamples.api.repository.CuratorsSampleTsqpRepository;
 import gov.noaa.ncei.geosamples.api.repository.CustomRepositoryImpl.Joiner;
 import gov.noaa.ncei.geosamples.api.service.ViewTransformers;
 import gov.noaa.ncei.geosamples.api.service.sample.SampleDisplayService.SampleDisplayDto;
+import gov.noaa.ncei.geosamples.api.view.FacilityNameView;
 import gov.noaa.ncei.geosamples.api.view.SampleDisplayView;
 import gov.noaa.ncei.geosamples.api.view.SampleDisplayViewImpl;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsCruiseEntity_;
@@ -45,7 +46,7 @@ class SampleDisplayService extends SampleBaseService<SampleDisplayView, SampleDi
 
   public static class SampleDisplayDto {
     private final String imlgs;
-    private final String facilityCode;
+    private final FacilityNameView facility;
     private final String platform;
     private final String cruise;
     private final String sample;
@@ -59,11 +60,11 @@ class SampleDisplayService extends SampleBaseService<SampleDisplayView, SampleDi
     private final String igsn;
     private final String leg;
 
-    public SampleDisplayDto(String imlgs, String facilityCode, String platform, String cruise, String sample, String device, String beginDate,
+    public SampleDisplayDto(String imlgs, Long facilityId, String facility, String facilityCode, String platform, String cruise, String sample, String device, String beginDate,
         Double lat,
         Double lon, Integer waterDepth, String storageMeth, Integer coredLength, String igsn, String leg) {
       this.imlgs = imlgs;
-      this.facilityCode = facilityCode;
+      this.facility = new FacilityNameView(facilityId, facility, facilityCode);
       this.platform = platform;
       this.cruise = cruise;
       this.sample = sample;
@@ -81,6 +82,8 @@ class SampleDisplayService extends SampleBaseService<SampleDisplayView, SampleDi
     static Selection<?>[] select(Root<CuratorsSampleTsqpEntity> r, CriteriaBuilder cb, Joiner<CuratorsSampleTsqpEntity> j) {
       return new Selection<?>[]{
           r.get(CuratorsSampleTsqpEntity_.IMLGS),
+          j.joinFacility().get(CuratorsFacilityEntity_.ID),
+          j.joinFacility().get(CuratorsFacilityEntity_.FACILITY),
           j.joinFacility().get(CuratorsFacilityEntity_.FACILITY_CODE),
           j.joinPlatform().get(PlatformMasterEntity_.PLATFORM),
           j.joinCruise().get(CuratorsCruiseEntity_.CRUISE_NAME),
@@ -100,7 +103,7 @@ class SampleDisplayService extends SampleBaseService<SampleDisplayView, SampleDi
     public SampleDisplayView toView() {
       SampleDisplayViewImpl view = new SampleDisplayViewImpl();
       view.setImlgs(imlgs);
-      view.setFacilityCode(facilityCode);
+      view.setFacility(facility);
       view.setPlatform(platform);
       view.setCruise(cruise);
       view.setSample(sample);
