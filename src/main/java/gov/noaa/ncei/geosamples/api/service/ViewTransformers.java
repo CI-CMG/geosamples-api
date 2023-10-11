@@ -9,6 +9,7 @@ import gov.noaa.ncei.geosamples.api.view.FacilityDisplayView;
 import gov.noaa.ncei.geosamples.api.view.FacilityNameView;
 import gov.noaa.ncei.geosamples.api.view.IntervalView;
 import gov.noaa.ncei.geosamples.api.view.LinkView;
+import gov.noaa.ncei.geosamples.api.view.PlatformNameView;
 import gov.noaa.ncei.geosamples.api.view.SampleDetailDisplayView;
 import gov.noaa.ncei.geosamples.api.view.SampleDetailView;
 import gov.noaa.ncei.geosamples.api.view.SampleDetailViewImpl;
@@ -28,6 +29,7 @@ import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsLegEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsSampleLinksEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsSampleTsqpEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.PlatformMasterEntity;
+import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.PlatformMasterEntity_;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
@@ -70,16 +72,17 @@ public final class ViewTransformers {
     view.setLegs(entity.getLegs().stream().map(CuratorsLegEntity::getLegName).collect(Collectors.toList()));
   }
 
+
   private static void populateCruiseView(CuratorsCruiseEntity entity, CruiseView view) {
     populateCruiseNameView(entity, view);
-    view.setFacilityCodes(
+    view.setFacilities(
         entity.getFacilityMappings().stream()
             .map(CuratorsCruiseFacilityEntity::getFacility)
-            .map(CuratorsFacilityEntity::getFacilityCode).sorted().collect(Collectors.toList()));
+            .map(fac -> new FacilityNameView(fac.getId(), fac.getFacility(), fac.getFacilityCode())).sorted().collect(Collectors.toList()));
     view.setPlatforms(
         entity.getPlatformMappings().stream()
             .map(CuratorsCruisePlatformEntity::getPlatform)
-            .map(PlatformMasterEntity::getPlatform).sorted().collect(Collectors.toList())
+            .map(platform -> new PlatformNameView(platform.getId(), platform.getPlatform())).sorted().collect(Collectors.toList())
     );
   }
 

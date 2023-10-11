@@ -1,6 +1,9 @@
 package gov.noaa.ncei.geosamples.api.view;
 
-public class FacilityNameView implements CsvColumnObject {
+import java.util.Comparator;
+import java.util.Objects;
+
+public class FacilityNameView implements CsvColumnObject, Comparable<FacilityNameView> {
 
   private Long id;
   private String facility;
@@ -43,5 +46,28 @@ public class FacilityNameView implements CsvColumnObject {
   @Override
   public Object asCsvColumn() {
     return facilityCode;
+  }
+
+  @Override
+  public int compareTo(FacilityNameView o) {
+    return Comparator.nullsLast(Comparator.comparing(FacilityNameView::getFacilityCode, String::compareToIgnoreCase)).compare(this, o);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    FacilityNameView that = (FacilityNameView) o;
+    return Objects.equals(id, that.id) && Objects.equals(facility, that.facility) && Objects.equals(facilityCode,
+        that.facilityCode);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, facility, facilityCode);
   }
 }

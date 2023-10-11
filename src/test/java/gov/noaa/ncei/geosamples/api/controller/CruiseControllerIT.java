@@ -218,12 +218,21 @@ class CruiseControllerIT {
     array.add("LEFT-1");
     array.add("RIGHT-1");
     cruise.replace("legs", array);
+
     array = objectMapper.createArrayNode();
-    array.add("Sea Biskit");
+    ObjectNode arrayObject = objectMapper.createObjectNode();
+    arrayObject.put("id", 152);
+    arrayObject.put("platform", "Sea Biskit");
+    array.add(arrayObject);
     cruise.replace("platforms", array);
+
     array = objectMapper.createArrayNode();
-    array.add("AOML");
-    cruise.replace("facility_codes", array);
+    arrayObject = objectMapper.createObjectNode();
+    arrayObject.put("id", 3);
+    arrayObject.put("facility_code", "AOML");
+    arrayObject.put("facility", "NOAA-Atlantic Oceanographic and Meteorol. Lab");
+    array.add(arrayObject);
+    cruise.replace("facilities", array);
     items.add(cruise);
 
     cruise = objectMapper.createObjectNode();
@@ -233,12 +242,23 @@ class CruiseControllerIT {
     array = objectMapper.createArrayNode();
     array.add("LEFT-2");
     cruise.replace("legs", array);
+
+
     array = objectMapper.createArrayNode();
-    array.add("Susie Q");
+    arrayObject = objectMapper.createObjectNode();
+    arrayObject.put("id", 187);
+    arrayObject.put("platform", "Susie Q");
+    array.add(arrayObject);
     cruise.replace("platforms", array);
+
     array = objectMapper.createArrayNode();
-    array.add("USGSMP");
-    cruise.replace("facility_codes", array);
+    arrayObject = objectMapper.createObjectNode();
+    arrayObject.put("id", 22);
+    arrayObject.put("facility_code", "USGSMP");
+    arrayObject.put("facility", "USGS Pacific Coastal and Marine Science Center");
+    array.add(arrayObject);
+    cruise.replace("facilities", array);
+
     items.add(cruise);
 
     assertEquals(objectMapper.readTree(expectedJson.toString()), json);
@@ -762,12 +782,21 @@ class CruiseControllerIT {
     array.add("LEFT-1");
     array.add("RIGHT-1");
     cruise.replace("legs", array);
+
     array = objectMapper.createArrayNode();
-    array.add("Sea Biskit");
+    ObjectNode arrayObject = objectMapper.createObjectNode();
+    arrayObject.put("id", 152);
+    arrayObject.put("platform", "Sea Biskit");
+    array.add(arrayObject);
     cruise.replace("platforms", array);
+
     array = objectMapper.createArrayNode();
-    array.add("AOML");
-    cruise.replace("facility_codes", array);
+    arrayObject = objectMapper.createObjectNode();
+    arrayObject.put("id", 3);
+    arrayObject.put("facility_code", "AOML");
+    arrayObject.put("facility", "NOAA-Atlantic Oceanographic and Meteorol. Lab");
+    array.add(arrayObject);
+    cruise.replace("facilities", array);
 
     ArrayNode cruiseLinks = objectMapper.createArrayNode();
     ObjectNode cruiseLink = objectMapper.createObjectNode();

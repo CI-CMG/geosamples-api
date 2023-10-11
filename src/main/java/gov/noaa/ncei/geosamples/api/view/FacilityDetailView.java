@@ -1,5 +1,7 @@
 package gov.noaa.ncei.geosamples.api.view;
 
+import java.util.Objects;
+
 public class FacilityDetailView extends FacilityDisplayView {
 
   private String instCode;
@@ -109,5 +111,29 @@ public class FacilityDetailView extends FacilityDisplayView {
 
   public void setOtherLink(String otherLink) {
     this.otherLink = otherLink;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    if (!super.equals(o)) {
+      return false;
+    }
+    FacilityDetailView that = (FacilityDetailView) o;
+    return Objects.equals(instCode, that.instCode) && Objects.equals(addr1, that.addr1) && Objects.equals(addr2,
+        that.addr2) && Objects.equals(addr3, that.addr3) && Objects.equals(addr4, that.addr4) && Objects.equals(contact1,
+        that.contact1) && Objects.equals(contact2, that.contact2) && Objects.equals(contact3, that.contact3)
+        && Objects.equals(emailLink, that.emailLink) && Objects.equals(urlLink, that.urlLink) && Objects.equals(ftpLink,
+        that.ftpLink) && Objects.equals(otherLink, that.otherLink);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(super.hashCode(), instCode, addr1, addr2, addr3, addr4, contact1, contact2, contact3, emailLink, urlLink, ftpLink, otherLink);
   }
 }
