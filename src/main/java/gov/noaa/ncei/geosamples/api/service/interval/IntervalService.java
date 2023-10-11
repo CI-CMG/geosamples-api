@@ -376,7 +376,7 @@ public class IntervalService {
     int maxPerPage = searchParameters.getItemsPerPage();
     int pageIndex = searchParameters.getPage() - 1;
     Page<String> page = curatorsLithologyRepository.getLithologies(
-        searchParameters, pageIndex, maxPerPage, lith1SpecFactory, lith2SpecFactory);
+        searchParameters, pageIndex, maxPerPage, specificationFactory);
 
     return new PagedItemsView.Builder<String>()
         .withItemsPerPage(maxPerPage)

@@ -20,6 +20,7 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -58,13 +59,12 @@ public class CustomLithologyRepositoryImpl implements CustomLithologyRepository 
 
   private Long count(
       GeosampleSearchParameterObject searchParameters,
-      SpecificationFactory<CuratorsLithologyEntity> specFactory1,
-      SpecificationFactory<CuratorsLithologyEntity> specFactory2) {
+      SpecificationFactory<CuratorsIntervalEntity> specFactory) {
     CriteriaBuilder cb = entityManager.getCriteriaBuilder();
     CriteriaQuery<Long> q = cb.createQuery(Long.class).distinct(true);
     Root<CuratorsLithologyEntity> r = q.from(CuratorsLithologyEntity.class);
 
-    lithWhere(searchParameters, r, cb, q, specFactory1, specFactory2);
+    lithWhere(searchParameters, r, cb, q, specFactory);
 
     return entityManager.createQuery(q.select(cb.count(r))).getSingleResult();
   }
@@ -74,40 +74,43 @@ public class CustomLithologyRepositoryImpl implements CustomLithologyRepository 
       Root<CuratorsLithologyEntity> r,
       CriteriaBuilder cb,
       CriteriaQuery<?> q,
-      SpecificationFactory<CuratorsLithologyEntity> specFactory1,
-      SpecificationFactory<CuratorsLithologyEntity> specFactory2) {
+      SpecificationFactory<CuratorsIntervalEntity> specFactory) {
 
-    Joiner<CuratorsLithologyEntity> joiner1 = specFactory1.getJoins(r);
-    Joiner<CuratorsLithologyEntity> joiner2 = specFactory2.getJoins(r);
+    Subquery<CuratorsIntervalEntity> subCq = q.subquery(CuratorsIntervalEntity.class);
+    Root<CuratorsIntervalEntity> ci = subCq.from(CuratorsIntervalEntity.class);
 
-    List<Predicate> specs =new ArrayList<>();
-    specs.add(cb.or(cb.isNotNull(joiner1.joinInterval().get(CuratorsIntervalEntity_.LITH1)), cb.isNotNull(joiner2.joinInterval().get(CuratorsIntervalEntity_.LITH2))));
-    specs.add(cb.or(
-        cb.and(where(searchParameters, r, cb, q, joiner1, null).toArray(new Predicate[0])),
-        cb.and(where(searchParameters, r, cb, q, joiner2, null).toArray(new Predicate[0]))));
+    Joiner<CuratorsIntervalEntity> joiner = specFactory.getJoins(ci);
+    List<Predicate> specs = new ArrayList<>();
+    specs.add(cb.and(where(searchParameters, ci, cb, q, joiner, null).toArray(new Predicate[0])));
+    specs.add(cb.or(cb.equal(ci.get(CuratorsIntervalEntity_.LITH1), r.get(CuratorsLithologyEntity_.LITHOLOGY)),
+        cb.equal(ci.get(CuratorsIntervalEntity_.LITH2), r.get(CuratorsLithologyEntity_.LITHOLOGY))));
 
-    q.where(cb.and(specs.toArray(new Predicate[0])));
+    subCq.select(ci.get(CuratorsIntervalEntity_.ID));
+    subCq.where(cb.and(specs.toArray(new Predicate[0])));
+
+    q.where(cb.exists(subCq));
+
   }
 
   @Override
   public Page<String> getLithologies(
       GeosampleSearchParameterObject searchParameters,
       int page, int pageSize,
-      SpecificationFactory<CuratorsLithologyEntity> specFactory1,
-      SpecificationFactory<CuratorsLithologyEntity> specFactory2
+      SpecificationFactory<CuratorsIntervalEntity> specFactory
   ) {
 
     CriteriaBuilder cb = entityManager.getCriteriaBuilder();
     CriteriaQuery<String> q = cb.createQuery(String.class).distinct(true);
     Root<CuratorsLithologyEntity> r = q.from(CuratorsLithologyEntity.class);
 
-    lithWhere(searchParameters, r, cb, q, specFactory1, specFactory2);
+    lithWhere(searchParameters, r, cb, q, specFactory);
 
-    TypedQuery<String> typedQuery = entityManager.createQuery(q.select(r.get(CuratorsLithologyEntity_.LITHOLOGY)).orderBy(cb.asc(r.get(CuratorsLithologyEntity_.LITHOLOGY))));
+    TypedQuery<String> typedQuery = entityManager.createQuery(
+        q.select(r.get(CuratorsLithologyEntity_.LITHOLOGY)).orderBy(cb.asc(r.get(CuratorsLithologyEntity_.LITHOLOGY))));
     typedQuery.setFirstResult((int) getOffset(page, pageSize));
     typedQuery.setMaxResults(pageSize);
 
     return PageableExecutionUtils.getPage(typedQuery.getResultList(), Pageable.ofSize(pageSize).withPage(page),
-        () -> count(searchParameters, specFactory1, specFactory2));
+        () -> count(searchParameters, specFactory));
   }
 }
