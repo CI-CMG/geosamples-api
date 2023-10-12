@@ -48,6 +48,8 @@ public class GeosampleSearchParameterObject implements PagingParameters {
   private Integer maxDepth;
   private String igsn;
   private String lithology;
+  @Parameter(name = "rock_lithology")
+  private String rockLithology;
   private String texture;
   private String mineralogy;
   private String weathering;
@@ -108,6 +110,7 @@ public class GeosampleSearchParameterObject implements PagingParameters {
       "max_depth",
       "igsn",
       "lithology",
+      "rock_lithology",
       "texture",
       "mineralogy",
       "weathering",
@@ -140,6 +143,7 @@ public class GeosampleSearchParameterObject implements PagingParameters {
       Integer maxDepth,
       String igsn,
       String lithology,
+      String rockLithology,
       String texture,
       String mineralogy,
       String weathering,
@@ -170,6 +174,7 @@ public class GeosampleSearchParameterObject implements PagingParameters {
     this.maxDepth = maxDepth;
     this.igsn = igsn;
     this.lithology = lithology;
+    this.rockLithology = rockLithology;
     this.texture = texture;
     this.mineralogy = mineralogy;
     this.weathering = weathering;
@@ -309,6 +314,14 @@ public class GeosampleSearchParameterObject implements PagingParameters {
 
   public void setLithology(String lithology) {
     this.lithology = trim(lithology);
+  }
+
+  public String getRockLithology() {
+    return rockLithology;
+  }
+
+  public void setRockLithology(String rockLithology) {
+    this.rockLithology = trim(rockLithology);
   }
 
   public String getTexture() {
@@ -458,21 +471,22 @@ public class GeosampleSearchParameterObject implements PagingParameters {
         cruise, that.cruise) && Objects.equals(device, that.device) && Objects.equals(startDate, that.startDate)
         && Objects.equals(startDateBeginsWith, that.startDateBeginsWith) && Objects.equals(minDepth, that.minDepth)
         && Objects.equals(maxDepth, that.maxDepth) && Objects.equals(igsn, that.igsn) && Objects.equals(lithology,
-        that.lithology) && Objects.equals(texture, that.texture) && Objects.equals(mineralogy, that.mineralogy)
-        && Objects.equals(weathering, that.weathering) && Objects.equals(metamorphism, that.metamorphism)
-        && Objects.equals(storageMethod, that.storageMethod) && Objects.equals(province, that.province) && Objects.equals(
-        age, that.age) && Objects.equals(imlgs, that.imlgs) && Objects.equals(cruiseId, that.cruiseId) && Objects.equals(
-        cruiseYear, that.cruiseYear) && Objects.equals(platformId, that.platformId) && Objects.equals(facilityId, that.facilityId)
-        && Objects.equals(intervalId, that.intervalId) && Objects.equals(leg, that.leg) && Objects.equals(aoi,
-        that.aoi) && Objects.equals(order, that.order);
+        that.lithology) && Objects.equals(rockLithology, that.rockLithology) && Objects.equals(texture, that.texture)
+        && Objects.equals(mineralogy, that.mineralogy) && Objects.equals(weathering, that.weathering) && Objects.equals(
+        metamorphism, that.metamorphism) && Objects.equals(storageMethod, that.storageMethod) && Objects.equals(province,
+        that.province) && Objects.equals(age, that.age) && Objects.equals(imlgs, that.imlgs) && Objects.equals(cruiseId,
+        that.cruiseId) && Objects.equals(cruiseYear, that.cruiseYear) && Objects.equals(platformId, that.platformId)
+        && Objects.equals(facilityId, that.facilityId) && Objects.equals(intervalId, that.intervalId) && Objects.equals(
+        leg, that.leg) && Objects.equals(aoi, that.aoi)
+        && Objects.equals(order, that.order);
   }
 
   @Override
   public int hashCode() {
     return Objects.hash(repository, bbox, platform, lake, cruise, device, startDate, startDateBeginsWith, minDepth, maxDepth, igsn, lithology,
-        texture,
-        mineralogy, weathering, metamorphism, storageMethod, province, age, imlgs, cruiseId, cruiseYear, platformId, facilityId, intervalId, leg,
-        aoi, page, itemsPerPage, order);
+        rockLithology, texture, mineralogy, weathering, metamorphism, storageMethod, province, age, imlgs, cruiseId, cruiseYear, platformId,
+        facilityId,
+        intervalId, leg, aoi, page, itemsPerPage, order);
   }
 
   @Override
@@ -490,6 +504,7 @@ public class GeosampleSearchParameterObject implements PagingParameters {
         ", maxDepth=" + maxDepth +
         ", igsn='" + igsn + '\'' +
         ", lithology='" + lithology + '\'' +
+        ", rockLithology='" + rockLithology + '\'' +
         ", texture='" + texture + '\'' +
         ", mineralogy='" + mineralogy + '\'' +
         ", weathering='" + weathering + '\'' +

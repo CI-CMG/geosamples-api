@@ -144,6 +144,7 @@ public class CustomRepositoryImpl<E, ID> extends SimpleJpaRepository<E, ID> impl
     Integer maxDepth = searchParameters.getMaxDepth();
     String igsn = searchParameters.getIgsn();
     String lithology = searchParameters.getLithology();
+    String rockLithology = searchParameters.getRockLithology();
     String texture = searchParameters.getTexture();
     String mineralogy = searchParameters.getMineralogy();
     String weathering = searchParameters.getWeathering();
@@ -224,10 +225,14 @@ public class CustomRepositoryImpl<E, ID> extends SimpleJpaRepository<E, ID> impl
           SearchUtils.equalIgnoreCase(cb, lithology,
               joiner.joinInterval().join(CuratorsIntervalEntity_.LITH1, JoinType.LEFT).get(CuratorsLithologyEntity_.LITHOLOGY)),
           SearchUtils.equalIgnoreCase(cb, lithology,
-              joiner.joinInterval().join(CuratorsIntervalEntity_.LITH2, JoinType.LEFT).get(CuratorsLithologyEntity_.LITHOLOGY)),
-          SearchUtils.equalIgnoreCase(cb, lithology,
-              joiner.joinInterval().join(CuratorsIntervalEntity_.ROCK_LITH, JoinType.LEFT).get(CuratorsRockLithEntity_.ROCK_LITH))
+              joiner.joinInterval().join(CuratorsIntervalEntity_.LITH2, JoinType.LEFT).get(CuratorsLithologyEntity_.LITHOLOGY))
       ));
+    }
+    if (StringUtils.hasText(rockLithology)) {
+      specs.add(
+          SearchUtils.equalIgnoreCase(cb, rockLithology,
+              joiner.joinInterval().join(CuratorsIntervalEntity_.ROCK_LITH, JoinType.LEFT).get(CuratorsRockLithEntity_.ROCK_LITH))
+      );
     }
     if (StringUtils.hasText(texture)) {
       specs.add(cb.or(
