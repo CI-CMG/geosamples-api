@@ -8,6 +8,7 @@ import gov.noaa.ncei.geosamples.api.repository.CuratorsFacilityRepository;
 import gov.noaa.ncei.geosamples.api.repository.CuratorsIntervalRepository;
 import gov.noaa.ncei.geosamples.api.repository.CuratorsLithologyRepository;
 import gov.noaa.ncei.geosamples.api.repository.CuratorsProvinceRepository;
+import gov.noaa.ncei.geosamples.api.repository.CuratorsRemarkRepository;
 import gov.noaa.ncei.geosamples.api.repository.CuratorsRockLithRepository;
 import gov.noaa.ncei.geosamples.api.repository.CuratorsRockMinRepository;
 import gov.noaa.ncei.geosamples.api.repository.CuratorsSampleTsqpRepository;
@@ -25,6 +26,7 @@ import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsIntervalEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsLegEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsLithologyEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsProvinceEntity;
+import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsRemarkEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsRockLithEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsRockMinEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsSampleTsqpEntity;
@@ -86,6 +88,8 @@ public class SpecificationFactoryTestUtils {
   private CuratorsRockMinRepository rockMinRepository;
   @Autowired
   private CuratorsWeathMetaRepository weathMetaRepository;
+  @Autowired
+  private CuratorsRemarkRepository remarkRepository;
   @Autowired
   private DataSource dataSource;
   @Autowired
@@ -158,6 +162,8 @@ public class SpecificationFactoryTestUtils {
     CuratorsWeathMetaEntity zeoliteMetamorphism = weathMetaRepository.findById("metamorphism - zeolite").get();
     CuratorsWeathMetaEntity greenschistMetamorphism = weathMetaRepository.findById("metamorphism - greenschist").get();
 
+    CuratorsRemarkEntity freshGlass = remarkRepository.findByRemark("some samples exhibit fresh glass").get();
+
 //      Start CRUISE_1
     {
       CuratorsCruiseEntity cruise1 = cruiseRepository.save(buildCruise(
@@ -190,7 +196,8 @@ public class SpecificationFactoryTestUtils {
               .setText1(nodulesTexture)
               .setText2(ashTexture)
               .setRockMin(garnetMineral)
-              .setWeathMeta(greenschistMetamorphism),
+              .setWeathMeta(greenschistMetamorphism)
+              .setRemark(freshGlass),
           "igsn_1"
       ));
 
@@ -588,6 +595,7 @@ public class SpecificationFactoryTestUtils {
     private CuratorsLithologyEntity comp4;
     private CuratorsLithologyEntity comp5;
     private CuratorsLithologyEntity comp6;
+    private CuratorsRemarkEntity remark;
 
     public CuratorsLithologyEntity getComp1() {
       return comp1;
@@ -640,6 +648,15 @@ public class SpecificationFactoryTestUtils {
 
     public IntervalSearchableFields setComp6(CuratorsLithologyEntity comp6) {
       this.comp6 = comp6;
+      return this;
+    }
+
+    public CuratorsRemarkEntity getRemark() {
+      return remark;
+    }
+
+    public IntervalSearchableFields setRemark(CuratorsRemarkEntity remark) {
+      this.remark = remark;
       return this;
     }
 
@@ -742,6 +759,7 @@ public class SpecificationFactoryTestUtils {
     interval.setComp4(fields.getComp4());
     interval.setComp5(fields.getComp5());
     interval.setComp6(fields.getComp6());
+    interval.setRemark(fields.getRemark());
     return interval;
   }
 

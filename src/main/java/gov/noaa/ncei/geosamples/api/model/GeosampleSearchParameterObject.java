@@ -55,6 +55,7 @@ public class GeosampleSearchParameterObject implements PagingParameters {
   private String weathering;
   private String metamorphism;
   private String composition;
+  private String remark;
   @Parameter(name = "storage_method")
   private String storageMethod;
   private String province;
@@ -117,6 +118,7 @@ public class GeosampleSearchParameterObject implements PagingParameters {
       "weathering",
       "metamorphism",
       "composition",
+      "remark",
       "storage_method",
       "province",
       "age",
@@ -151,6 +153,7 @@ public class GeosampleSearchParameterObject implements PagingParameters {
       String weathering,
       String metamorphism,
       String composition,
+      String remark,
       String storageMethod,
       String province,
       String age,
@@ -183,6 +186,7 @@ public class GeosampleSearchParameterObject implements PagingParameters {
     this.weathering = weathering;
     this.metamorphism = metamorphism;
     this.composition = composition;
+    this.remark = remark;
     this.storageMethod = storageMethod;
     this.province = province;
     this.age = age;
@@ -334,6 +338,14 @@ public class GeosampleSearchParameterObject implements PagingParameters {
 
   public void setComposition(String composition) {
     this.composition = trim(composition);
+  }
+
+  public String getRemark() {
+    return remark;
+  }
+
+  public void setRemark(String remark) {
+    this.remark = remark;
   }
 
   public String getTexture() {

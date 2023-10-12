@@ -19,6 +19,7 @@ import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsLithologyEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsLithologyEntity_;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsProvinceEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsProvinceEntity_;
+import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsRemarkEntity_;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsRockLithEntity_;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsRockMinEntity_;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsSampleTsqpEntity;
@@ -151,6 +152,7 @@ public class CustomRepositoryImpl<E, ID> extends SimpleJpaRepository<E, ID> impl
     String weathering = searchParameters.getWeathering();
     String metamorphism = searchParameters.getMetamorphism();
     String composition = searchParameters.getComposition();
+    String remark = searchParameters.getRemark();
     String storageMethod = searchParameters.getStorageMethod();
     String province = searchParameters.getProvince();
     String age = searchParameters.getAge();
@@ -271,6 +273,10 @@ public class CustomRepositoryImpl<E, ID> extends SimpleJpaRepository<E, ID> impl
           SearchUtils.equalIgnoreCase(cb, composition,
               joiner.joinInterval().join(CuratorsIntervalEntity_.COMP6, JoinType.LEFT).get(CuratorsLithologyEntity_.LITHOLOGY))
       ));
+    }
+    if (StringUtils.hasText(remark)) {
+      specs.add(SearchUtils.equalIgnoreCase(cb, remark, joiner.joinInterval()
+          .join(CuratorsIntervalEntity_.REMARK).get(CuratorsRemarkEntity_.REMARK)));
     }
     if (StringUtils.hasText(storageMethod)) {
       specs.add(SearchUtils.equalIgnoreCase(cb, storageMethod, joiner.joinSample()
