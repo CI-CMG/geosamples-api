@@ -3,8 +3,10 @@ package gov.noaa.ncei.geosamples.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import gov.noaa.ncei.geosamples.api.error.ApiError;
+import gov.noaa.ncei.geosamples.api.service.BuildInfoService;
 import io.swagger.v3.core.converter.ModelConverters;
 import io.swagger.v3.core.jackson.ModelResolver;
+import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.MediaType;
 import io.swagger.v3.oas.models.media.Schema;
@@ -17,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 import org.springdoc.core.GroupedOpenApi;
 import org.springdoc.core.customizers.OpenApiCustomiser;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -24,11 +27,22 @@ import org.springframework.http.HttpStatus;
 @Configuration
 public class OpenAPIConfig {
 
+
+  private final BuildInfoService buildInfoService;
+
+  @Autowired
+  public OpenAPIConfig(BuildInfoService buildInfoService) {
+    this.buildInfoService = buildInfoService;
+  }
+
   @Bean
-  public GroupedOpenApi openApi(OpenApiCustomiser openApiCustomiser) {
-    return GroupedOpenApi.builder()
-        .group("api")
-        .pathsToMatch("/api/**")
+  public GroupedOpenApi imlgsApiGroup(OpenApiCustomiser openApiCustomiser) {
+    return GroupedOpenApi.builder().group("imlgs")
+        .addOpenApiCustomiser(
+            openApi -> openApi.info(
+                new Info().title("IMLGS API").description("Read-only access to the Index to Marine and Lacustrine Geological Samples database")
+                    .version(buildInfoService.getVersion())))
+        .packagesToScan("gov.noaa.ncei.geosamples.api")
         .addOpenApiCustomiser(openApiCustomiser)
         .build();
   }
