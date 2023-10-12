@@ -221,6 +221,7 @@ public class SpecificationFactoryTestUtils {
               .setAge(devonianAge)
               .setLith2(terrigenousLith)
               .setText2(crustsTexture)
+              .setComp1(glauconiteLith)
       ));
 
       intervalRepository.save(buildInterval(false, cruise1Sample2, 2,
@@ -316,6 +317,7 @@ public class SpecificationFactoryTestUtils {
               .setText1(slabsTexture)
               .setRockMin(muscoviteMineral)
               .setWeathMeta(zeoliteMetamorphism)
+              .setComp6(glauconiteLith)
       ));
 
       intervalRepository.save(buildInterval(false, cruise2Sample2, 2,
@@ -580,6 +582,66 @@ public class SpecificationFactoryTestUtils {
     private CuratorsWeathMetaEntity weathMeta;
     private CuratorsAgeEntity age;
     private CuratorsRockLithEntity rockLith;
+    private CuratorsLithologyEntity comp1;
+    private CuratorsLithologyEntity comp2;
+    private CuratorsLithologyEntity comp3;
+    private CuratorsLithologyEntity comp4;
+    private CuratorsLithologyEntity comp5;
+    private CuratorsLithologyEntity comp6;
+
+    public CuratorsLithologyEntity getComp1() {
+      return comp1;
+    }
+
+    public IntervalSearchableFields setComp1(CuratorsLithologyEntity comp1) {
+      this.comp1 = comp1;
+      return this;
+    }
+
+    public CuratorsLithologyEntity getComp2() {
+      return comp2;
+    }
+
+    public IntervalSearchableFields setComp2(CuratorsLithologyEntity comp2) {
+      this.comp2 = comp2;
+      return this;
+    }
+
+    public CuratorsLithologyEntity getComp3() {
+      return comp3;
+    }
+
+    public IntervalSearchableFields setComp3(CuratorsLithologyEntity comp3) {
+      this.comp3 = comp3;
+      return this;
+    }
+
+    public CuratorsLithologyEntity getComp4() {
+      return comp4;
+    }
+
+    public IntervalSearchableFields setComp4(CuratorsLithologyEntity comp4) {
+      this.comp4 = comp4;
+      return this;
+    }
+
+    public CuratorsLithologyEntity getComp5() {
+      return comp5;
+    }
+
+    public IntervalSearchableFields setComp5(CuratorsLithologyEntity comp5) {
+      this.comp5 = comp5;
+      return this;
+    }
+
+    public CuratorsLithologyEntity getComp6() {
+      return comp6;
+    }
+
+    public IntervalSearchableFields setComp6(CuratorsLithologyEntity comp6) {
+      this.comp6 = comp6;
+      return this;
+    }
 
     public CuratorsLithologyEntity getLith1() {
       return lith1;
@@ -674,6 +736,12 @@ public class SpecificationFactoryTestUtils {
     interval.setAges(Collections.singletonList(fields.getAge()));
     interval.setPublish(publish);
     interval.setIgsn(igsn);
+    interval.setComp1(fields.getComp1());
+    interval.setComp2(fields.getComp2());
+    interval.setComp3(fields.getComp3());
+    interval.setComp4(fields.getComp4());
+    interval.setComp5(fields.getComp5());
+    interval.setComp6(fields.getComp6());
     return interval;
   }
 

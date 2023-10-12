@@ -15,6 +15,7 @@ import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsIntervalEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsIntervalEntity_;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsLegEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsLegEntity_;
+import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsLithologyEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsLithologyEntity_;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsProvinceEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsProvinceEntity_;
@@ -149,6 +150,7 @@ public class CustomRepositoryImpl<E, ID> extends SimpleJpaRepository<E, ID> impl
     String mineralogy = searchParameters.getMineralogy();
     String weathering = searchParameters.getWeathering();
     String metamorphism = searchParameters.getMetamorphism();
+    String composition = searchParameters.getComposition();
     String storageMethod = searchParameters.getStorageMethod();
     String province = searchParameters.getProvince();
     String age = searchParameters.getAge();
@@ -253,6 +255,22 @@ public class CustomRepositoryImpl<E, ID> extends SimpleJpaRepository<E, ID> impl
     if (StringUtils.hasText(metamorphism)) {
       specs.add(SearchUtils.equalIgnoreCase(cb, "metamorphism - " + metamorphism, joiner.joinInterval()
           .join(CuratorsIntervalEntity_.WEATH_META).get(CuratorsWeathMetaEntity_.WEATH_META)));
+    }
+    if (StringUtils.hasText(composition)) {
+      specs.add(cb.or(
+          SearchUtils.equalIgnoreCase(cb, composition,
+              joiner.joinInterval().join(CuratorsIntervalEntity_.COMP1, JoinType.LEFT).get(CuratorsLithologyEntity_.LITHOLOGY)),
+          SearchUtils.equalIgnoreCase(cb, composition,
+              joiner.joinInterval().join(CuratorsIntervalEntity_.COMP2, JoinType.LEFT).get(CuratorsLithologyEntity_.LITHOLOGY)),
+          SearchUtils.equalIgnoreCase(cb, composition,
+              joiner.joinInterval().join(CuratorsIntervalEntity_.COMP3, JoinType.LEFT).get(CuratorsLithologyEntity_.LITHOLOGY)),
+          SearchUtils.equalIgnoreCase(cb, composition,
+              joiner.joinInterval().join(CuratorsIntervalEntity_.COMP4, JoinType.LEFT).get(CuratorsLithologyEntity_.LITHOLOGY)),
+          SearchUtils.equalIgnoreCase(cb, composition,
+              joiner.joinInterval().join(CuratorsIntervalEntity_.COMP5, JoinType.LEFT).get(CuratorsLithologyEntity_.LITHOLOGY)),
+          SearchUtils.equalIgnoreCase(cb, composition,
+              joiner.joinInterval().join(CuratorsIntervalEntity_.COMP6, JoinType.LEFT).get(CuratorsLithologyEntity_.LITHOLOGY))
+      ));
     }
     if (StringUtils.hasText(storageMethod)) {
       specs.add(SearchUtils.equalIgnoreCase(cb, storageMethod, joiner.joinSample()

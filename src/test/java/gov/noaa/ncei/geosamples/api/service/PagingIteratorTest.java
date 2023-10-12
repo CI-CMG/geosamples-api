@@ -43,6 +43,7 @@ class PagingIteratorTest {
         null,
         null,
         null,
+        null,
         null
     );
   }
