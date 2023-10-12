@@ -215,6 +215,7 @@ class FacilityControllerIT {
     facility.put("id", testUtils.getFacilityId(facility1));
     facility.put("facility", "NOAA-Atlantic Oceanographic and Meteorol. Lab");
     facility.put("facility_code", "AOML");
+    facility.put("other_link", "https://dx.doi.org/doi:10.7289/V5VM498W");
     facility.put("sample_count", 2);
     facility.put("facility_comment", "AOML comment");
     items.add(facility);
@@ -558,6 +559,7 @@ class FacilityControllerIT {
     facility.put("id", testUtils.getFacilityId(facility1));
     facility.put("facility", "NOAA-Atlantic Oceanographic and Meteorol. Lab");
     facility.put("facility_code", "AOML");
+    facility.put("other_link", "https://dx.doi.org/doi:10.7289/V5VM498W");
     items.add(facility);
 
     assertEquals(objectMapper.readTree(expectedJson.toString()), json);

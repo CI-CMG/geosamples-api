@@ -159,6 +159,7 @@ class SampleDetailService extends SampleBaseService<SampleDetailDisplayView, Sam
         Long facilityId,
         String facility,
         String facilityCode,
+        String facilityOtherLink,
         String platform,
         String cruise,
         String sample,
@@ -189,7 +190,7 @@ class SampleDetailService extends SampleBaseService<SampleDetailDisplayView, Sam
         String showSampl,
         String publish
     ) {
-      super(imlgs, facilityId, facility, facilityCode, platform, cruise, sample, device, beginDate, lat, lon, waterDepth, storageMeth, coredLength, igsn, leg);
+      super(imlgs, facilityId, facility, facilityCode, facilityOtherLink, platform, cruise, sample, device, beginDate, lat, lon, waterDepth, storageMeth, coredLength, igsn, leg);
       this.shipCode = shipCode;
       this.endDate = endDate;
       this.endLat = endLat;

@@ -60,11 +60,11 @@ class SampleDisplayService extends SampleBaseService<SampleDisplayView, SampleDi
     private final String igsn;
     private final String leg;
 
-    public SampleDisplayDto(String imlgs, Long facilityId, String facility, String facilityCode, String platform, String cruise, String sample, String device, String beginDate,
+    public SampleDisplayDto(String imlgs, Long facilityId, String facility, String facilityCode, String otherLink, String platform, String cruise, String sample, String device, String beginDate,
         Double lat,
         Double lon, Integer waterDepth, String storageMeth, Integer coredLength, String igsn, String leg) {
       this.imlgs = imlgs;
-      this.facility = new FacilityNameView(facilityId, facility, facilityCode);
+      this.facility = new FacilityNameView(facilityId, facility, facilityCode, otherLink);
       this.platform = platform;
       this.cruise = cruise;
       this.sample = sample;
@@ -85,6 +85,7 @@ class SampleDisplayService extends SampleBaseService<SampleDisplayView, SampleDi
           j.joinFacility().get(CuratorsFacilityEntity_.ID),
           j.joinFacility().get(CuratorsFacilityEntity_.FACILITY),
           j.joinFacility().get(CuratorsFacilityEntity_.FACILITY_CODE),
+          j.joinFacility().get(CuratorsFacilityEntity_.DOI_LINK),
           j.joinPlatform().get(PlatformMasterEntity_.PLATFORM),
           j.joinCruise().get(CuratorsCruiseEntity_.CRUISE_NAME),
           r.get(CuratorsSampleTsqpEntity_.SAMPLE),

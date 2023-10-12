@@ -15,7 +15,6 @@ public class FacilityDetailView extends FacilityDisplayView {
   private String emailLink;
   private String urlLink;
   private String ftpLink;
-  private String otherLink;
 
   public String getInstCode() {
     return instCode;
@@ -105,14 +104,6 @@ public class FacilityDetailView extends FacilityDisplayView {
     this.ftpLink = ftpLink;
   }
 
-  public String getOtherLink() {
-    return otherLink;
-  }
-
-  public void setOtherLink(String otherLink) {
-    this.otherLink = otherLink;
-  }
-
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -129,11 +120,11 @@ public class FacilityDetailView extends FacilityDisplayView {
         that.addr2) && Objects.equals(addr3, that.addr3) && Objects.equals(addr4, that.addr4) && Objects.equals(contact1,
         that.contact1) && Objects.equals(contact2, that.contact2) && Objects.equals(contact3, that.contact3)
         && Objects.equals(emailLink, that.emailLink) && Objects.equals(urlLink, that.urlLink) && Objects.equals(ftpLink,
-        that.ftpLink) && Objects.equals(otherLink, that.otherLink);
+        that.ftpLink);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(super.hashCode(), instCode, addr1, addr2, addr3, addr4, contact1, contact2, contact3, emailLink, urlLink, ftpLink, otherLink);
+    return Objects.hash(super.hashCode(), instCode, addr1, addr2, addr3, addr4, contact1, contact2, contact3, emailLink, urlLink, ftpLink);
   }
 }

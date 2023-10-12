@@ -206,6 +206,7 @@ class SampleControllerIT {
     facility.put("id", 3);
     facility.put("facility", "NOAA-Atlantic Oceanographic and Meteorol. Lab");
     facility.put("facility_code", "AOML");
+    facility.put("other_link", "https://dx.doi.org/doi:10.7289/V5VM498W");
 
     ObjectNode sample = objectMapper.createObjectNode();
     sample.put("imlgs", testUtils.getImlgs(cruiseName1, year1, sample1.getSample()));
@@ -239,6 +240,7 @@ class SampleControllerIT {
     facility.put("id", 22);
     facility.put("facility", "USGS Pacific Coastal and Marine Science Center");
     facility.put("facility_code", "USGSMP");
+    facility.put("other_link", "https://dx.doi.org/doi:10.7289/V55T3HGJ");
 
     sample = objectMapper.createObjectNode();
     sample.put("imlgs", testUtils.getImlgs(cruiseName2, year2, sample3.getSample()));
@@ -571,7 +573,7 @@ class SampleControllerIT {
     facility.put("id", 3);
     facility.put("facility", "NOAA-Atlantic Oceanographic and Meteorol. Lab");
     facility.put("facility_code", "AOML");
-
+    facility.put("other_link", "https://dx.doi.org/doi:10.7289/V5VM498W");
 
     ObjectNode sample = objectMapper.createObjectNode();
     sample.put("imlgs", testUtils.getImlgs(cruiseName1, year1, sample1.getSample()));
@@ -613,6 +615,7 @@ class SampleControllerIT {
     facility.put("id", 22);
     facility.put("facility", "USGS Pacific Coastal and Marine Science Center");
     facility.put("facility_code", "USGSMP");
+    facility.put("other_link", "https://dx.doi.org/doi:10.7289/V55T3HGJ");
 
     sample = objectMapper.createObjectNode();
     sample.put("imlgs", testUtils.getImlgs(cruiseName2, year2, sample3.getSample()));
@@ -929,6 +932,7 @@ class SampleControllerIT {
     ObjectNode facility = objectMapper.createObjectNode();
     facility.put("id", testUtils.getFacilityId("AOML"));
     facility.put("facility_code", "AOML");
+    facility.put("other_link", "https://dx.doi.org/doi:10.7289/V5VM498W");
     facility.put("facility", "NOAA-Atlantic Oceanographic and Meteorol. Lab");
     expectedJson.replace("facility", facility);
 

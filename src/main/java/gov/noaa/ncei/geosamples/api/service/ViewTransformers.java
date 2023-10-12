@@ -78,7 +78,7 @@ public final class ViewTransformers {
     view.setFacilities(
         entity.getFacilityMappings().stream()
             .map(CuratorsCruiseFacilityEntity::getFacility)
-            .map(fac -> new FacilityNameView(fac.getId(), fac.getFacility(), fac.getFacilityCode())).sorted().collect(Collectors.toList()));
+            .map(fac -> new FacilityNameView(fac.getId(), fac.getFacility(), fac.getFacilityCode(), fac.getDoiLink())).sorted().collect(Collectors.toList()));
     view.setPlatforms(
         entity.getPlatformMappings().stream()
             .map(CuratorsCruisePlatformEntity::getPlatform)
@@ -126,7 +126,6 @@ public final class ViewTransformers {
     view.setEmailLink(entity.getEmailLink());
     view.setUrlLink(entity.getUrlLink());
     view.setFtpLink(entity.getFtpLink());
-    view.setOtherLink(entity.getDoiLink());
   }
 
   private static void populateFacilityDisplayView(CuratorsFacilityEntity entity, Integer sampleCount, FacilityDisplayView view) {
@@ -139,6 +138,7 @@ public final class ViewTransformers {
     view.setId(entity.getId());
     view.setFacility(entity.getFacility());
     view.setFacilityCode(entity.getFacilityCode());
+    view.setOtherLink(entity.getDoiLink());
   }
 
   public static SampleDetailDisplayView toSampleDetailView(CuratorsSampleTsqpEntity entity) {
@@ -232,7 +232,8 @@ public final class ViewTransformers {
       return new FacilityNameView(
           entity.getCruiseFacility().getFacility().getId(),
           entity.getCruiseFacility().getFacility().getFacility(),
-          entity.getCruiseFacility().getFacility().getFacilityCode()
+          entity.getCruiseFacility().getFacility().getFacilityCode(),
+          entity.getCruiseFacility().getFacility().getDoiLink()
       );
     }
     return null;

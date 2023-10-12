@@ -8,15 +8,17 @@ public class FacilityNameView implements CsvColumnObject, Comparable<FacilityNam
   private Long id;
   private String facility;
   private String facilityCode;
+  private String otherLink;
 
   public FacilityNameView() {
 
   }
 
-  public FacilityNameView(Long id, String facility, String facilityCode) {
+  public FacilityNameView(Long id, String facility, String facilityCode, String otherLink) {
     this.id = id;
     this.facility = facility;
     this.facilityCode = facilityCode;
+    this.otherLink = otherLink;
   }
 
   public Long getId() {
@@ -43,6 +45,14 @@ public class FacilityNameView implements CsvColumnObject, Comparable<FacilityNam
     this.facilityCode = facilityCode;
   }
 
+  public String getOtherLink() {
+    return otherLink;
+  }
+
+  public void setOtherLink(String otherLink) {
+    this.otherLink = otherLink;
+  }
+
   @Override
   public Object asCsvColumn() {
     return facilityCode;
@@ -63,11 +73,11 @@ public class FacilityNameView implements CsvColumnObject, Comparable<FacilityNam
     }
     FacilityNameView that = (FacilityNameView) o;
     return Objects.equals(id, that.id) && Objects.equals(facility, that.facility) && Objects.equals(facilityCode,
-        that.facilityCode);
+        that.facilityCode) && Objects.equals(otherLink, that.otherLink);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, facility, facilityCode);
+    return Objects.hash(id, facility, facilityCode, otherLink);
   }
 }
