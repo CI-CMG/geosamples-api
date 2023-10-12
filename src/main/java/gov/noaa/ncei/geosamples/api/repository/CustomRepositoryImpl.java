@@ -183,7 +183,7 @@ public class CustomRepositoryImpl<E, ID> extends SimpleJpaRepository<E, ID> impl
       specs.add(cb.lessThanOrEqualTo(joiner.joinSample().get(CuratorsSampleTsqpEntity_.LAT), box.getYMax()));
     }
     if (StringUtils.hasText(cruise)) {
-      specs.add(SearchUtils.equalIgnoreCase(cb, cruise, joiner.joinCruise().get(CuratorsCruiseEntity_.CRUISE_NAME)));
+      specs.add(SearchUtils.startsWithIgnoreCase(cb, cruise, joiner.joinCruise().get(CuratorsCruiseEntity_.CRUISE_NAME)));
     }
     if (StringUtils.hasText(leg)) {
       specs.add(SearchUtils.equalIgnoreCase(cb, leg, joiner.joinLeg().get(CuratorsLegEntity_.LEG_NAME)));
