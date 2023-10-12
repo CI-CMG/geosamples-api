@@ -48,7 +48,7 @@ public class OpenAPIConfig {
       openApi.getComponents().getSchemas().putAll(ModelConverters.getInstance().read(ApiError.class));
       Schema errorResponseSchema = new Schema();
       errorResponseSchema.setName("ApiErrorView");
-      errorResponseSchema.set$ref("#/components/schemas/ApiErrorView");
+      errorResponseSchema.set$ref("#/components/schemas/ApiError");
       openApi.getPaths().values().forEach(pathItem -> pathItem.readOperations().forEach(operation -> {
         List<Parameter> parameters = operation.getParameters();
         if(parameters != null) {
