@@ -5,7 +5,9 @@ import static gov.noaa.ncei.geosamples.api.repository.CustomRepositoryImpl.where
 import gov.noaa.ncei.geosamples.api.model.GeosampleSearchParameterObject;
 import gov.noaa.ncei.geosamples.api.repository.CustomRepositoryImpl.Joiner;
 import gov.noaa.ncei.geosamples.api.service.SpecificationFactory;
+import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsIntervalEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsIntervalEntity_;
+import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsLithologyEntity_;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsTextureEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsTextureEntity_;
 import java.util.ArrayList;
@@ -17,6 +19,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
@@ -29,13 +32,12 @@ public class CustomTextureRepositoryImpl implements CustomTextureRepository {
 
   private Long count(
       GeosampleSearchParameterObject searchParameters,
-      SpecificationFactory<CuratorsTextureEntity> specFactory1,
-      SpecificationFactory<CuratorsTextureEntity> specFactory2) {
+      SpecificationFactory<CuratorsIntervalEntity> specFactory) {
     CriteriaBuilder cb = entityManager.getCriteriaBuilder();
     CriteriaQuery<Long> q = cb.createQuery(Long.class).distinct(true);
     Root<CuratorsTextureEntity> r = q.from(CuratorsTextureEntity.class);
 
-    textWhere(searchParameters, r, cb, q, specFactory1, specFactory2);
+    textWhere(searchParameters, r, cb, q, specFactory);
 
     return entityManager.createQuery(q.select(cb.count(r))).getSingleResult();
   }
@@ -50,40 +52,44 @@ public class CustomTextureRepositoryImpl implements CustomTextureRepository {
       Root<CuratorsTextureEntity> r,
       CriteriaBuilder cb,
       CriteriaQuery<?> q,
-      SpecificationFactory<CuratorsTextureEntity> specFactory1,
-      SpecificationFactory<CuratorsTextureEntity> specFactory2) {
+      SpecificationFactory<CuratorsIntervalEntity> specFactory) {
 
-    Joiner<CuratorsTextureEntity> joiner1 = specFactory1.getJoins(r);
-    Joiner<CuratorsTextureEntity> joiner2 = specFactory2.getJoins(r);
 
-    List<Predicate> specs =new ArrayList<>();
-    specs.add(cb.or(cb.isNotNull(joiner1.joinInterval().get(CuratorsIntervalEntity_.TEXT1)), cb.isNotNull(joiner2.joinInterval().get(CuratorsIntervalEntity_.TEXT2))));
+    Subquery<CuratorsIntervalEntity> subCq = q.subquery(CuratorsIntervalEntity.class);
+    Root<CuratorsIntervalEntity> ci = subCq.from(CuratorsIntervalEntity.class);
+
+    Joiner<CuratorsIntervalEntity> joiner = specFactory.getJoins(ci);
+    List<Predicate> specs = new ArrayList<>();
+    specs.add(cb.and(where(searchParameters, ci, cb, q, joiner, null).toArray(new Predicate[0])));
     specs.add(cb.or(
-        cb.and(where(searchParameters, r, cb, q, joiner1, null).toArray(new Predicate[0])),
-        cb.and(where(searchParameters, r, cb, q, joiner2, null).toArray(new Predicate[0]))));
+        cb.equal(ci.get(CuratorsIntervalEntity_.TEXT1), r.get(CuratorsTextureEntity_.TEXTURE)),
+        cb.equal(ci.get(CuratorsIntervalEntity_.TEXT2), r.get(CuratorsTextureEntity_.TEXTURE))));
 
-    q.where(cb.and(specs.toArray(new Predicate[0])));
+    subCq.select(ci.get(CuratorsIntervalEntity_.ID));
+    subCq.where(cb.and(specs.toArray(new Predicate[0])));
+
+    q.where(cb.exists(subCq));
+
   }
 
   @Override
   public Page<String> getTextures(
       GeosampleSearchParameterObject searchParameters,
       int page, int pageSize,
-      SpecificationFactory<CuratorsTextureEntity> specFactory1,
-      SpecificationFactory<CuratorsTextureEntity> specFactory2) {
+      SpecificationFactory<CuratorsIntervalEntity> specFactory) {
 
     CriteriaBuilder cb = entityManager.getCriteriaBuilder();
     CriteriaQuery<String> q = cb.createQuery(String.class).distinct(true);
     Root<CuratorsTextureEntity> r = q.from(CuratorsTextureEntity.class);
 
-    textWhere(searchParameters, r, cb, q, specFactory1, specFactory2);
+    textWhere(searchParameters, r, cb, q, specFactory);
 
     TypedQuery<String> typedQuery = entityManager.createQuery(q.select(r.get(CuratorsTextureEntity_.TEXTURE)).orderBy(cb.asc(r.get(CuratorsTextureEntity_.TEXTURE))));
     typedQuery.setFirstResult((int) getOffset(page, pageSize));
     typedQuery.setMaxResults(pageSize);
 
     return PageableExecutionUtils.getPage(typedQuery.getResultList(), Pageable.ofSize(pageSize).withPage(page),
-        () -> count(searchParameters, specFactory1, specFactory2));
+        () -> count(searchParameters, specFactory));
   }
 
 }
