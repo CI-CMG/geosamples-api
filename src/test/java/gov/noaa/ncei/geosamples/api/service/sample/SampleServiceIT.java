@@ -529,7 +529,7 @@ class SampleServiceIT {
     PagedItemsView<SampleDetailDisplayView> response = objectMapper.readValue(httpResponse.getBody(), DETAIL_PAGE);
 
     List<String> expectedSamples = Arrays.asList(
-        "CRUISE_1_S1",
+        "CRUISE_2_S1",
         "CRUISE_2_S2"
     );
 
