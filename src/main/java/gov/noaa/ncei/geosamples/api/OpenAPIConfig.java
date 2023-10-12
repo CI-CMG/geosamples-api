@@ -61,9 +61,9 @@ public class OpenAPIConfig {
           }
         }
         ApiResponses apiResponses = operation.getResponses();
-        apiResponses.addApiResponse("3xx", createApiResponse(HttpStatus.FORBIDDEN.getReasonPhrase(), errorResponseSchema));
-        apiResponses.addApiResponse("4xx", createApiResponse(HttpStatus.BAD_REQUEST.getReasonPhrase(), errorResponseSchema));
-        apiResponses.addApiResponse("5xx", createApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), errorResponseSchema));
+        apiResponses.addApiResponse("300", createApiResponse(HttpStatus.FORBIDDEN.getReasonPhrase(), errorResponseSchema));
+        apiResponses.addApiResponse("400", createApiResponse(HttpStatus.BAD_REQUEST.getReasonPhrase(), errorResponseSchema));
+        apiResponses.addApiResponse("500", createApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), errorResponseSchema));
       }));
     };
   }
