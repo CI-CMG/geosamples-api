@@ -7,6 +7,7 @@ import gov.noaa.ncei.geosamples.api.view.FacilityDetailView;
 import gov.noaa.ncei.geosamples.api.view.FacilityDisplayView;
 import gov.noaa.ncei.geosamples.api.view.FacilityNameView;
 import gov.noaa.ncei.geosamples.api.view.PagedItemsView;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import javax.validation.Valid;
 import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/repositories")
+@Tag(name = "Repositories", description = "API endpoints to query for repositories / facilities.")
 public class FacilityController {
 
   private final FacilityService facilityService;

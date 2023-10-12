@@ -11,6 +11,7 @@ geosamples:
   cruise-table: ${geosamples.schema}.curators_cruise
   leg-table: ${geosamples.schema}.curators_leg
   age-interval-join-table: ${geosamples.schema}.age_interval
+  public-base-url:
 
 
 server:

@@ -34,6 +34,8 @@ public class ServiceProperties {
   private String platformTable;
   @NotBlank
   private String ageIntervalJoinTable;
+  @NotBlank
+  private String publicBaseUrl;
 
 
   public String getSchema() {
@@ -130,5 +132,14 @@ public class ServiceProperties {
 
   public void setAgeIntervalJoinTable(String ageIntervalJoinTable) {
     this.ageIntervalJoinTable = ageIntervalJoinTable;
+  }
+
+  public String getPublicBaseUrl() {
+    return publicBaseUrl;
+  }
+
+  public ServiceProperties setPublicBaseUrl(String publicBaseUrl) {
+    this.publicBaseUrl = publicBaseUrl;
+    return this;
   }
 }

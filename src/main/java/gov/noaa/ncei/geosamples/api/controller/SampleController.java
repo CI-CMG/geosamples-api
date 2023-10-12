@@ -7,6 +7,7 @@ import gov.noaa.ncei.geosamples.api.view.PagedItemsView;
 import gov.noaa.ncei.geosamples.api.view.SampleDetailDisplayView;
 import gov.noaa.ncei.geosamples.api.view.SampleDisplayView;
 import gov.noaa.ncei.geosamples.api.view.SampleLinkedDetailView;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/samples")
+@Tag(name = "Samples", description = "API endpoints to query for sample data.")
 public class SampleController {
 
   private static final String TEXT_CSV_VALUE = "text/csv";

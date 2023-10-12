@@ -1,7 +1,9 @@
 package gov.noaa.ncei.geosamples.api.model;
 
 import gov.noaa.ncei.geosamples.api.view.PagingParameters;
+import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.beans.ConstructorProperties;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,6 +26,7 @@ public class GeosampleSearchParameterObject implements PagingParameters {
 
 
   private String repository;
+  @Parameter(name = "bbox", description = "Comma separated list of lat / lon values representing a box to search within: xmin,ymin,xmax,ymax")
   @ValidBbox
   private String bbox;
   private String platform;
@@ -69,6 +72,21 @@ public class GeosampleSearchParameterObject implements PagingParameters {
   private String leg;
 
   private Geometry aoi;
+
+  @Parameter(
+      name = "aoi",
+      description = "Search within this geometry.  Format is WKT (OGC well known text) format",
+      example = "POLYGON ((30.0 10.0, 40.0 40.0, 20.0 40.0, 10.0 20.0, 30.0 10.0))",
+      schema = @Schema(
+          externalDocs = @ExternalDocumentation(url = "https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry")
+      )
+  )
+  private String aoiDocumentation;
+
+  //This is not a real field.  This is here to properly display the aoi parameter in swagger.  DO NOT USE!
+  public String getAoiDocumentation() {
+    throw new UnsupportedOperationException("This is a workaround to display swagger documentation for geometries");
+  }
 
 
   @Min(1)

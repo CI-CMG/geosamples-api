@@ -5,6 +5,7 @@ import gov.noaa.ncei.geosamples.api.service.interval.IntervalService;
 import gov.noaa.ncei.geosamples.api.service.sample.SampleService;
 import gov.noaa.ncei.geosamples.api.view.MinMaxView;
 import gov.noaa.ncei.geosamples.api.view.PagedItemsView;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import javax.validation.Valid;
 import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api")
+@Tag(name = "Sample Attribute Descriptors", description = "API endpoints to list attributes from across all samples.")
 public class AttributesController {
 
   private final SampleService sampleService;
