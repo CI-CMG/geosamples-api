@@ -75,8 +75,7 @@ public class GeosampleSearchParameterObject implements PagingParameters {
 
   @Parameter(
       name = "aoi",
-      description = "Search within this geometry.  Format is WKT (OGC well known text) format",
-      example = "POLYGON ((30.0 10.0, 40.0 40.0, 20.0 40.0, 10.0 20.0, 30.0 10.0))",
+      description = "Search within this geometry.  Format is WKT (OGC well known text) format. Ex. POLYGON ((30.0 10.0, 40.0 40.0, 20.0 40.0, 10.0 20.0, 30.0 10.0))",
       schema = @Schema(
           externalDocs = @ExternalDocumentation(url = "https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry")
       )

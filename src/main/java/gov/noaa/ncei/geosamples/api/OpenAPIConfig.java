@@ -15,6 +15,7 @@ import io.swagger.v3.oas.models.servers.Server;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import org.springdoc.core.GroupedOpenApi;
 import org.springdoc.core.customizers.OpenApiCustomiser;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,6 +23,16 @@ import org.springframework.http.HttpStatus;
 
 @Configuration
 public class OpenAPIConfig {
+
+  @Bean
+  public GroupedOpenApi openApi(OpenApiCustomiser openApiCustomiser) {
+    return GroupedOpenApi.builder()
+        .group("api")
+        .pathsToMatch("/api/**")
+        .addOpenApiCustomiser(openApiCustomiser)
+        .build();
+  }
+
 
   @Bean
   public ModelResolver modelResolver(ObjectMapper objectMapper) {
