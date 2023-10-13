@@ -178,10 +178,16 @@ public final class ViewTransformers {
   }
 
   public static IntervalView toIntervalView(CuratorsIntervalEntity entity, SampleDisplayViewBase sample) {
+
+    FacilityNameView facility =  null;
+    if(entity.getSample() != null && entity.getSample().getCruiseFacility() != null && entity.getSample().getCruiseFacility().getFacility() != null ) {
+      facility = toFacilityNameView(entity.getSample().getCruiseFacility().getFacility());
+    }
+
     IntervalView view = new IntervalView();
     view.setId(entity.getId());
     view.setCruise(entity.getSample().getCruise().getCruiseName());
-    view.setFacilityCode(entity.getSample().getCruiseFacility().getFacility().getFacilityCode());
+    view.setFacility(facility);
     view.setPlatform(sample.getPlatform());
     view.setSample(sample.getSample());
     view.setDevice(sample.getDevice());

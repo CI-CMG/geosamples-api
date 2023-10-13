@@ -238,9 +238,15 @@ class IntervalControllerIT {
     expectedJson.put("total_items", 4);
     expectedJson.put("items_per_page", 500);
 
+    ObjectNode facility = objectMapper.createObjectNode();
+    facility.put("id", testUtils.getFacilityId("AOML"));
+    facility.put("facility_code", "AOML");
+    facility.put("other_link", "https://dx.doi.org/doi:10.7289/V5VM498W");
+    facility.put("facility", "NOAA-Atlantic Oceanographic and Meteorol. Lab");
+
     ObjectNode interval = objectMapper.createObjectNode();
     interval.put("id", testUtils.getIntervalId(imlgs, 1));
-    interval.put("facility_code", "AOML");
+    interval.replace("facility", facility);
     interval.put("platform", "Sea Biskit");
     interval.put("cruise", "CRUISE_1");
     interval.put("sample", "sample1");
@@ -264,7 +270,7 @@ class IntervalControllerIT {
     ages2.forEach(ages::add);
     interval = objectMapper.createObjectNode();
     interval.put("id", testUtils.getIntervalId(imlgs, 2));
-    interval.put("facility_code", "AOML");
+    interval.replace("facility", facility);
     interval.put("platform", "Sea Biskit");
     interval.put("cruise", "CRUISE_1");
     interval.put("sample", "sample1");
@@ -282,7 +288,7 @@ class IntervalControllerIT {
     ages3.forEach(ages::add);
     interval = objectMapper.createObjectNode();
     interval.put("id", testUtils.getIntervalId(imlgs2, 1));
-    interval.put("facility_code", "AOML");
+    interval.replace("facility", facility);
     interval.put("platform", "Sea Biskit");
     interval.put("cruise", "CRUISE_1");
     interval.put("sample", "sample2");
@@ -300,7 +306,7 @@ class IntervalControllerIT {
     ages4.forEach(ages::add);
     interval = objectMapper.createObjectNode();
     interval.put("id", testUtils.getIntervalId(imlgs2, 2));
-    interval.put("facility_code", "AOML");
+    interval.replace("facility", facility);
     interval.put("platform", "Sea Biskit");
     interval.put("cruise", "CRUISE_1");
     interval.put("sample", "sample2");
@@ -651,13 +657,19 @@ class IntervalControllerIT {
     );
     assertEquals(200, response.getStatusCode().value());
 
+    ObjectNode facility = objectMapper.createObjectNode();
+    facility.put("id", testUtils.getFacilityId("AOML"));
+    facility.put("facility_code", "AOML");
+    facility.put("other_link", "https://dx.doi.org/doi:10.7289/V5VM498W");
+    facility.put("facility", "NOAA-Atlantic Oceanographic and Meteorol. Lab");
+
     JsonNode json = objectMapper.readTree(response.getBody());
 
     ArrayNode ages = objectMapper.createArrayNode();
     ages1.forEach(ages::add);
     ObjectNode interval = objectMapper.createObjectNode();
     interval.put("id", id);
-    interval.put("facility_code", "AOML");
+    interval.replace("facility", facility);
     interval.put("platform", "Sea Biskit");
     interval.put("cruise", "CRUISE_1");
     interval.put("sample", "sample1");

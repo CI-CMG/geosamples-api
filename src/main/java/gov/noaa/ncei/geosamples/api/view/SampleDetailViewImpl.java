@@ -5,7 +5,7 @@ import java.util.Objects;
 
 public class SampleDetailViewImpl implements SampleDetailDisplayView {
   
-  @CsvColumn(order = 28, column = "IMLGS Number")
+  @CsvColumn(order = 23, column = "IMLGS Number")
   private String imlgs;
   @CsvColumn(order = 0, column = "Repository")
   private FacilityNameView facility;
@@ -17,54 +17,54 @@ public class SampleDetailViewImpl implements SampleDetailDisplayView {
   private String sample;
   @CsvColumn(order = 4, column = "Sampling Device")
   private String device;
-  @CsvColumn(order = 5, column = "begin_date")
+  @CsvColumn(order = 5, column = "Date Sample Collected")
   private String beginDate;
-  @CsvColumn(order = 7, column = "lat")
+  @CsvColumn(order = 7, column = "Latitude")
   private Double lat;
-  @CsvColumn(order = 9, column = "lon")
+  @CsvColumn(order = 9, column = "Longitude")
   private Double lon;
-  @CsvColumn(order = 12, column = "water_depth")
+  @CsvColumn(order = 11, column = "Water Depth (m)")
   private Integer waterDepth;
-  @CsvColumn(order = 14, column = "storage_meth")
+  @CsvColumn(order = 13, column = "Storage Method")
   private String storageMeth;
-  @CsvColumn(order = 15, column = "cored_length")
+  @CsvColumn(order = 14, column = "Core Length (cm)")
   private Integer coredLength;
-  @CsvColumn(order = 24, column = "igsn")
+  @CsvColumn(order = 19, column = "IGSN")
   private String igsn;
-  @CsvColumn(order = 25, column = "leg")
+  @CsvColumn(order = 20, column = "Alternate Cruise/Leg")
   private String leg;
   private String shipCode;
-  @CsvColumn(order = 6, column = "end_date")
+  @CsvColumn(order = 6, column = "Date Sample Collection Ended")
   private String endDate;
-  @CsvColumn(order = 8, column = "end_lat")
+  @CsvColumn(order = 8, column = "Ending Latitude")
   private Double endLat;
-  @CsvColumn(order = 10, column = "end_lon")
+  @CsvColumn(order = 10, column = "Ending Longitude")
   private Double endLon;
-  @CsvColumn(order = 11, column = "latlon_orig")
+
   private String latlonOrig;
-  @CsvColumn(order = 13, column = "end_water_depth")
+  @CsvColumn(order = 12, column = "Ending Water Depth (m)")
   private Integer endWaterDepth;
-  @CsvColumn(order = 16, column = "cored_length_mm")
+
   private Integer coredLengthMm;
-  @CsvColumn(order = 17, column = "cored_diam")
+  @CsvColumn(order = 15, column = "Core Diameter (cm)")
   private Integer coredDiam;
-  @CsvColumn(order = 18, column = "cored_diam_mm")
+
   private Integer coredDiamMm;
-  @CsvColumn(order = 19, column = "pi")
+  @CsvColumn(order = 16, column = "Principal Investigator")
   private String pi;
-  @CsvColumn(order = 20, column = "province")
+  @CsvColumn(order = 17, column = "Physiographic Province")
   private String province;
-  @CsvColumn(order = 21, column = "lake")
+  @CsvColumn(order = 18, column = "Lake")
   private String lake;
-  @CsvColumn(order = 22, column = "other_link")
+
   private String otherLink;
-  @CsvColumn(order = 23, column = "last_update")
+
   private String lastUpdate;
-  @CsvColumn(order = 26, column = "sample_comments")
+  @CsvColumn(order = 21, column = "Sample Comments")
   private String sampleComments;
-  @CsvColumn(order = 27, column = "show_sampl")
+  @CsvColumn(order = 22, column = "Data and Information for Sample")
   private String showSampl;
-  @CsvColumn(order = 29, column = "publish")
+
   private String publish;
 
   @Override

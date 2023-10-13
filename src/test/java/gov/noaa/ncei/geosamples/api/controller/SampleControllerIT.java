@@ -870,10 +870,16 @@ class SampleControllerIT {
 
     expectedJson.replace("links", sampleLinks);
 
+    ObjectNode facility = objectMapper.createObjectNode();
+    facility.put("id", testUtils.getFacilityId("AOML"));
+    facility.put("facility_code", "AOML");
+    facility.put("other_link", "https://dx.doi.org/doi:10.7289/V5VM498W");
+    facility.put("facility", "NOAA-Atlantic Oceanographic and Meteorol. Lab");
+
     ArrayNode intervals = objectMapper.createArrayNode();
     ObjectNode interval = objectMapper.createObjectNode();
     interval.put("id", testUtils.getIntervalId(imlgs, 1));
-    interval.put("facility_code", "AOML");
+    interval.replace("facility", facility);
     interval.put("platform", "Sea Biskit");
     interval.put("cruise", "CRUISE_1");
     interval.put("sample", "sample1");
@@ -895,7 +901,7 @@ class SampleControllerIT {
 
     interval = objectMapper.createObjectNode();
     interval.put("id", testUtils.getIntervalId(imlgs, 2));
-    interval.put("facility_code", "AOML");
+    interval.replace("facility", facility);
     interval.put("platform", "Sea Biskit");
     interval.put("cruise", "CRUISE_1");
     interval.put("sample", "sample1");
@@ -929,11 +935,6 @@ class SampleControllerIT {
     cruise.replace("links", cruiseLinks);
     expectedJson.replace("cruise", cruise);
 
-    ObjectNode facility = objectMapper.createObjectNode();
-    facility.put("id", testUtils.getFacilityId("AOML"));
-    facility.put("facility_code", "AOML");
-    facility.put("other_link", "https://dx.doi.org/doi:10.7289/V5VM498W");
-    facility.put("facility", "NOAA-Atlantic Oceanographic and Meteorol. Lab");
     expectedJson.replace("facility", facility);
 
     //need to reserialize before comparing due to int to long node differences

@@ -11,7 +11,7 @@ public class IntervalView implements Comparable<IntervalView> {
 
   private Long id;
   @CsvColumn(order = 0, column = "Repository")
-  private String facilityCode;
+  private FacilityNameView facility;
   @CsvColumn(order = 1, column = "Ship/Platform")
   private String platform;
   @CsvColumn(order = 2, column = "Cruise ID")
@@ -20,11 +20,11 @@ public class IntervalView implements Comparable<IntervalView> {
   private String sample;
   @CsvColumn(order = 4, column = "Sampling Device")
   private String device;
-  @CsvColumn(order = 5, column = "Interval/Subsample")
+  @CsvColumn(order = 5, column = "Interval/Subsample Number")
   private Integer interval;
-  @CsvColumn(order = 6, column = "Depth to Top")
+  @CsvColumn(order = 6, column = "Depth to Top (cm)")
   private Integer depthTop;
-  @CsvColumn(order = 7, column = "Depth to Bottom")
+  @CsvColumn(order = 7, column = "Depth to Bottom (cm)")
   private Integer depthBot;
   @CsvColumn(order = 8, column = "Primary Lithologic Composition")
   private String lith1;
@@ -87,12 +87,12 @@ public class IntervalView implements Comparable<IntervalView> {
     this.id = id;
   }
 
-  public String getFacilityCode() {
-    return facilityCode;
+  public FacilityNameView getFacility() {
+    return facility;
   }
 
-  public void setFacilityCode(String facilityCode) {
-    this.facilityCode = facilityCode;
+  public void setFacility(FacilityNameView facility) {
+    this.facility = facility;
   }
 
   public String getPlatform() {
@@ -363,7 +363,6 @@ public class IntervalView implements Comparable<IntervalView> {
   }
 
 
-
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -372,26 +371,28 @@ public class IntervalView implements Comparable<IntervalView> {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    IntervalView view = (IntervalView) o;
-    return Objects.equals(facilityCode, view.facilityCode) && Objects.equals(platform, view.platform) && Objects.equals(
-        cruise, view.cruise) && Objects.equals(sample, view.sample) && Objects.equals(device, view.device)
-        && Objects.equals(interval, view.interval) && Objects.equals(depthTop, view.depthTop) && Objects.equals(depthBot,
-        view.depthBot) && Objects.equals(lith1, view.lith1) && Objects.equals(lith2, view.lith2) && Objects.equals(text1,
-        view.text1) && Objects.equals(text2, view.text2) && Objects.equals(comp1, view.comp1) && Objects.equals(comp2,
-        view.comp2) && Objects.equals(comp3, view.comp3) && Objects.equals(comp4, view.comp4) && Objects.equals(comp5,
-        view.comp5) && Objects.equals(comp6, view.comp6) && Objects.equals(description, view.description)
-        && Objects.equals(ages, view.ages) && Objects.equals(absoluteAgeTop, view.absoluteAgeTop) && Objects.equals(
-        absoluteAgeBot, view.absoluteAgeBot) && Objects.equals(weight, view.weight) && Objects.equals(rockLith, view.rockLith)
-        && Objects.equals(rockMin, view.rockMin) && Objects.equals(weathMeta, view.weathMeta) && Objects.equals(remark,
-        view.remark) && Objects.equals(munsellCode, view.munsellCode) && Objects.equals(exhaustCode, view.exhaustCode)
-        && Objects.equals(photoLink, view.photoLink) && Objects.equals(lake, view.lake) && Objects.equals(intComments,
-        view.intComments) && Objects.equals(igsn, view.igsn) && Objects.equals(imlgs, view.imlgs);
+    IntervalView that = (IntervalView) o;
+    return Objects.equals(id, that.id) && Objects.equals(facility, that.facility) && Objects.equals(platform,
+        that.platform) && Objects.equals(cruise, that.cruise) && Objects.equals(sample, that.sample) && Objects.equals(
+        device, that.device) && Objects.equals(interval, that.interval) && Objects.equals(depthTop, that.depthTop)
+        && Objects.equals(depthBot, that.depthBot) && Objects.equals(lith1, that.lith1) && Objects.equals(lith2,
+        that.lith2) && Objects.equals(text1, that.text1) && Objects.equals(text2, that.text2) && Objects.equals(comp1,
+        that.comp1) && Objects.equals(comp2, that.comp2) && Objects.equals(comp3, that.comp3) && Objects.equals(comp4,
+        that.comp4) && Objects.equals(comp5, that.comp5) && Objects.equals(comp6, that.comp6) && Objects.equals(
+        description, that.description) && Objects.equals(ages, that.ages) && Objects.equals(absoluteAgeTop, that.absoluteAgeTop)
+        && Objects.equals(absoluteAgeBot, that.absoluteAgeBot) && Objects.equals(weight, that.weight) && Objects.equals(
+        rockLith, that.rockLith) && Objects.equals(rockMin, that.rockMin) && Objects.equals(weathMeta, that.weathMeta)
+        && Objects.equals(remark, that.remark) && Objects.equals(munsellCode, that.munsellCode) && Objects.equals(
+        exhaustCode, that.exhaustCode) && Objects.equals(photoLink, that.photoLink) && Objects.equals(lake, that.lake)
+        && Objects.equals(intComments, that.intComments) && Objects.equals(igsn, that.igsn) && Objects.equals(imlgs,
+        that.imlgs);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(facilityCode, platform, cruise, sample, device, interval, depthTop, depthBot, lith1, lith2, text1, text2, comp1, comp2, comp3,
-        comp4, comp5, comp6, description, ages, absoluteAgeTop, absoluteAgeBot, weight, rockLith, rockMin, weathMeta, remark, munsellCode, exhaustCode,
+    return Objects.hash(id, facility, platform, cruise, sample, device, interval, depthTop, depthBot, lith1, lith2, text1, text2, comp1, comp2, comp3,
+        comp4, comp5, comp6, description, ages, absoluteAgeTop, absoluteAgeBot, weight, rockLith, rockMin, weathMeta, remark, munsellCode,
+        exhaustCode,
         photoLink, lake, intComments, igsn, imlgs);
   }
 
@@ -406,7 +407,7 @@ public class IntervalView implements Comparable<IntervalView> {
   public String toString() {
     return "IntervalView{" +
         "id=" + id +
-        ", facilityCode='" + facilityCode + '\'' +
+        ", facility=" + facility +
         ", platform='" + platform + '\'' +
         ", cruise='" + cruise + '\'' +
         ", sample='" + sample + '\'' +
@@ -425,7 +426,7 @@ public class IntervalView implements Comparable<IntervalView> {
         ", comp5='" + comp5 + '\'' +
         ", comp6='" + comp6 + '\'' +
         ", description='" + description + '\'' +
-        ", ages='" + ages + '\'' +
+        ", ages=" + ages +
         ", absoluteAgeTop='" + absoluteAgeTop + '\'' +
         ", absoluteAgeBot='" + absoluteAgeBot + '\'' +
         ", weight=" + weight +

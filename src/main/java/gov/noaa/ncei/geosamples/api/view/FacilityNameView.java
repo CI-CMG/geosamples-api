@@ -55,7 +55,7 @@ public class FacilityNameView implements CsvColumnObject, Comparable<FacilityNam
 
   @Override
   public Object asCsvColumn() {
-    return facilityCode;
+    return facility;
   }
 
   @Override
