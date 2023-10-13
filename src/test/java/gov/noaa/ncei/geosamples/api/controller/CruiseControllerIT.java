@@ -221,14 +221,14 @@ class CruiseControllerIT {
 
     array = objectMapper.createArrayNode();
     ObjectNode arrayObject = objectMapper.createObjectNode();
-    arrayObject.put("id", 380);
+    arrayObject.put("id", testUtils.getPlatformId("Sea Biskit"));
     arrayObject.put("platform", "Sea Biskit");
     array.add(arrayObject);
     cruise.replace("platforms", array);
 
     array = objectMapper.createArrayNode();
     arrayObject = objectMapper.createObjectNode();
-    arrayObject.put("id", 3);
+    arrayObject.put("id", testUtils.getFacilityId("AOML"));
     arrayObject.put("facility_code", "AOML");
     arrayObject.put("facility", "NOAA-Atlantic Oceanographic and Meteorol. Lab");
     arrayObject.put("other_link", "https://dx.doi.org/doi:10.7289/V5VM498W");
@@ -247,14 +247,14 @@ class CruiseControllerIT {
 
     array = objectMapper.createArrayNode();
     arrayObject = objectMapper.createObjectNode();
-    arrayObject.put("id", 415);
+    arrayObject.put("id", testUtils.getPlatformId("Susie Q"));
     arrayObject.put("platform", "Susie Q");
     array.add(arrayObject);
     cruise.replace("platforms", array);
 
     array = objectMapper.createArrayNode();
     arrayObject = objectMapper.createObjectNode();
-    arrayObject.put("id", 16);
+    arrayObject.put("id", testUtils.getFacilityId("USGSMP"));
     arrayObject.put("facility_code", "USGSMP");
     arrayObject.put("facility", "USGS Pacific Coastal and Marine Science Center");
     arrayObject.put("other_link", "https://dx.doi.org/doi:10.7289/V55T3HGJ");
@@ -787,14 +787,14 @@ class CruiseControllerIT {
 
     array = objectMapper.createArrayNode();
     ObjectNode arrayObject = objectMapper.createObjectNode();
-    arrayObject.put("id", 380);
+    arrayObject.put("id", testUtils.getPlatformId("Sea Biskit"));
     arrayObject.put("platform", "Sea Biskit");
     array.add(arrayObject);
     cruise.replace("platforms", array);
 
     array = objectMapper.createArrayNode();
     arrayObject = objectMapper.createObjectNode();
-    arrayObject.put("id", 3);
+    arrayObject.put("id", testUtils.getFacilityId("AOML"));
     arrayObject.put("facility_code", "AOML");
     arrayObject.put("facility", "NOAA-Atlantic Oceanographic and Meteorol. Lab");
     arrayObject.put("other_link", "https://dx.doi.org/doi:10.7289/V5VM498W");

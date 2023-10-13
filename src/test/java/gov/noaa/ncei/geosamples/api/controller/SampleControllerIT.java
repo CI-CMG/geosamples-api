@@ -203,7 +203,7 @@ class SampleControllerIT {
     expectedJson.put("items_per_page", 500);
 
     ObjectNode facility = objectMapper.createObjectNode();
-    facility.put("id", 3);
+    facility.put("id", testUtils.getFacilityId("AOML"));
     facility.put("facility", "NOAA-Atlantic Oceanographic and Meteorol. Lab");
     facility.put("facility_code", "AOML");
     facility.put("other_link", "https://dx.doi.org/doi:10.7289/V5VM498W");
@@ -237,7 +237,7 @@ class SampleControllerIT {
     items.add(sample);
 
     facility = objectMapper.createObjectNode();
-    facility.put("id", 16);
+    facility.put("id", testUtils.getFacilityId("USGSMP"));
     facility.put("facility", "USGS Pacific Coastal and Marine Science Center");
     facility.put("facility_code", "USGSMP");
     facility.put("other_link", "https://dx.doi.org/doi:10.7289/V55T3HGJ");
@@ -284,7 +284,7 @@ class SampleControllerIT {
     items.add(sample);
 
 
-    assertEquals(expectedJson, json);
+    assertEquals(objectMapper.readTree(expectedJson.toString()), objectMapper.readTree(json.toString()));
   }
 
   @Test
@@ -570,7 +570,7 @@ class SampleControllerIT {
 
 
     ObjectNode facility = objectMapper.createObjectNode();
-    facility.put("id", 3);
+    facility.put("id", testUtils.getFacilityId("AOML"));
     facility.put("facility", "NOAA-Atlantic Oceanographic and Meteorol. Lab");
     facility.put("facility_code", "AOML");
     facility.put("other_link", "https://dx.doi.org/doi:10.7289/V5VM498W");
@@ -612,7 +612,7 @@ class SampleControllerIT {
     items.add(sample);
 
     facility = objectMapper.createObjectNode();
-    facility.put("id", 16);
+    facility.put("id", testUtils.getFacilityId("USGSMP"));
     facility.put("facility", "USGS Pacific Coastal and Marine Science Center");
     facility.put("facility_code", "USGSMP");
     facility.put("other_link", "https://dx.doi.org/doi:10.7289/V55T3HGJ");
@@ -678,7 +678,7 @@ class SampleControllerIT {
     expectedJson.put("items_per_page", 500);
 
 
-    assertEquals(expectedJson, json);
+    assertEquals(objectMapper.readTree(expectedJson.toString()), objectMapper.readTree(json.toString()));
   }
 
   @Test

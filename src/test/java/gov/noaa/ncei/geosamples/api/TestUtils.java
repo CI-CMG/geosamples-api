@@ -150,6 +150,11 @@ public class TestUtils {
         facilityCode);
   }
 
+  public Long getPlatformId(String platform)  {
+    return jdbcTemplate.queryForObject("select ID from " + properties.getPlatformTable() + " where PLATFORM = ?", Long.class,
+        platform);
+  }
+
   public void insertSample(String cruiseName, int cruiseYear, String legName, String facilityCode, String platform, Sample sample) {
     tx.executeWithoutResult(ts -> {
       Long facilityId = getFacilityId(facilityCode);

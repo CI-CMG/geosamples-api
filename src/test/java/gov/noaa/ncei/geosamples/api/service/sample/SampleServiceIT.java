@@ -835,7 +835,7 @@ class SampleServiceIT {
   public void findByPlatformId() throws Exception {
 
     ResponseEntity<String> httpResponse = restClient.exchange(
-        UriComponentsBuilder.fromPath("/api/samples/detail").queryParam("platform_id", "22").build().toString(),
+        UriComponentsBuilder.fromPath("/api/samples/detail").queryParam("platform_id", testUtils.getPlatformId("Explorer")).build().toString(),
         HttpMethod.GET,
         new HttpEntity<>(null),
         String.class
@@ -858,7 +858,7 @@ class SampleServiceIT {
   public void findByFacilityId() throws Exception {
 
     ResponseEntity<String> httpResponse = restClient.exchange(
-        UriComponentsBuilder.fromPath("/api/samples/detail").queryParam("facility_id", "4").build().toString(),
+        UriComponentsBuilder.fromPath("/api/samples/detail").queryParam("facility_id", testUtils.getFacilityId("OER")).build().toString(),
         HttpMethod.GET,
         new HttpEntity<>(null),
         String.class
