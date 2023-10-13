@@ -221,7 +221,7 @@ class CruiseControllerIT {
 
     array = objectMapper.createArrayNode();
     ObjectNode arrayObject = objectMapper.createObjectNode();
-    arrayObject.put("id", 152);
+    arrayObject.put("id", 380);
     arrayObject.put("platform", "Sea Biskit");
     array.add(arrayObject);
     cruise.replace("platforms", array);
@@ -247,14 +247,14 @@ class CruiseControllerIT {
 
     array = objectMapper.createArrayNode();
     arrayObject = objectMapper.createObjectNode();
-    arrayObject.put("id", 187);
+    arrayObject.put("id", 415);
     arrayObject.put("platform", "Susie Q");
     array.add(arrayObject);
     cruise.replace("platforms", array);
 
     array = objectMapper.createArrayNode();
     arrayObject = objectMapper.createObjectNode();
-    arrayObject.put("id", 22);
+    arrayObject.put("id", 16);
     arrayObject.put("facility_code", "USGSMP");
     arrayObject.put("facility", "USGS Pacific Coastal and Marine Science Center");
     arrayObject.put("other_link", "https://dx.doi.org/doi:10.7289/V55T3HGJ");
@@ -787,7 +787,7 @@ class CruiseControllerIT {
 
     array = objectMapper.createArrayNode();
     ObjectNode arrayObject = objectMapper.createObjectNode();
-    arrayObject.put("id", 152);
+    arrayObject.put("id", 380);
     arrayObject.put("platform", "Sea Biskit");
     array.add(arrayObject);
     cruise.replace("platforms", array);

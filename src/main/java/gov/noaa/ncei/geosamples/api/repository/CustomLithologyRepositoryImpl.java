@@ -57,7 +57,7 @@ public class CustomLithologyRepositoryImpl implements CustomLithologyRepository 
     return (long) page * (long) pageSize;
   }
 
-  private Long count(
+  private Long countLith(
       GeosampleSearchParameterObject searchParameters,
       SpecificationFactory<CuratorsIntervalEntity> specFactory) {
     CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -92,6 +92,47 @@ public class CustomLithologyRepositoryImpl implements CustomLithologyRepository 
 
   }
 
+  private Long countComp(
+      GeosampleSearchParameterObject searchParameters,
+      SpecificationFactory<CuratorsIntervalEntity> specFactory) {
+    CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+    CriteriaQuery<Long> q = cb.createQuery(Long.class).distinct(true);
+    Root<CuratorsLithologyEntity> r = q.from(CuratorsLithologyEntity.class);
+
+    compWhere(searchParameters, r, cb, q, specFactory);
+
+    return entityManager.createQuery(q.select(cb.count(r))).getSingleResult();
+  }
+
+  private void compWhere(
+      GeosampleSearchParameterObject searchParameters,
+      Root<CuratorsLithologyEntity> r,
+      CriteriaBuilder cb,
+      CriteriaQuery<?> q,
+      SpecificationFactory<CuratorsIntervalEntity> specFactory) {
+
+    Subquery<CuratorsIntervalEntity> subCq = q.subquery(CuratorsIntervalEntity.class);
+    Root<CuratorsIntervalEntity> ci = subCq.from(CuratorsIntervalEntity.class);
+
+    Joiner<CuratorsIntervalEntity> joiner = specFactory.getJoins(ci);
+    List<Predicate> specs = new ArrayList<>();
+    specs.add(cb.and(where(searchParameters, ci, cb, q, joiner, null).toArray(new Predicate[0])));
+    specs.add(cb.or(
+        cb.equal(ci.get(CuratorsIntervalEntity_.COMP1), r.get(CuratorsLithologyEntity_.LITHOLOGY)),
+        cb.equal(ci.get(CuratorsIntervalEntity_.COMP2), r.get(CuratorsLithologyEntity_.LITHOLOGY)),
+        cb.equal(ci.get(CuratorsIntervalEntity_.COMP3), r.get(CuratorsLithologyEntity_.LITHOLOGY)),
+        cb.equal(ci.get(CuratorsIntervalEntity_.COMP4), r.get(CuratorsLithologyEntity_.LITHOLOGY)),
+        cb.equal(ci.get(CuratorsIntervalEntity_.COMP5), r.get(CuratorsLithologyEntity_.LITHOLOGY)),
+        cb.equal(ci.get(CuratorsIntervalEntity_.COMP6), r.get(CuratorsLithologyEntity_.LITHOLOGY))
+    ));
+
+    subCq.select(ci.get(CuratorsIntervalEntity_.ID));
+    subCq.where(cb.and(specs.toArray(new Predicate[0])));
+
+    q.where(cb.exists(subCq));
+
+  }
+
   @Override
   public Page<String> getLithologies(
       GeosampleSearchParameterObject searchParameters,
@@ -111,6 +152,28 @@ public class CustomLithologyRepositoryImpl implements CustomLithologyRepository 
     typedQuery.setMaxResults(pageSize);
 
     return PageableExecutionUtils.getPage(typedQuery.getResultList(), Pageable.ofSize(pageSize).withPage(page),
-        () -> count(searchParameters, specFactory));
+        () -> countLith(searchParameters, specFactory));
+  }
+
+  @Override
+  public Page<String> getCompositions(
+      GeosampleSearchParameterObject searchParameters,
+      int page, int pageSize,
+      SpecificationFactory<CuratorsIntervalEntity> specFactory
+  ) {
+
+    CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+    CriteriaQuery<String> q = cb.createQuery(String.class).distinct(true);
+    Root<CuratorsLithologyEntity> r = q.from(CuratorsLithologyEntity.class);
+
+    compWhere(searchParameters, r, cb, q, specFactory);
+
+    TypedQuery<String> typedQuery = entityManager.createQuery(
+        q.select(r.get(CuratorsLithologyEntity_.LITHOLOGY)).orderBy(cb.asc(r.get(CuratorsLithologyEntity_.LITHOLOGY))));
+    typedQuery.setFirstResult((int) getOffset(page, pageSize));
+    typedQuery.setMaxResults(pageSize);
+
+    return PageableExecutionUtils.getPage(typedQuery.getResultList(), Pageable.ofSize(pageSize).withPage(page),
+        () -> countComp(searchParameters, specFactory));
   }
 }

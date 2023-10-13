@@ -102,16 +102,24 @@ public class AttributesController {
     return intervalService.searchMetamorphism(searchParams);
   }
 
-  
   @GetMapping(path = "/geologic_ages", produces = MediaType.APPLICATION_JSON_VALUE)
   public PagedItemsView<String> getAges(@ParameterObject @Valid GeosampleSearchParameterObject searchParams) {
     return intervalService.searchAges(searchParams);
   }
 
-  
   @GetMapping(path = "/platforms", produces = MediaType.APPLICATION_JSON_VALUE)
   public PagedItemsView<String> getPlatform(@ParameterObject @Valid GeosampleSearchParameterObject searchParams) {
     return sampleService.searchPlatform(searchParams);
+  }
+
+  @GetMapping(path = "/remarks", produces = MediaType.APPLICATION_JSON_VALUE)
+  public PagedItemsView<String> getRemarks(@ParameterObject @Valid GeosampleSearchParameterObject searchParams) {
+    return intervalService.searchRemarks(searchParams);
+  }
+
+  @GetMapping(path = "/compositions", produces = MediaType.APPLICATION_JSON_VALUE)
+  public PagedItemsView<String> getCompositions(@ParameterObject @Valid GeosampleSearchParameterObject searchParams) {
+    return intervalService.searchCompositions(searchParams);
   }
 
 

@@ -25,6 +25,22 @@ import org.springframework.web.util.UriComponentsBuilder;
 @ActiveProfiles("it")
 class FacilityControllerIT {
 
+  private static final String AOML_COMMENT = "<p><a href=\"http://www.aoml.noaa.gov/\" target=\"_top\">Atlantic Oceanographic and Meteorological Laboratories (AOML)</a>\n"
+      + "<br>(http://www.aoml.noaa.gov/)\n"
+      + "<br>Charles Featherstone\n"
+      + "<br>NOAA - Atlantic Oceanographic and Meteorological Laboratories\n"
+      + "<br>4301 Rickenbacker Causeway<br>Miami, FL  33149\n"
+      + "<br>(305)361-4401\n"
+      + "<br>(305)361-4392 (fax)\n"
+      + "<br><a href=\"mailto:charles.featherstone@noaa.gov\">charles.featherstone@noaa.gov</a>\n"
+      + "</p>\n"
+      + "<br>\n"
+      + "<br>\n"
+      + "<cite>Cite as: NOAA Atlantic Oceanographic and Meteorological Laboratories (AOML): Archive of data and information about the former AOML geosample collection. NOAA National Centers for Environmental Information. <a href=\"https://dx.doi.org/10.7289/V5VM498W\">doi:10.7289/V5VM498W</a> [access date]<cite> \n"
+      + "<br>\n"
+      + "<br>\n"
+      + "<p>AOML no longer maintains a core repository/samples are no longer available.</p>";
+
   @Autowired
   private TestRestTemplate restClient;
 
@@ -217,7 +233,7 @@ class FacilityControllerIT {
     facility.put("facility_code", "AOML");
     facility.put("other_link", "https://dx.doi.org/doi:10.7289/V5VM498W");
     facility.put("sample_count", 2);
-    facility.put("facility_comment", "AOML comment");
+    facility.put("facility_comment", AOML_COMMENT);
     items.add(facility);
 
     assertEquals(objectMapper.readTree(expectedJson.toString()), json);
@@ -730,7 +746,7 @@ class FacilityControllerIT {
     facility.put("facility", "NOAA-Atlantic Oceanographic and Meteorol. Lab");
     facility.put("facility_code", "AOML");
     facility.put("sample_count", 2);
-    facility.put("facility_comment", "AOML comment");
+    facility.put("facility_comment", AOML_COMMENT);
     facility.put("inst_code", "03");
     facility.put("addr1", "NOAA-AOML");
     facility.put("addr2", "4301 Rickenbacker Causeway");

@@ -11,4 +11,9 @@ public interface CustomLithologyRepository {
       GeosampleSearchParameterObject searchParameters,
       int page, int pageSize,
       SpecificationFactory<CuratorsIntervalEntity> specFactory);
+
+  Page<String> getCompositions(
+      GeosampleSearchParameterObject searchParameters,
+      int page, int pageSize,
+      SpecificationFactory<CuratorsIntervalEntity> specFactory);
 }

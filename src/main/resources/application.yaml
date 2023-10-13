@@ -62,7 +62,7 @@ spring:
     username:
     password:
   flyway:
-    locations: classpath:db/migration/{vendor}
+    locations: classpath:gov/noaa/ncei/mgg/geosamples/db/migration/{vendor}
     enabled: false
     baseline-on-migrate: true
     baseline-version: '000'

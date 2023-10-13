@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import gov.noaa.ncei.geosamples.api.TestUtils;
+import gov.noaa.ncei.geosamples.api.repository.CuratorsRemarkRepository;
 import java.util.Collections;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,6 +32,8 @@ public class AttributesControllerIT {
   @Autowired
   private ObjectMapper objectMapper;
 
+  @Autowired
+  private CuratorsRemarkRepository remarkRepository;
 
   @Autowired
   private TestUtils testUtils;
@@ -2163,6 +2166,293 @@ public class AttributesControllerIT {
     expectedJson.put("total_items", 1);
     expectedJson.put("items_per_page", 500);
     items.add("ash");
+
+    assertEquals(expectedJson, json);
+  }
+
+
+  @Test
+  public void testGetCompositions() throws Exception {
+    String cruiseName1 = "CRUISE_1";
+    int year1 = 2020;
+    String platform1 = "Sea Biskit";
+    String facility1 = "AOML";
+    String leg1 = "LEFT-1";
+    String leg2 = "RIGHT-1";
+
+    String cruiseName2 = "CRUISE_2";
+    int year2 = 2021;
+    String platform2 = "Susie Q";
+    String facility2 = "USGSMP";
+    String leg3 = "LEFT-2";
+    String leg4 = null;
+
+    testUtils.createBasicCruise(cruiseName1, year1, platform1, facility1, leg1, leg2);
+    testUtils.createBasicCruise(cruiseName2, year2, platform2, facility2, leg3, leg4);
+
+    Sample sample1 = new Sample();
+    sample1.setIgsn("igsn1");
+    sample1.setSample("sample1");
+    sample1.setPublish("Y");
+    sample1.setProvince("axial valley");
+    sample1.setLat(55.5);
+    sample1.setLon(66.6);
+    sample1.setDevice("trap, sediment");
+    sample1.setLake("blue");
+
+    Sample sample2 = new Sample();
+    sample2.setIgsn("igsn2");
+    sample2.setSample("sample2");
+    sample2.setPublish("Y");
+    sample2.setProvince("delta or cone");
+    sample2.setLat(55.5);
+    sample2.setLon(66.6);
+    sample2.setDevice("core, dart");
+    sample2.setLake("red");
+
+    testUtils.insertSample(cruiseName1, year1, leg1, facility1, platform1, sample1);
+    Interval interval1 = new Interval();
+    interval1.setInterval(1);
+    interval1.setLith1("terrigenous");
+    interval1.setLith2("evaporite");
+    interval1.setRockLith("sedimentary (pyroclastic)");
+    interval1.setText1("gravel");
+    interval1.setText2("sandy mud or ooze");
+    interval1.setComp1("calcareous, oolites");
+    interval1.setComp2("fish teeth");
+
+    Interval interval2 = new Interval();
+    interval2.setInterval(2);
+    interval2.setLith1("volcanics");
+    interval2.setText1("lapilli");
+
+
+    testUtils.insertInterval(cruiseName1, year1, sample1.getSample(), interval1);
+    testUtils.insertInterval(cruiseName1, year1, sample1.getSample(), interval2);
+
+    testUtils.insertSample(cruiseName1, year1, leg2, facility1, platform1, sample2);
+    Interval interval3 = new Interval();
+    interval3.setInterval(1);
+    interval3.setLith2("dolomite");
+    interval3.setText2("crusts");
+    interval3.setComp3("erratic rock");
+
+    Interval interval4 = new Interval();
+    interval4.setInterval(2);
+    interval4.setRockLith("igneous (extrusive/volcanic), latite");
+    interval4.setComp4("dolomite");
+
+    testUtils.insertInterval(cruiseName1, year1, sample2.getSample(), interval3);
+    testUtils.insertInterval(cruiseName1, year1, sample2.getSample(), interval4);
+
+    Sample sample3 = new Sample();
+    sample3.setIgsn("igsn3");
+    sample3.setSample("sample1");
+    sample3.setPublish("Y");
+    sample3.setProvince("fjord");
+    sample3.setLat(55.5);
+    sample3.setLon(66.6);
+    sample3.setDevice("core");
+    sample3.setLake("wet");
+
+    Sample sample4 = new Sample();
+    sample4.setIgsn("igsn4");
+    sample4.setSample("sample2");
+    sample4.setPublish("Y");
+    sample4.setProvince("estuary");
+    sample4.setLat(55.5);
+    sample4.setLon(66.6);
+    sample4.setDevice("probe");
+    sample4.setLake("dry");
+
+    Sample sample5 = new Sample();
+    sample5.setSample("sample3");
+    sample5.setPublish("Y");
+    sample5.setLat(55.5);
+    sample5.setLon(66.6);
+    sample5.setDevice("core, dart");
+
+    testUtils.insertSample(cruiseName2, year2, leg3, facility2, platform2, sample3);
+
+    Interval interval5 = new Interval();
+    interval5.setInterval(1);
+    interval5.setComp5("chert or porcelanite");
+
+    Interval interval6 = new Interval();
+    interval6.setInterval(2);
+    interval6.setLith1("phosphate");
+    interval6.setText1("ash");
+    interval6.setComp6("calcareous, pteropods");
+
+    testUtils.insertInterval(cruiseName2, year2, sample3.getSample(), interval5);
+    testUtils.insertInterval(cruiseName2, year2, sample3.getSample(), interval6);
+
+    testUtils.insertSample(cruiseName2, year2, leg4, facility2, platform2, sample4);
+    testUtils.insertSample(cruiseName2, year2, leg3, facility2, platform2, sample5);
+
+    ResponseEntity<String> response = restClient.exchange(
+        UriComponentsBuilder.fromPath("/api/compositions")
+            .build().toString(),
+        HttpMethod.GET,
+        new HttpEntity<>(null),
+        String.class
+    );
+    assertEquals(200, response.getStatusCode().value());
+
+    JsonNode json = objectMapper.readTree(response.getBody());
+    ObjectNode expectedJson = objectMapper.createObjectNode();
+    ArrayNode items = objectMapper.createArrayNode();
+    expectedJson.replace("items", items);
+    expectedJson.put("page", 1);
+    expectedJson.put("total_pages", 1);
+    expectedJson.put("total_items", 6);
+    expectedJson.put("items_per_page", 500);
+    items.add("calcareous, oolites");
+    items.add("calcareous, pteropods");
+    items.add("chert or porcelanite");
+    items.add("dolomite");
+    items.add("erratic rock");
+    items.add("fish teeth");
+
+
+    assertEquals(expectedJson, json);
+  }
+
+  @Test
+  public void testGetRemarks() throws Exception {
+    String cruiseName1 = "CRUISE_1";
+    int year1 = 2020;
+    String platform1 = "Sea Biskit";
+    String facility1 = "AOML";
+    String leg1 = "LEFT-1";
+    String leg2 = "RIGHT-1";
+
+    String cruiseName2 = "CRUISE_2";
+    int year2 = 2021;
+    String platform2 = "Susie Q";
+    String facility2 = "USGSMP";
+    String leg3 = "LEFT-2";
+    String leg4 = null;
+
+    testUtils.createBasicCruise(cruiseName1, year1, platform1, facility1, leg1, leg2);
+    testUtils.createBasicCruise(cruiseName2, year2, platform2, facility2, leg3, leg4);
+
+    Sample sample1 = new Sample();
+    sample1.setIgsn("igsn1");
+    sample1.setSample("sample1");
+    sample1.setPublish("Y");
+    sample1.setProvince("axial valley");
+    sample1.setLat(55.5);
+    sample1.setLon(66.6);
+    sample1.setDevice("trap, sediment");
+    sample1.setLake("blue");
+
+    Sample sample2 = new Sample();
+    sample2.setIgsn("igsn2");
+    sample2.setSample("sample2");
+    sample2.setPublish("Y");
+    sample2.setProvince("delta or cone");
+    sample2.setLat(55.5);
+    sample2.setLon(66.6);
+    sample2.setDevice("core, dart");
+    sample2.setLake("red");
+
+    testUtils.insertSample(cruiseName1, year1, leg1, facility1, platform1, sample1);
+    Interval interval1 = new Interval();
+    interval1.setInterval(1);
+    interval1.setLith1("terrigenous");
+    interval1.setLith2("evaporite");
+    interval1.setRockLith("sedimentary (pyroclastic)");
+    interval1.setText1("gravel");
+    interval1.setText2("sandy mud or ooze");
+    interval1.setRemark(remarkRepository.findByRemark("no glass").get().getId());
+
+    Interval interval2 = new Interval();
+    interval2.setInterval(2);
+    interval2.setLith1("volcanics");
+    interval2.setText1("lapilli");
+    interval2.setRemark(remarkRepository.findByRemark("notable Mn/Fe oxide coatings").get().getId());
+
+    testUtils.insertInterval(cruiseName1, year1, sample1.getSample(), interval1);
+    testUtils.insertInterval(cruiseName1, year1, sample1.getSample(), interval2);
+
+    testUtils.insertSample(cruiseName1, year1, leg2, facility1, platform1, sample2);
+    Interval interval3 = new Interval();
+    interval3.setInterval(1);
+    interval3.setLith2("dolomite");
+    interval3.setText2("crusts");
+    interval3.setRemark(remarkRepository.findByRemark("thin Mn/Fe oxide").get().getId());
+
+    Interval interval4 = new Interval();
+    interval4.setInterval(2);
+    interval4.setRockLith("igneous (extrusive/volcanic), latite");
+
+    testUtils.insertInterval(cruiseName1, year1, sample2.getSample(), interval3);
+    testUtils.insertInterval(cruiseName1, year1, sample2.getSample(), interval4);
+
+    Sample sample3 = new Sample();
+    sample3.setIgsn("igsn3");
+    sample3.setSample("sample1");
+    sample3.setPublish("Y");
+    sample3.setProvince("fjord");
+    sample3.setLat(55.5);
+    sample3.setLon(66.6);
+    sample3.setDevice("core");
+    sample3.setLake("wet");
+
+    Sample sample4 = new Sample();
+    sample4.setIgsn("igsn4");
+    sample4.setSample("sample2");
+    sample4.setPublish("Y");
+    sample4.setProvince("estuary");
+    sample4.setLat(55.5);
+    sample4.setLon(66.6);
+    sample4.setDevice("probe");
+    sample4.setLake("dry");
+
+    Sample sample5 = new Sample();
+    sample5.setSample("sample3");
+    sample5.setPublish("Y");
+    sample5.setLat(55.5);
+    sample5.setLon(66.6);
+    sample5.setDevice("core, dart");
+
+    testUtils.insertSample(cruiseName2, year2, leg3, facility2, platform2, sample3);
+
+    Interval interval5 = new Interval();
+    interval5.setInterval(1);
+
+    Interval interval6 = new Interval();
+    interval6.setInterval(2);
+    interval6.setLith1("phosphate");
+    interval6.setText1("ash");
+
+    testUtils.insertInterval(cruiseName2, year2, sample3.getSample(), interval5);
+    testUtils.insertInterval(cruiseName2, year2, sample3.getSample(), interval6);
+
+    testUtils.insertSample(cruiseName2, year2, leg4, facility2, platform2, sample4);
+    testUtils.insertSample(cruiseName2, year2, leg3, facility2, platform2, sample5);
+
+    ResponseEntity<String> response = restClient.exchange(
+        UriComponentsBuilder.fromPath("/api/remarks")
+            .build().toString(),
+        HttpMethod.GET,
+        new HttpEntity<>(null),
+        String.class
+    );
+    assertEquals(200, response.getStatusCode().value());
+
+    JsonNode json = objectMapper.readTree(response.getBody());
+    ObjectNode expectedJson = objectMapper.createObjectNode();
+    ArrayNode items = objectMapper.createArrayNode();
+    expectedJson.replace("items", items);
+    expectedJson.put("page", 1);
+    expectedJson.put("total_pages", 1);
+    expectedJson.put("total_items", 3);
+    expectedJson.put("items_per_page", 500);
+    items.add("no glass");
+    items.add("notable Mn/Fe oxide coatings");
+    items.add("thin Mn/Fe oxide");
 
     assertEquals(expectedJson, json);
   }

@@ -237,7 +237,7 @@ class SampleControllerIT {
     items.add(sample);
 
     facility = objectMapper.createObjectNode();
-    facility.put("id", 22);
+    facility.put("id", 16);
     facility.put("facility", "USGS Pacific Coastal and Marine Science Center");
     facility.put("facility_code", "USGSMP");
     facility.put("other_link", "https://dx.doi.org/doi:10.7289/V55T3HGJ");
@@ -612,7 +612,7 @@ class SampleControllerIT {
     items.add(sample);
 
     facility = objectMapper.createObjectNode();
-    facility.put("id", 22);
+    facility.put("id", 16);
     facility.put("facility", "USGS Pacific Coastal and Marine Science Center");
     facility.put("facility_code", "USGSMP");
     facility.put("other_link", "https://dx.doi.org/doi:10.7289/V55T3HGJ");
