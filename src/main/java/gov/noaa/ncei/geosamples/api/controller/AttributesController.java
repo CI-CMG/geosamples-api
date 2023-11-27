@@ -67,8 +67,8 @@ public class AttributesController {
   }
 
   
-  @GetMapping(path = "/lithologies", produces = MediaType.APPLICATION_JSON_VALUE)
-  public PagedItemsView<String> getLithologies(@ParameterObject @Valid GeosampleSearchParameterObject searchParams) {
+  @GetMapping(path = "/lithologic_compositions", produces = MediaType.APPLICATION_JSON_VALUE)
+  public PagedItemsView<String> getLithologicCompositions(@ParameterObject @Valid GeosampleSearchParameterObject searchParams) {
     return intervalService.searchLithologies(searchParams);
   }
 
@@ -115,11 +115,6 @@ public class AttributesController {
   @GetMapping(path = "/remarks", produces = MediaType.APPLICATION_JSON_VALUE)
   public PagedItemsView<String> getRemarks(@ParameterObject @Valid GeosampleSearchParameterObject searchParams) {
     return intervalService.searchRemarks(searchParams);
-  }
-
-  @GetMapping(path = "/compositions", produces = MediaType.APPLICATION_JSON_VALUE)
-  public PagedItemsView<String> getCompositions(@ParameterObject @Valid GeosampleSearchParameterObject searchParams) {
-    return intervalService.searchCompositions(searchParams);
   }
 
 

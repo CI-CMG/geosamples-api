@@ -162,20 +162,5 @@ public class IntervalService {
         .build();
   }
 
-  public PagedItemsView<String> searchCompositions(GeosampleSearchParameterObject searchParameters) {
-
-    int maxPerPage = searchParameters.getItemsPerPage();
-    int pageIndex = searchParameters.getPage() - 1;
-    Page<String> page = curatorsLithologyRepository.getCompositions(
-        searchParameters, pageIndex, maxPerPage, specificationFactory);
-
-    return new PagedItemsView.Builder<String>()
-        .withItemsPerPage(maxPerPage)
-        .withTotalPages(page.getTotalPages())
-        .withPage(page.getNumber() + 1)
-        .withTotalItems(page.getTotalElements())
-        .withItems(page.toList())
-        .build();
-  }
 
 }

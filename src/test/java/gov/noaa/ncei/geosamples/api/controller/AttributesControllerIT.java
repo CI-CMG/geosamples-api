@@ -1744,7 +1744,7 @@ public class AttributesControllerIT {
     testUtils.insertSample(cruiseName2, year2, leg3, facility2, platform2, sample5);
 
     ResponseEntity<String> response = restClient.exchange(
-        "/api/lithologies",
+        "/api/lithologic_compositions",
         HttpMethod.GET,
         new HttpEntity<>(null),
         String.class
@@ -1876,7 +1876,7 @@ public class AttributesControllerIT {
     testUtils.insertSample(cruiseName2, year2, leg3, facility2, platform2, sample5);
 
     ResponseEntity<String> response = restClient.exchange(
-        UriComponentsBuilder.fromPath("/api/lithologies")
+        UriComponentsBuilder.fromPath("/api/lithologic_compositions")
             .queryParam("cruise", cruiseName2)
             .build().toString(),
         HttpMethod.GET,
@@ -2291,7 +2291,7 @@ public class AttributesControllerIT {
     testUtils.insertSample(cruiseName2, year2, leg3, facility2, platform2, sample5);
 
     ResponseEntity<String> response = restClient.exchange(
-        UriComponentsBuilder.fromPath("/api/compositions")
+        UriComponentsBuilder.fromPath("/api/lithologic_compositions")
             .build().toString(),
         HttpMethod.GET,
         new HttpEntity<>(null),
@@ -2305,14 +2305,19 @@ public class AttributesControllerIT {
     expectedJson.replace("items", items);
     expectedJson.put("page", 1);
     expectedJson.put("total_pages", 1);
-    expectedJson.put("total_items", 6);
+    expectedJson.put("total_items", 10);
     expectedJson.put("items_per_page", 500);
     items.add("calcareous, oolites");
     items.add("calcareous, pteropods");
     items.add("chert or porcelanite");
     items.add("dolomite");
     items.add("erratic rock");
+    items.add("evaporite");
     items.add("fish teeth");
+    items.add("phosphate");
+    items.add("terrigenous");
+    items.add("volcanics");
+
 
 
     assertEquals(expectedJson, json);
