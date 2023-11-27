@@ -1145,13 +1145,13 @@
         }
       }
     },
-    "/lithologies": {
+    "/lithologic_compositions": {
       "get": {
         "tags": [
           "geosamples"
         ],
-        "summary": "Find lithology values used in the IMLGS",
-        "operationId": "getLithologies",
+        "summary": "Find lithology and composition values used in the IMLGS",
+        "operationId": "getLithologicCompositions",
         "parameters": [
           {
             "name": "repository",
