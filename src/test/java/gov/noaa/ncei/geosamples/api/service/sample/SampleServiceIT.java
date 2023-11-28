@@ -495,7 +495,7 @@ class SampleServiceIT {
   public void findByLithology() throws Exception {
 
     ResponseEntity<String> httpResponse = restClient.exchange(
-        UriComponentsBuilder.fromPath("/api/samples/detail").queryParam("lithology", "zeolites").build().toString(),
+        UriComponentsBuilder.fromPath("/api/samples/detail").queryParam("lithologic_composition", "zeolites").build().toString(),
         HttpMethod.GET,
         new HttpEntity<>(null),
         String.class
@@ -540,7 +540,7 @@ class SampleServiceIT {
   public void testFindByComposition() throws Exception {
 
     ResponseEntity<String> httpResponse = restClient.exchange(
-        UriComponentsBuilder.fromPath("/api/samples/detail").queryParam("composition", "glauconite").build().toString(),
+        UriComponentsBuilder.fromPath("/api/samples/detail").queryParam("lithologic_composition", "glauconite").build().toString(),
         HttpMethod.GET,
         new HttpEntity<>(null),
         String.class
