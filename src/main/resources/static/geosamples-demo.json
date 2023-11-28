@@ -516,7 +516,7 @@
             }
           },
           {
-            "name": "lithology",
+            "name": "lithology_composition",
             "in": "query",
             "required": false,
             "schema": {
@@ -1236,7 +1236,7 @@
             }
           },
           {
-            "name": "lithology",
+            "name": "lithology_composition",
             "in": "query",
             "required": false,
             "schema": {
@@ -1736,7 +1736,7 @@
           "igsn": {
             "type": "string"
           },
-          "lithology": {
+          "lithology_composition": {
             "type": "string"
           },
           "texture": {
