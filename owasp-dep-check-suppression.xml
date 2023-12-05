@@ -52,4 +52,25 @@
     <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson\-core@.*$</packageUrl>
     <cve>CVE-2022-45688</cve>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: spring-boot-starter-thymeleaf-2.7.18.jar
+   ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework\.boot/spring\-boot\-starter\-thymeleaf@.*$</packageUrl>
+    <cve>CVE-2023-38286</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: thymeleaf-extras-java8time-3.0.4.RELEASE.jar
+   ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.thymeleaf\.extras/thymeleaf\-extras\-java8time@.*$</packageUrl>
+    <cve>CVE-2023-38286</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: jackson-core-2.13.5.jar
+   ]]></notes>
+    <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson\-core@.*$</packageUrl>
+    <cve>CVE-2023-5072</cve>
+  </suppress>
 </suppressions>
