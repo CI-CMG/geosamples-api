@@ -20,6 +20,7 @@ import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsSampleTsqpEntity_;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsStorageMethEntity_;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.PlatformMasterEntity_;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -83,6 +84,15 @@ abstract class SampleBaseService<V, D> {
     lake
   }
 
+  private static final List<String> DEFAULT_SORT = Arrays.asList(
+      "sample:asc",
+      "platform:asc",
+      "facility_code:asc",
+      "cruise:asc",
+      "leg:asc",
+      "imlgs:asc"
+  );
+
   public PagedItemsView<V> search(GeosampleSearchParameterObject searchParameters) {
 
     int maxPerPage = searchParameters.getItemsPerPage();
@@ -92,6 +102,9 @@ abstract class SampleBaseService<V, D> {
       HibernateCriteriaBuilder hcb = (HibernateCriteriaBuilder) cb;
       List<Order> orders = new ArrayList<>();
       List<String> definedSorts = new ArrayList<>(searchParameters.getOrder());
+      if (definedSorts.isEmpty()) {
+        definedSorts = new ArrayList<>(DEFAULT_SORT);
+      }
       if (!definedSorts.contains("imlgs:asc") && !definedSorts.contains("imlgs:desc")) {
         definedSorts.add("imlgs:asc");
       }
