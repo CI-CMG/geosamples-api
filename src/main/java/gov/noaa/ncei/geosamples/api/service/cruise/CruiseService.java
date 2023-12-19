@@ -64,12 +64,8 @@ public class CruiseService {
       "id:asc"
   );
 
-  public PagedItemsView<CruiseView> search(GeosampleSearchParameterObject searchParameters) {
-
-    int maxPerPage = searchParameters.getItemsPerPage();
-    int pageIndex = searchParameters.getPage() - 1;
-
-    SortBuilder<CuratorsCruiseEntity> sortBuilder = (r, cb, j) -> {
+  private static SortBuilder<CuratorsCruiseEntity> sortBuilder(GeosampleSearchParameterObject searchParameters) {
+    return  (r, cb, j) -> {
       HibernateCriteriaBuilder hcb = (HibernateCriteriaBuilder) cb;
       List<Order> orders = new ArrayList<>();
       List<String> definedSorts = new ArrayList<>(searchParameters.getOrder());
@@ -111,6 +107,14 @@ public class CruiseService {
       });
       return orders;
     };
+  }
+
+  public PagedItemsView<CruiseView> search(GeosampleSearchParameterObject searchParameters) {
+
+    int maxPerPage = searchParameters.getItemsPerPage();
+    int pageIndex = searchParameters.getPage() - 1;
+
+    SortBuilder<CuratorsCruiseEntity> sortBuilder = sortBuilder(searchParameters);
 
     Page<CuratorsCruiseEntity> page = curatorsCruiseRepository.searchParameters(
         searchParameters,
@@ -133,12 +137,15 @@ public class CruiseService {
 
     int maxPerPage = searchParameters.getItemsPerPage();
     int pageIndex = searchParameters.getPage() - 1;
+
+    SortBuilder<CuratorsCruiseEntity> sortBuilder = sortBuilder(searchParameters);
+
     Page<CuratorsCruiseEntity> page = curatorsCruiseRepository.searchParameters(
         searchParameters,
         pageIndex, maxPerPage,
         CuratorsCruiseEntity.class,
         (r, cb, j) -> r,
-        (r, cb, j) -> Arrays.asList(cb.asc(r.get(CuratorsCruiseEntity_.CRUISE_NAME)), cb.asc(r.get(CuratorsCruiseEntity_.YEAR))),
+        sortBuilder,
         specificationFactory);
 
     return new PagedItemsView.Builder<CruiseNameView>()
