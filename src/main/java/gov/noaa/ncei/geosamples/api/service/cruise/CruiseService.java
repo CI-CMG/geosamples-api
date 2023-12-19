@@ -4,6 +4,8 @@ import gov.noaa.ncei.geosamples.api.error.ApiError;
 import gov.noaa.ncei.geosamples.api.error.ApiException;
 import gov.noaa.ncei.geosamples.api.model.GeosampleSearchParameterObject;
 import gov.noaa.ncei.geosamples.api.repository.CuratorsCruiseRepository;
+import gov.noaa.ncei.geosamples.api.repository.CustomRepositoryImpl.SortBuilder;
+import gov.noaa.ncei.geosamples.api.service.SortDirection;
 import gov.noaa.ncei.geosamples.api.service.ViewTransformers;
 import gov.noaa.ncei.geosamples.api.view.CountView;
 import gov.noaa.ncei.geosamples.api.view.CruiseLinkDetailView;
@@ -12,8 +14,13 @@ import gov.noaa.ncei.geosamples.api.view.CruiseView;
 import gov.noaa.ncei.geosamples.api.view.PagedItemsView;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsCruiseEntity;
 import gov.noaa.ncei.mgg.geosamples.ingest.jpa.entity.CuratorsCruiseEntity_;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
+import javax.persistence.criteria.Order;
+import org.hibernate.query.criteria.HibernateCriteriaBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -45,17 +52,72 @@ public class CruiseService {
     return new CountView(curatorsCruiseRepository.count(searchParameters, specificationFactory));
   }
 
+  public enum CruiseSortField {
+    id,
+    cruise,
+    year
+  }
+
+  private static final List<String> DEFAULT_SORT = Arrays.asList(
+      "cruise:asc",
+      "year:asc",
+      "id:asc"
+  );
 
   public PagedItemsView<CruiseView> search(GeosampleSearchParameterObject searchParameters) {
 
     int maxPerPage = searchParameters.getItemsPerPage();
     int pageIndex = searchParameters.getPage() - 1;
+
+    SortBuilder<CuratorsCruiseEntity> sortBuilder = (r, cb, j) -> {
+      HibernateCriteriaBuilder hcb = (HibernateCriteriaBuilder) cb;
+      List<Order> orders = new ArrayList<>();
+      List<String> definedSorts = new ArrayList<>(searchParameters.getOrder());
+      if (definedSorts.isEmpty()) {
+        definedSorts = new ArrayList<>(DEFAULT_SORT);
+      }
+      if (!definedSorts.contains("id:asc") && !definedSorts.contains("id:desc")) {
+        definedSorts.add("id:asc");
+      }
+      definedSorts.forEach(definedSort -> {
+        String[] parts = definedSort.split(":");
+        CruiseSortField field = CruiseSortField.valueOf(parts[0]);
+        SortDirection direction = SortDirection.valueOf(parts[1].toLowerCase(Locale.ENGLISH));
+        switch (field) {
+          case id:
+            if (direction == SortDirection.asc) {
+              orders.add(hcb.asc(r.get(CuratorsCruiseEntity_.ID), false));
+            } else {
+              orders.add(hcb.desc(r.get(CuratorsCruiseEntity_.ID), false));
+            }
+            break;
+          case cruise:
+            if (direction == SortDirection.asc) {
+              orders.add(hcb.asc(hcb.lower(r.get(CuratorsCruiseEntity_.CRUISE_NAME)), false));
+            } else {
+              orders.add(hcb.desc(hcb.lower(r.get(CuratorsCruiseEntity_.CRUISE_NAME)), false));
+            }
+            break;
+          case year:
+            if (direction == SortDirection.asc) {
+              orders.add(hcb.asc(r.get(CuratorsCruiseEntity_.YEAR), false));
+            } else {
+              orders.add(hcb.desc(r.get(CuratorsCruiseEntity_.YEAR), false));
+            }
+            break;
+          default:
+            throw new IllegalStateException("Unsupported sort field: " + field);
+        }
+      });
+      return orders;
+    };
+
     Page<CuratorsCruiseEntity> page = curatorsCruiseRepository.searchParameters(
         searchParameters,
         pageIndex, maxPerPage,
         CuratorsCruiseEntity.class,
         (r, cb, j) -> r,
-        (r, cb, j) -> Arrays.asList(cb.asc(r.get(CuratorsCruiseEntity_.CRUISE_NAME)), cb.asc(r.get(CuratorsCruiseEntity_.YEAR))),
+        sortBuilder,
         specificationFactory);
 
     return new PagedItemsView.Builder<CruiseView>()

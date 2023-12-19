@@ -193,6 +193,7 @@ class CruiseControllerIT {
 
     ResponseEntity<String> response = restClient.exchange(
         UriComponentsBuilder.fromPath("/api/cruises/detail")
+            .queryParam("order", "year:desc")
             .build().toString(),
         HttpMethod.GET,
         new HttpEntity<>(null),
@@ -210,43 +211,19 @@ class CruiseControllerIT {
     expectedJson.put("total_items", 2);
     expectedJson.put("items_per_page", 500);
 
+
+
     ObjectNode cruise = objectMapper.createObjectNode();
-    cruise.put("id", testUtils.getCruiseId(cruiseName1, year1));
-    cruise.put("year", year1);
-    cruise.put("cruise", "CRUISE_1");
-    ArrayNode array = objectMapper.createArrayNode();
-    array.add("LEFT-1");
-    array.add("RIGHT-1");
-    cruise.replace("legs", array);
-
-    array = objectMapper.createArrayNode();
-    ObjectNode arrayObject = objectMapper.createObjectNode();
-    arrayObject.put("id", testUtils.getPlatformId("Sea Biskit"));
-    arrayObject.put("platform", "Sea Biskit");
-    array.add(arrayObject);
-    cruise.replace("platforms", array);
-
-    array = objectMapper.createArrayNode();
-    arrayObject = objectMapper.createObjectNode();
-    arrayObject.put("id", testUtils.getFacilityId("AOML"));
-    arrayObject.put("facility_code", "AOML");
-    arrayObject.put("facility", "NOAA-Atlantic Oceanographic and Meteorol. Lab");
-    arrayObject.put("other_link", "https://dx.doi.org/doi:10.7289/V5VM498W");
-    array.add(arrayObject);
-    cruise.replace("facilities", array);
-    items.add(cruise);
-
-    cruise = objectMapper.createObjectNode();
     cruise.put("id", testUtils.getCruiseId(cruiseName2, year2));
     cruise.put("year", year2);
     cruise.put("cruise", "CRUISE_2");
-    array = objectMapper.createArrayNode();
+    ArrayNode array = objectMapper.createArrayNode();
     array.add("LEFT-2");
     cruise.replace("legs", array);
 
 
     array = objectMapper.createArrayNode();
-    arrayObject = objectMapper.createObjectNode();
+    ObjectNode arrayObject = objectMapper.createObjectNode();
     arrayObject.put("id", testUtils.getPlatformId("Susie Q"));
     arrayObject.put("platform", "Susie Q");
     array.add(arrayObject);
@@ -261,6 +238,32 @@ class CruiseControllerIT {
     array.add(arrayObject);
     cruise.replace("facilities", array);
 
+    items.add(cruise);
+
+    cruise = objectMapper.createObjectNode();
+    cruise.put("id", testUtils.getCruiseId(cruiseName1, year1));
+    cruise.put("year", year1);
+    cruise.put("cruise", "CRUISE_1");
+    array = objectMapper.createArrayNode();
+    array.add("LEFT-1");
+    array.add("RIGHT-1");
+    cruise.replace("legs", array);
+
+    array = objectMapper.createArrayNode();
+    arrayObject = objectMapper.createObjectNode();
+    arrayObject.put("id", testUtils.getPlatformId("Sea Biskit"));
+    arrayObject.put("platform", "Sea Biskit");
+    array.add(arrayObject);
+    cruise.replace("platforms", array);
+
+    array = objectMapper.createArrayNode();
+    arrayObject = objectMapper.createObjectNode();
+    arrayObject.put("id", testUtils.getFacilityId("AOML"));
+    arrayObject.put("facility_code", "AOML");
+    arrayObject.put("facility", "NOAA-Atlantic Oceanographic and Meteorol. Lab");
+    arrayObject.put("other_link", "https://dx.doi.org/doi:10.7289/V5VM498W");
+    array.add(arrayObject);
+    cruise.replace("facilities", array);
     items.add(cruise);
 
     assertEquals(objectMapper.readTree(expectedJson.toString()), json);

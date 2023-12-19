@@ -16,13 +16,7 @@ import org.locationtech.jts.geom.Geometry;
 
 public class GeosampleSearchParameterObject implements PagingParameters {
 
-  private static final List<String> DEFAULT_SORT = Arrays.asList(
-      "sample:asc",
-      "platform:asc",
-      "facility_code:asc",
-      "cruise:asc",
-      "leg:asc"
-  );
+
 
 
   private String repository;
@@ -99,7 +93,7 @@ public class GeosampleSearchParameterObject implements PagingParameters {
   @Max(2000)
   @Parameter(name = "items_per_page")
   private int itemsPerPage;
-  private List<String> order = DEFAULT_SORT;
+  private List<String> order;
 
   @ConstructorProperties({
       "repository",
@@ -198,7 +192,7 @@ public class GeosampleSearchParameterObject implements PagingParameters {
     this.page = page == null ? 1 : page;
     this.itemsPerPage = itemsPerPage == null ? 500 : itemsPerPage;
     this.startDateBeginsWith = startDateBeginsWith;
-    this.order = order == null || order.isEmpty() ? DEFAULT_SORT : new ArrayList<>(order);
+    this.order = order == null ? new ArrayList<>(0) : new ArrayList<>(order);
     this.aoi = areaOfInterest;
   }
 
@@ -465,8 +459,8 @@ public class GeosampleSearchParameterObject implements PagingParameters {
 
   @Override
   public void setOrder(List<String> order) {
-    if (order == null || order.isEmpty()) {
-      order = DEFAULT_SORT;
+    if (order == null) {
+      order = new ArrayList<>(0);
     }
     this.order = new ArrayList<>(order);
   }
