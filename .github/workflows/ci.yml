@@ -35,3 +35,39 @@ jobs:
           --header 'Accept: application/vnd.github+json' \
           --header "Authorization: token ${{ secrets.RELEASE_PAT }}" \
           --data @dependency-action.json
+      - id: version
+        run: |
+          echo "version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> "$GITHUB_OUTPUT"
+          echo "version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> "$GITHUB_ENV"
+      - name: Upload Jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: jar
+          path: "target/geosamples-api-${{ env.version }}-exe.jar"
+      - name: Upload Zip
+        uses: actions/upload-artifact@v4
+        with:
+          name: zip
+          path: "target/geosamples-api-${{ env.version }}.zip"
+      - name: Upload Tarball
+        uses: actions/upload-artifact@v4
+        with:
+          name: tar
+          path: "target/geosamples-api-${{ env.version }}.tar.gz"
+  release:
+    needs:
+      - build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+      - run: mkdir release
+      - run: cp jar/* release/geosamples-api-${{ needs.build.outputs.version }}-exe.jar
+      - run: cp zip/* release/geosamples-api-${{ needs.build.outputs.version }}.zip
+      - run: cp tar/* release/geosamples-api-${{ needs.build.outputs.version }}.tar.gz
+      - name: Update branch release
+        uses: eine/tip@master
+        with:
+          tag: ${{ inputs.is_tag == true && inputs.ref || format('{0}-latest', inputs.ref)  }}
+          rm: true
+          token: ${{ secrets.RELEASE_PAT }}
+          files: release/*
