@@ -9,29 +9,102 @@
     <relativePath />
   </parent>
 
-  <groupId>gov.noaa.ncei.geosamples</groupId>
+  <groupId>io.github.ci-cmg.cruise-pack</groupId>
   <artifactId>geosamples-api</artifactId>
-  <version>2.4.0-SNAPSHOT</version>
+  <version>3.0.0-SNAPSHOT</version>
 
-  <name>geosamples</name>
-  <description>GeoSamples API</description>
+  <name>${project.groupId}:${project.artifactId}</name>
+  <description>
+    A Spring Boot application running the read-only API for the IMLGS / Geosamples database
+  </description>
+  <url>https://github.com/CI-CMG/geosamples-api</url>
+
+  <licenses>
+    <license>
+      <name>MIT License</name>
+      <url>http://www.opensource.org/licenses/mit-license.php</url>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <name>CIRES Coastal and Marine Geophysics / Marine Geology and Geophysics Developers</name>
+      <organization>CIRES</organization>
+      <organizationUrl>https://github.com/CI-CMG</organizationUrl>
+    </developer>
+  </developers>
 
   <scm>
-    <connection>scm:git:git@github.com:CI-CMG/geosamples-api.git</connection>
-    <developerConnection>scm:git:git@github.com:CI-CMG/geosamples-api.git</developerConnection>
+    <connection>scm:git:https://github.com/CI-CMG/geosamples-api.git</connection>
+    <developerConnection>scm:git:https://github.com/CI-CMG/geosamples-api.git</developerConnection>
     <url>https://github.com/CI-CMG/geosamples-api</url>
     <tag>HEAD</tag>
   </scm>
+
+  <distributionManagement>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+  </distributionManagement>
 
   <properties>
     <maven.compiler.release>8</maven.compiler.release>
     <java.version>8</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <javadoc.version>3.11.2</javadoc.version>
+    <jacoco.version>0.8.12</jacoco.version>
+    <git.username />
+    <git.password />
+    <docker.showLogs>true</docker.showLogs>
 <!--    security vulnerablity updates-->
     <snakeyaml.version>1.33</snakeyaml.version>
     <thymeleaf.version>3.1.2.RELEASE</thymeleaf.version>
   </properties>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>${javadoc.version}</version>
+      </plugin>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>${jacoco.version}</version>
+      </plugin>
+    </plugins>
+  </reporting>
+
+  <repositories>
+    <repository>
+      <id>central</id>
+      <name>Central Repository</name>
+      <url>https://repo.maven.apache.org/maven2</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+        <checksumPolicy>fail</checksumPolicy>
+      </releases>
+    </repository>
+    <!-- Maven Central Snapshots -->
+    <repository>
+      <id>ossrh</id>
+      <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>always</updatePolicy>
+      </snapshots>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+    </repository>
+  </repositories>
 
   <dependencyManagement>
     <dependencies>
@@ -112,9 +185,9 @@
     </dependency>
 
     <dependency>
-      <groupId>gov.noaa.ncei.mgg.geology</groupId>
+      <groupId>io.github.ci-cmg.cruise-pack</groupId>
       <artifactId>geosamples-ingest-jpa</artifactId>
-      <version>1.5.0</version>
+      <version>2.0.0</version>
     </dependency>
     <dependency>
       <groupId>org.hibernate</groupId>
@@ -195,18 +268,91 @@
       <plugins>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.13.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>3.5.2</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-failsafe-plugin</artifactId>
+          <version>3.5.2</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-antrun-plugin</artifactId>
+          <version>3.1.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-release-plugin</artifactId>
+          <version>3.1.1</version>
+        </plugin>
+        <plugin>
+          <groupId>pl.project13.maven</groupId>
+          <artifactId>git-commit-id-plugin</artifactId>
+          <version>4.9.10</version>
+        </plugin>
+        <plugin>
+          <groupId>org.jacoco</groupId>
+          <artifactId>jacoco-maven-plugin</artifactId>
+          <version>${jacoco.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-source-plugin</artifactId>
+          <version>3.3.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-site-plugin</artifactId>
+          <version>3.21.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-project-info-reports-plugin</artifactId>
+          <version>3.8.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>${javadoc.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>com.github.spotbugs</groupId>
+          <artifactId>spotbugs-maven-plugin</artifactId>
+          <version>4.8.6.5</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>3.3.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.simplify4u.plugins</groupId>
+          <artifactId>sign-maven-plugin</artifactId>
+          <version>1.1.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-clean-plugin</artifactId>
           <version>3.2.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-resources-plugin</artifactId>
-          <version>3.3.0</version>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>3.0.0</version>
+          <configuration>
+            <deployAtEnd>true</deployAtEnd>
+          </configuration>
         </plugin>
         <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.10.1</version>
+          <groupId>org.sonatype.plugins</groupId>
+          <artifactId>nexus-staging-maven-plugin</artifactId>
+          <version>1.7.0</version>
         </plugin>
         <plugin>
           <groupId>com.github.eirslett</groupId>
@@ -220,78 +366,14 @@
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.22.2</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-failsafe-plugin</artifactId>
-          <version>2.22.2</version>
-        </plugin>
-        <plugin>
-          <groupId>com.github.spotbugs</groupId>
-          <artifactId>spotbugs-maven-plugin</artifactId>
-          <version>4.8.2.0</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-javadoc-plugin</artifactId>
-          <version>3.4.1</version>
-        </plugin>
-        <plugin>
-          <groupId>org.owasp</groupId>
-          <artifactId>dependency-check-maven</artifactId>
-          <version>7.2.1</version>
-        </plugin>
-        <plugin>
-          <groupId>org.jacoco</groupId>
-          <artifactId>jacoco-maven-plugin</artifactId>
-          <version>0.8.8</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-release-plugin</artifactId>
-          <version>2.5.3</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-assembly-plugin</artifactId>
           <version>3.4.2</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-deploy-plugin</artifactId>
-          <version>3.0.0</version>
-          <configuration>
-            <deployAtEnd>true</deployAtEnd>
-          </configuration>
         </plugin>
       </plugins>
     </pluginManagement>
 
     <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-resources-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>dockerfile</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${basedir}/target</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>src/main/docker</directory>
-                  <filtering>true</filtering>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
@@ -304,6 +386,93 @@
           </execution>
         </executions>
       </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.simplify4u.plugins</groupId>
+        <artifactId>sign-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>sign</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.sonatype.plugins</groupId>
+        <artifactId>nexus-staging-maven-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <serverId>ossrh</serverId>
+          <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
+          <autoReleaseAfterClose>true</autoReleaseAfterClose>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <configuration>
+          <autoVersionSubmodules>true</autoVersionSubmodules>
+          <useReleaseProfile>false</useReleaseProfile>
+          <releaseProfiles>release,site-publish</releaseProfiles>
+          <goals>deploy site</goals>
+          <tagNameFormat>v@{project.version}</tagNameFormat>
+          <arguments>-DskipTests -Dgit.username=${git.username} -Dgit.password=${git.password}</arguments>
+          <username>${git.username}</username>
+          <password>${git.password}</password>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>default-prepare-agent</id>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>report</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>report</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>com.github.spotbugs</groupId>
+        <artifactId>spotbugs-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <excludeFilterFile>spotbugs-exclude.xml</excludeFilterFile>
+        </configuration>
+      </plugin>
+
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
@@ -312,24 +481,7 @@
           <layout>ZIP</layout>
         </configuration>
       </plugin>
-      <plugin>
-        <groupId>org.jacoco</groupId>
-        <artifactId>jacoco-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>prepare-agent</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>report</id>
-            <phase>prepare-package</phase>
-            <goals>
-              <goal>report</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
@@ -350,55 +502,141 @@
           </execution>
         </executions>
       </plugin>
-      <plugin>
-        <groupId>com.github.spotbugs</groupId>
-        <artifactId>spotbugs-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>check</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <excludeFilterFile>spotbugs-exclude.xml</excludeFilterFile>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-release-plugin</artifactId>
-        <configuration>
-          <autoVersionSubmodules>true</autoVersionSubmodules>
-          <useReleaseProfile>false</useReleaseProfile>
-          <goals>deploy</goals>
-          <tagNameFormat>v@{project.version}</tagNameFormat>
-          <arguments>-Pdep-check -Pit</arguments>
-        </configuration>
-      </plugin>
+
+
     </plugins>
 
   </build>
 
   <profiles>
     <profile>
-      <id>dep-check</id>
+      <id>release</id>
+      <properties>
+        <sign.skipNoKey>false</sign.skipNoKey>
+      </properties>
       <build>
         <plugins>
           <plugin>
-            <groupId>org.owasp</groupId>
-            <artifactId>dependency-check-maven</artifactId>
-            <version>8.0.2</version>
-            <configuration>
-              <failBuildOnAnyVulnerability>true</failBuildOnAnyVulnerability>
-              <suppressionFiles>
-                <suppressionFile>owasp-dep-check-suppression.xml</suppressionFile>
-              </suppressionFiles>
-            </configuration>
+            <groupId>pl.project13.maven</groupId>
+            <artifactId>git-commit-id-plugin</artifactId>
             <executions>
               <execution>
+                <id>get-the-git-infos</id>
                 <goals>
-                  <goal>check</goal>
+                  <goal>revision</goal>
                 </goals>
+                <phase>pre-site</phase>
+              </execution>
+            </executions>
+            <configuration>
+              <injectAllReactorProjects>true</injectAllReactorProjects>
+              <failOnNoGitDirectory>false</failOnNoGitDirectory>
+              <offline>true</offline>
+              <replacementProperties>
+                <replacementProperty>
+                  <property>git.remote.origin.url</property>
+                  <propertyOutputSuffix>suffix</propertyOutputSuffix>
+                  <token>^.+/(.+).git$</token>
+                  <value>$1</value>
+                  <regex>true</regex>
+                </replacementProperty>
+              </replacementProperties>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>site-publish</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-site-plugin</artifactId>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-resources-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>index.html</id>
+                <phase>site</phase>
+                <goals>
+                  <goal>copy-resources</goal>
+                </goals>
+                <configuration>
+                  <outputDirectory>${project.build.directory}/site-resources</outputDirectory>
+                  <useDefaultDelimiters>false</useDefaultDelimiters>
+                  <delimiters>
+                    <delimiter>@</delimiter>
+                  </delimiters>
+                  <resources>
+                    <resource>
+                      <directory>site-resources</directory>
+                      <filtering>true</filtering>
+                    </resource>
+                  </resources>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>publish-site</id>
+                <phase>site</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <target>
+                    <delete dir="${project.build.directory}/project-documentation" quiet="true" />
+                    <exec dir="${project.build.directory}" executable="git">
+                      <arg value="clone" />
+                      <arg value="--depth=1" />
+                      <arg value="https://${git.username}:${git.password}@github.com/CI-CMG/project-documentation.git" />
+                    </exec>
+                    <exec dir="${project.build.directory}/project-documentation" executable="git">
+                      <arg value="remote" />
+                      <arg value="add" />
+                      <arg value="javadoc" />
+                      <arg value="https://${git.username}:${git.password}@github.com/CI-CMG/project-documentation.git" />
+                    </exec>
+                    <exec dir="${project.build.directory}/project-documentation" executable="git" failonerror="false">
+                      <arg value="rm" />
+                      <arg value="-r" />
+                      <arg value="${git.remote.origin.url.suffix}/${project.version}" />
+                    </exec>
+                    <mkdir dir="${project.build.directory}/project-documentation/${git.remote.origin.url.suffix}" />
+                    <copy todir="${project.build.directory}/project-documentation/${git.remote.origin.url.suffix}">
+                      <fileset file="${project.build.directory}/site-resources/index.html" />
+                    </copy>
+                    <copy todir="${project.build.directory}/project-documentation/${git.remote.origin.url.suffix}/${project.version}">
+                      <fileset dir="${project.build.directory}/site" />
+                    </copy>
+                    <exec dir="${project.build.directory}/project-documentation" executable="git">
+                      <arg value="add" />
+                      <arg value="${git.remote.origin.url.suffix}/index.html" />
+                    </exec>
+                    <exec dir="${project.build.directory}/project-documentation" executable="git">
+                      <arg value="add" />
+                      <arg value="${git.remote.origin.url.suffix}/${project.version}" />
+                    </exec>
+                    <exec dir="${project.build.directory}/project-documentation" executable="git">
+                      <arg value="commit" />
+                      <arg value="-m" />
+                      <arg value="Update Documentation: ${git.remote.origin.url.suffix}/${project.version}" />
+                    </exec>
+                    <exec dir="${project.build.directory}/project-documentation" executable="git">
+                      <arg value="push" />
+                      <arg value="javadoc" />
+                      <arg value="main" />
+                    </exec>
+                  </target>
+                </configuration>
               </execution>
             </executions>
           </plugin>
@@ -446,15 +684,20 @@
                 <configuration>
                   <images>
                     <image>
-                      <name>cirescmg/crowbar-db:20210416</name>
+                      <name>container-registry.oracle.com/database/free:23.6.0.0-lite</name>
                       <alias>geosamples-ingest-test</alias>
                       <run>
                         <privileged>true</privileged>
                         <ports>
                           <port>15215:1521</port>
                         </ports>
+                        <volumes>
+                          <bind>
+                            <volume>${project.basedir}/src/test/resources/db-startup:/opt/oracle/scripts/startup</volume>
+                          </bind>
+                        </volumes>
                         <wait>
-                          <log>Completed: ALTER DATABASE OPEN</log>
+                          <log>DONE: Executing user defined scripts</log>
                           <time>240000</time>
                         </wait>
                       </run>

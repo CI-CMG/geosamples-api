@@ -1,5 +1,5 @@
 geosamples:
-  schema: mud
+  schema: MUD
   sample-table: ${geosamples.schema}.curators_sample_tsqp
   facility-table: ${geosamples.schema}.curators_facility
   interval-table: ${geosamples.schema}.curators_interval
