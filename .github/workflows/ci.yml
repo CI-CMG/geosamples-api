@@ -69,7 +69,7 @@ jobs:
       - name: Update branch release
         uses: eine/tip@master
         with:
-          tag: ${{ format('{0}-latest', inputs.ref) }}
+          tag: '${{ github.ref_name  }}-latest'
           rm: true
           token: ${{ secrets.RELEASE_PAT }}
           files: release/*
