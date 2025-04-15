@@ -6,70 +6,9 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.version.outputs.version }}
-    steps:
-      - name: checkout
-        uses: actions/checkout@v4
-      - name: Set up JDK 11
-        uses: actions/setup-java@v4
-        with:
-          java-version: '11'
-          distribution: 'temurin'
-          cache: maven
-      - name: build with maven
-        run: mvn -B -s settings.xml clean deploy -Pit
-        env:
-          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
-          SIGN_KEY_PASS: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
-          SIGN_KEY: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
-          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
-      - name: notify dependencies
-        run: |
-          set -ex
-          mvn dependency:list | grep 'SNAPSHOT:compile' > dependencies.txt || true
-          mvn -q -Dexec.executable='echo' -Dexec.args='${project.groupId}:${project.artifactId}:${project.packaging}:${project.version}' exec:exec | grep :jar: > artifacts.txt
-          echo "{\"event_type\":\"update-dependencies\",\"client_payload\":{\"project\":\"${{ github.event.repository.name }}:${{ github.head_ref || github.ref_name }}\",\"artifacts\":\"$( cat artifacts.txt | awk -v ORS='\\n' '1' )\",\"dependencies\":\"$( cat dependencies.txt | awk -v ORS='\\n' '1' )\"}}" > dependency-action.json
-          curl -n "https://api.github.com/repos/CI-CMG/maven-dependency-build/dispatches" \
-          --header 'Accept: application/vnd.github+json' \
-          --header "Authorization: token ${{ secrets.RELEASE_PAT }}" \
-          --data @dependency-action.json
-      - id: version
-        run: |
-          echo "version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> "$GITHUB_OUTPUT"
-          echo "version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> "$GITHUB_ENV"
-      - name: Upload Jar
-        uses: actions/upload-artifact@v4
-        with:
-          name: jar
-          path: "target/geosamples-api-${{ env.version }}-exe.jar"
-      - name: Upload Zip
-        uses: actions/upload-artifact@v4
-        with:
-          name: zip
-          path: "target/geosamples-api-${{ env.version }}.zip"
-      - name: Upload Tarball
-        uses: actions/upload-artifact@v4
-        with:
-          name: tar
-          path: "target/geosamples-api-${{ env.version }}.tar.gz"
-  release:
-    needs:
-      - build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/download-artifact@v4
-      - run: mkdir release
-      - run: cp jar/* release/geosamples-api-${{ needs.build.outputs.version }}-exe.jar
-      - run: cp zip/* release/geosamples-api-${{ needs.build.outputs.version }}.zip
-      - run: cp tar/* release/geosamples-api-${{ needs.build.outputs.version }}.tar.gz
-      - name: Update branch release
-        uses: eine/tip@master
-        with:
-          tag: ${{ inputs.is_tag == true && inputs.ref || format('{0}-latest', inputs.ref)  }}
-          rm: true
-          token: ${{ secrets.RELEASE_PAT }}
-          files: release/*
+  build-artifacts:
+    uses: ./.github/workflows/build-artifacts.yml
+    with:
+      ref: ${{ github.ref_name }}
+      is_tag: false
+    secrets: inherit
