@@ -635,7 +635,7 @@
                     <exec dir="${project.build.directory}/project-documentation" executable="git">
                       <arg value="push" />
                       <arg value="javadoc" />
-                      <arg value="main" />
+                      <arg value="trunk" />
                     </exec>
                   </target>
                 </configuration>
