@@ -62,20 +62,20 @@ jobs:
         with:
           name: tar
           path: "target/geosamples-api-${{ env.version }}.tar.gz"
-    release:
-      needs:
-        - build
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/download-artifact@v4
-        - run: mkdir release
-        - run: cp jar/* release/geosamples-api-${{ needs.build.outputs.version }}-exe.jar
-        - run: cp zip/* release/geosamples-api-${{ needs.build.outputs.version }}.zip
-        - run: cp tar/* release/geosamples-api-${{ needs.build.outputs.version }}.tar.gz
-        - name: Update branch release
-          uses: eine/tip@master
-          with:
-            tag: 'v${{ needs.build.outputs.version }}'
-            rm: true
-            token: ${{ secrets.RELEASE_PAT }}
-            files: release/*
+  release:
+    needs:
+      - build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+      - run: mkdir release
+      - run: cp jar/* release/geosamples-api-${{ needs.build.outputs.version }}-exe.jar
+      - run: cp zip/* release/geosamples-api-${{ needs.build.outputs.version }}.zip
+      - run: cp tar/* release/geosamples-api-${{ needs.build.outputs.version }}.tar.gz
+      - name: Update branch release
+        uses: eine/tip@master
+        with:
+          tag: 'v${{ needs.build.outputs.version }}'
+          rm: true
+          token: ${{ secrets.RELEASE_PAT }}
+          files: release/*
