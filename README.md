@@ -1,13 +1,40 @@
-# IMLGS API
+# geosamples-api
+The geosamples-ingest-service is a web application that provides a REST API for public read-only access to the IMLGS database.
 
-a simple RESTful API for read-only access to the Index to Marine and Lacustrine Geological Samples (IMLGS) database.
-Although it can be used independently, many of the endpoints are designed to support the [IMLGS web application](https://maps.ngdc.noaa.gov/viewers/imlgs)
+## Running the application
 
-Resources exposed via the API include:
-* Geosamples
-* Cruises
-* Repositories (aka Facilities)
+### Runtime Requirements
+- Java 8+
+- Oracle 18c+ Database
 
-Partial OpenAPI format documentation may be viewed via [Swagger UI](https://www.ngdc.noaa.gov/geosamples-api/swagger-ui/index.html?configUrl=https://www.ngdc.noaa.gov/geosamples-api/swagger-config.json). 
-See [notes](https://www.ngdc.noaa.gov/mgg/curator/curatorcoding.html) 
-on the database fields underlying the API
+## Installation
+1. Ensure JRE / JDK 8+ in installed and
+2. Optionally, but recommended, set the JAVA_HOME environment variable
+2. Unzip geosamples-ingest-api-X.X.X.zip
+2. In the unzipped directory, edit config/application.properties and set parameters for the database connection and TLS keystore.
+3. Run the application by executing run.sh to run in the foreground or start-background.sh to run in the background.
+
+## Flyway Database Schema Migration
+The database schema is defined in a shared library, geosamples-ingest-jpa, which this project depends on.  The Flyway tool can
+be used to set up the schema.  To enable this feature, start the application with the following property set:
+```properties
+spring.flyway.enabled=true
+```
+
+
+## Development
+
+### Development Requirements
+- JDK 8+
+- Maven 3.6.0+
+- Docker
+
+### Building From Source
+```bash
+mvn clean install
+```
+
+### Building From Source And Running Database Tests (Integration Tests)
+```bash
+mvn clean install -Pit
+```
