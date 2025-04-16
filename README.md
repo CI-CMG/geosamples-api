@@ -1,5 +1,5 @@
 # geosamples-api
-The geosamples-ingest-service is a web application that provides a REST API for public read-only access to the IMLGS database.
+The geosamples-api is a web application that provides a REST API for public read-only access to the IMLGS database.
 
 ## Running the application
 
@@ -10,7 +10,7 @@ The geosamples-ingest-service is a web application that provides a REST API for 
 ## Installation
 1. Ensure JRE / JDK 8+ in installed and
 2. Optionally, but recommended, set the JAVA_HOME environment variable
-2. Unzip geosamples-ingest-api-X.X.X.zip
+2. Unzip geosamples-api-X.X.X.zip
 2. In the unzipped directory, edit config/application.properties and set parameters for the database connection and TLS keystore.
 3. Run the application by executing run.sh to run in the foreground or start-background.sh to run in the background.
 
